@@ -1,5 +1,5 @@
-import { Placeholder } from '@/components/ui/Placeholder';
+import { PedidosScreen } from '@/components/features/pedidos/PedidosScreen';
 
 export default function PedidosPage() {
-  return <Placeholder title="Pedidos" phase="Fase 2 · Kanban interactiva" />;
+  return <PedidosScreen />;
 }

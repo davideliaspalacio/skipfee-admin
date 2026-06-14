@@ -131,7 +131,7 @@
 .topbar-title b { font-family: var(--font-display), sans-serif; font-size: 19px; letter-spacing: -.01em; color: var(--text); }
 .topbar-title span { font-size: 12.5px; color: var(--text-muted); }
 .topbar-actions { display: flex; align-items: center; gap: 8px; }
-.content { flex: 1; padding: clamp(16px, 3vw, 28px); }
+.content { flex: 1; min-height: 0; padding: clamp(16px, 3vw, 28px); display: flex; flex-direction: column; }
 
 /* square icon button (topbar / rail foot) */
 .iconbtn {
@@ -216,6 +216,39 @@
 }
 .placeholder h2 { font-size: 1.6rem; }
 .placeholder p { color: var(--text-muted); max-width: 44ch; }
+
+/* ---------- Avatar ---------- */
+.avatar {
+  border-radius: 50%; display: grid; place-items: center; flex: none;
+  font-weight: 700; background: var(--ink); color: var(--on-ink); line-height: 1;
+}
+
+/* ---------- Chips compactos (estado / urgencia / filtros) ---------- */
+.chip.sm { padding: 5px 11px; font-size: 12px; gap: 6px; }
+.chip .cdot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; }
+.chip.tone-green { background: var(--green-wash); color: var(--green-ink); }
+.chip.tone-sun { background: oklch(0.87 0.15 92 / .2); color: var(--sun-ink); }
+.chip.tone-coral { background: oklch(0.70 0.14 28 / .15); color: var(--coral); }
+.chip.tone-active { background: var(--ink); color: var(--on-ink); }
+button.chip { border: none; cursor: pointer; transition: transform .12s var(--ease-quart), background .15s; }
+button.chip:hover { transform: translateY(-1px); }
+
+/* ---------- Search input ---------- */
+.input-search {
+  display: flex; align-items: center; gap: 8px; padding: 9px 13px;
+  border: 1.5px solid var(--line); border-radius: 12px;
+  background: var(--surface); color: var(--text-muted); min-width: 0;
+}
+.input-search input { border: none; background: transparent; outline: none; font: inherit; font-size: 14px; color: var(--text); width: 100%; min-width: 0; }
+.input-search input::placeholder { color: var(--text-muted); }
+.input-search:focus-within { border-color: var(--green); box-shadow: 0 0 0 3px var(--green-wash); }
+
+/* select on-brand (cocinero, etc.) */
+.select {
+  width: 100%; padding: 10px 12px; border: 1.5px solid var(--line); border-radius: 11px;
+  background: var(--surface); color: var(--text); font: inherit; font-size: 14px; cursor: pointer;
+}
+.select:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px var(--green-wash); }
 
 @media (prefers-reduced-motion: reduce) {
   .spinner { animation-duration: 1.4s; }
