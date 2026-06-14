@@ -1,0 +1,85 @@
+/* Dashboard — "Centro de operación". Superficie viva sobre el lenguaje de marca.
+   No KPIs pasivos: prioriza lo que requiere acción (promo viva + atención). */
+
+.wrap { display: flex; flex-direction: column; gap: 18px; }
+
+/* ── Banner de promoción activa ───────────────────────────────────── */
+.promo {
+  display: flex; align-items: center; gap: 16px;
+  background: var(--green); color: var(--green-ink);
+  border-radius: var(--r-md); padding: 14px 18px;
+  position: relative; overflow: hidden;
+  box-shadow: 0 6px 0 var(--green-shadow);
+  animation: rise .5s var(--ease-expo);
+}
+.promoMark {
+  display: grid; place-items: center; flex: none;
+  min-width: 56px; height: 56px; padding: 0 10px;
+  background: var(--green-ink); color: var(--green);
+  border-radius: var(--r-sm);
+  font-family: var(--font-display); font-weight: 800; font-size: 20px;
+  letter-spacing: -0.02em; line-height: 1; text-align: center;
+}
+.promoBody { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.promoKicker {
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em;
+  text-transform: uppercase; opacity: .7;
+}
+.promoName { font-family: var(--font-display); font-weight: 800; font-size: 18px; letter-spacing: -0.01em; }
+.promoDesc { font-size: 13.5px; opacity: .8; line-height: 1.35; }
+.promoSpark { flex: none; opacity: .55; }
+
+/* ── Cabecera ─────────────────────────────────────────────────────── */
+.head { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.headTitle { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; letter-spacing: -0.02em; color: var(--ink); }
+.live { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--text-muted); white-space: nowrap; }
+.liveDot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex: none; }
+.liveDot.on { animation: pulse 1.4s ease-in-out infinite; }
+
+/* ── StatCard: trend + acción inline ──────────────────────────────── */
+.statHead { display: flex; align-items: center; gap: 7px; color: var(--text-muted); margin-bottom: 12px; }
+.statIcon { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; background: var(--green-wash); color: var(--green-ink); flex: none; }
+.statLabel { font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
+.statValue { font-family: var(--font-display); font-weight: 800; font-size: 2.2rem; letter-spacing: -0.03em; line-height: 1; color: var(--ink); }
+.statSub { font-size: 12px; color: var(--text-muted); margin-top: 8px; display: flex; align-items: center; gap: 6px; }
+.statSub.alert { color: var(--coral); font-weight: 600; }
+
+/* statGrid: tarjetas sharp con borde por celda, eco de .stats pero con cabecera */
+.statGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.statCell { background: var(--surface); padding: 18px 20px 20px; transition: background .15s var(--ease-quart); }
+.statCell.hot { background: color-mix(in oklch, var(--coral) 6%, var(--surface)); }
+
+/* ── Charts row ───────────────────────────────────────────────────── */
+.row { display: grid; grid-template-columns: 1.7fr 1fr; gap: 18px; }
+.chartArea { padding: 6px 4px 0; }
+.legend { display: inline-flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--text-muted); font-family: var(--font-mono); text-transform: none; letter-spacing: 0; }
+.legendDot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+
+/* Donut + leyenda */
+.donutWrap { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.donutLegend { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 130px; }
+.donutRow { display: flex; align-items: center; gap: 9px; font-size: 13px; }
+.swatch { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+.donutName { color: var(--text); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.donutVal { font-family: var(--font-mono); font-size: 12.5px; color: var(--text-muted); }
+
+/* ── Panel "Requiere tu atención" ─────────────────────────────────── */
+.attnNum { font-family: var(--font-mono); font-weight: 600; font-size: 13px; color: var(--text); }
+.attnReason { color: var(--text); font-size: 13.5px; }
+.attnReason .who { color: var(--text-muted); }
+.attnDeep { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-mono); font-size: 11.5px; color: var(--green-ink); }
+.dtableLink tr { transition: background .12s var(--ease-quart); }
+.dtableLink tr:hover { background: var(--green-wash); }
+
+.muted { color: var(--text-muted); }
+
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .45; transform: scale(.78); } }
+
+@media (max-width: 880px) {
+  .row { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .promo { animation: none; }
+  .liveDot.on { animation: none; }
+}

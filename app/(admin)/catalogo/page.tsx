@@ -1,5 +1,5 @@
-import { Placeholder } from '@/components/ui/Placeholder';
+import { CatalogoScreen } from '@/components/features/catalogo/CatalogoScreen';
 
 export default function CatalogoPage() {
-  return <Placeholder title="Catálogo" phase="Fase 4" />;
+  return <CatalogoScreen />;
 }

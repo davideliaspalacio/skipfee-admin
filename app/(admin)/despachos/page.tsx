@@ -1,5 +1,5 @@
-import { Placeholder } from '@/components/ui/Placeholder';
+import { DespachosScreen } from '@/components/features/despachos/DespachosScreen';
 
 export default function DespachosPage() {
-  return <Placeholder title="Despachos" phase="Fase 6" />;
+  return <DespachosScreen />;
 }

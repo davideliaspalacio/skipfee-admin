@@ -1,5 +1,5 @@
-import { Placeholder } from '@/components/ui/Placeholder';
+import { ReportesScreen } from '@/components/features/reportes/ReportesScreen';
 
 export default function ReportesPage() {
-  return <Placeholder title="Reportes" phase="Fase 5" />;
+  return <ReportesScreen />;
 }

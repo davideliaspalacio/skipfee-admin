@@ -1,0 +1,156 @@
+/* Reportes — superficie analítica sobre el lenguaje de marca.
+   Cards sharp, mono para cifras, Bricolage para los números grandes.
+   Cero colores nuevos: heatmap y barras se construyen con --green-wash → --green. */
+
+.wrap { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 16px; }
+
+/* ---------- Header ---------- */
+.head {
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+}
+.headTitle { font-family: var(--font-display), sans-serif; font-weight: 800; font-size: 1.45rem; letter-spacing: -0.02em; color: var(--text); line-height: 1; }
+.headSub { font-size: 13px; color: var(--text-muted); margin-top: 5px; }
+
+/* ---------- Bento grid ---------- */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.35fr);
+  gap: 16px;
+}
+.gridSecondary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  gap: 16px;
+}
+@media (max-width: 1023px) {
+  .grid, .gridSecondary { grid-template-columns: 1fr; }
+}
+
+/* ---------- Financial card ---------- */
+.finCard { display: flex; flex-direction: column; }
+.finVar {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 700;
+  padding: 4px 9px; border-radius: var(--r-pill);
+}
+.finVarUp { background: var(--green-wash); color: var(--green-ink); }
+.finVarDown { background: oklch(0.70 0.14 28 / .15); color: var(--coral); }
+
+.finHero {
+  padding: 20px 18px 18px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--green-wash), transparent 130%);
+}
+.finHeroLbl {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--green-ink);
+}
+.finHeroVal {
+  font-family: var(--font-display), sans-serif; font-weight: 800; font-size: 2.5rem; letter-spacing: -0.03em;
+  line-height: 1; color: var(--text); margin-top: 10px; font-variant-numeric: tabular-nums;
+}
+
+.finSplit { display: grid; grid-template-columns: 1fr 1fr; }
+.finCell {
+  padding: 16px 18px; display: flex; flex-direction: column; gap: 7px;
+}
+.finCell + .finCell { border-left: 1px solid var(--line); }
+.finCellLbl {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12.5px; color: var(--text-muted);
+}
+.finCellVal {
+  font-family: var(--font-mono); font-size: 1.05rem; font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.finPos { color: var(--green-ink); }
+.finNeg { color: var(--coral); }
+.infoBtn {
+  display: inline-grid; place-items: center; width: 16px; height: 16px; flex: none;
+  border: none; background: none; padding: 0; cursor: help; color: var(--text-muted);
+  position: relative;
+}
+.infoBtn:hover { color: var(--green-ink); }
+.infoBtn .tipText {
+  position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%) translateY(4px);
+  width: max-content; max-width: 230px; padding: 8px 11px; border-radius: 10px;
+  background: var(--ink); color: var(--on-ink); font-size: 12px; font-weight: 500; line-height: 1.4;
+  font-family: var(--font-sans); text-align: left; text-transform: none; letter-spacing: 0;
+  opacity: 0; pointer-events: none; transition: opacity .15s, transform .15s var(--ease-quart); z-index: 20;
+  box-shadow: 0 16px 36px -16px oklch(0.2 0.05 250 / .55);
+}
+.infoBtn:hover .tipText { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---------- Chart legend ---------- */
+.legend { display: inline-flex; align-items: center; gap: 12px; }
+.legendItem { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--text-muted); text-transform: none; letter-spacing: 0; font-family: var(--font-sans); }
+.legendDot { width: 9px; height: 9px; border-radius: 3px; flex: none; }
+
+/* ---------- Top products ---------- */
+.prodList { display: flex; flex-direction: column; gap: 13px; }
+.prodRow { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 11px; align-items: center; }
+.prodRank {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--text-muted);
+  width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center;
+  background: var(--surface-2); flex: none;
+}
+.prodRow:first-child .prodRank { background: var(--green); color: var(--green-ink); }
+.prodMid { min-width: 0; }
+.prodName {
+  font-size: 13.5px; font-weight: 600; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px;
+}
+.prodVal { font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--text); text-align: right; min-width: 30px; }
+.prodValSub { display: block; font-size: 10px; font-weight: 500; color: var(--text-muted); }
+
+/* ---------- Heatmap ---------- */
+.heatLegend { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; color: var(--text-muted); text-transform: none; letter-spacing: 0; font-family: var(--font-sans); }
+.heatScale { display: inline-flex; gap: 2px; }
+.heatScaleCell { width: 13px; height: 11px; border-radius: 2px; }
+
+.heat {
+  display: grid;
+  grid-template-columns: 34px repeat(12, minmax(0, 1fr));
+  gap: 4px;
+  align-items: center;
+}
+.heatCorner {}
+.heatCol { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); text-align: center; }
+.heatRowLbl { font-size: 11.5px; font-weight: 600; color: var(--text-muted); text-align: right; padding-right: 4px; }
+.heatCell {
+  aspect-ratio: 1 / 1; min-height: 18px; border-radius: 4px;
+  background: var(--green); /* opacity drives intensity */
+  transition: transform .12s var(--ease-quart);
+  cursor: default; position: relative;
+}
+.heatCell:hover { transform: scale(1.18); z-index: 5; box-shadow: 0 0 0 2px var(--surface), 0 6px 14px -6px oklch(0.2 0.05 250 / .5); }
+.heatCellEmpty { background: var(--surface-3); }
+
+/* ---------- Conversion funnel (estilo .sla) ---------- */
+.convTop { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+.convRate {
+  font-family: var(--font-display), sans-serif; font-weight: 800; font-size: 2.6rem; letter-spacing: -0.03em; line-height: 1;
+  color: var(--text); font-variant-numeric: tabular-nums;
+}
+.convRate .pct { font-size: 1.2rem; color: var(--green-strong); margin-left: 1px; }
+.convCaption { font-size: 12.5px; color: var(--text-muted); }
+
+.funnel { display: flex; flex-direction: column; gap: 16px; margin-top: 18px; }
+.funRow { display: grid; grid-template-columns: 130px 1fr auto; gap: 14px; align-items: center; }
+.funNm { font-size: 13px; font-weight: 600; color: var(--text); }
+.funTrack { height: 12px; background: var(--surface-3); border-radius: 99px; overflow: hidden; }
+.funFill { display: block; height: 100%; border-radius: 99px; transition: width 1s var(--ease-expo); }
+.funFillBase { background: var(--ink-soft); }
+.funFillWin { background: var(--green); }
+.funFillLoss { background: var(--coral); }
+.funVal { font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--text); text-align: right; min-width: 34px; }
+
+@media (max-width: 560px) {
+  .funRow { grid-template-columns: 96px 1fr auto; }
+  .finHeroVal { font-size: 2.1rem; }
+  .heat { grid-template-columns: 28px repeat(12, minmax(0, 1fr)); gap: 3px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heatCell:hover { transform: none; }
+  .funFill { transition: none; }
+}

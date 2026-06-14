@@ -1,0 +1,247 @@
+/* Configuración — superficie de ajustes sobre el lenguaje de marca.
+   Todo self-contained (no depende de .switch/.flow/.cooks globales que no existen). */
+
+.wrap { display: flex; flex-direction: column; gap: 16px; }
+.tabsRow { align-self: flex-start; max-width: 100%; overflow-x: auto; }
+.stack { display: flex; flex-direction: column; gap: 16px; }
+
+/* ---- Card genérica del panel ---- */
+.card {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+  overflow: clip;
+}
+.cardHead {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;
+  padding: 15px 16px; border-bottom: 1px solid var(--line);
+}
+.cardTitle { font-family: var(--font-display); font-weight: 700; font-size: 15px; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.cardSub { font-size: 12.5px; color: var(--text-muted); margin-top: 3px; max-width: 62ch; line-height: 1.4; }
+.cardBody { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.cardFoot { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--line); }
+
+.muted { color: var(--text-muted); font-size: 13px; }
+.loading { padding: 28px; text-align: center; color: var(--text-muted); font-size: 13px; }
+
+/* ---- Filas / grids ---- */
+.row {
+  display: flex; align-items: center; gap: 12px; padding: 11px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.row:last-child { border-bottom: none; }
+.col { display: flex; flex-direction: column; gap: 6px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.full { grid-column: 1 / -1; }
+.label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+.flexInput { display: flex; gap: 8px; align-items: center; }
+.err { font-size: 12px; color: var(--coral); }
+.hint { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+/* ---- Switch (no existe global; lo definimos acá) ---- */
+.switch {
+  --w: 40px; --h: 22px;
+  position: relative; width: var(--w); height: var(--h); border-radius: 999px; flex: none;
+  border: none; cursor: pointer; padding: 0;
+  background: var(--surface-3);
+  transition: background .2s var(--ease-quart);
+}
+.switch::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: calc(var(--h) - 4px); height: calc(var(--h) - 4px); border-radius: 50%;
+  background: #fff; box-shadow: 0 1px 2px oklch(0.2 0.05 250 / .35);
+  transition: transform .2s var(--ease-quart);
+}
+.switch.on { background: var(--green); }
+.switch.on::after { transform: translateX(calc(var(--w) - var(--h))); }
+.switch:disabled { opacity: .5; cursor: default; }
+
+/* ---- Estado abierto/cerrado/pausa ---- */
+.statusBar {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  padding: 15px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap;
+}
+.statusChip {
+  display: inline-flex; align-items: center; gap: 7px; font-weight: 700; font-size: 13px;
+  padding: 5px 11px; border-radius: 999px;
+}
+.statusDot { width: 8px; height: 8px; border-radius: 50%; }
+.s_green { color: var(--green-ink); background: var(--green-wash); }
+.s_green .statusDot { background: var(--green); }
+.s_amber { color: var(--sun-ink, #7a5b00); background: oklch(0.87 0.15 92 / .25); }
+.s_amber .statusDot { background: var(--sun); }
+.s_red { color: var(--coral); background: oklch(0.7 0.18 25 / .16); }
+.s_red .statusDot { background: var(--coral); }
+.toggleLabel { display: flex; align-items: center; gap: 9px; cursor: pointer; }
+
+/* ---- Horario por día ---- */
+.dayRow {
+  display: grid; grid-template-columns: 110px 44px 1fr; align-items: center; gap: 12px;
+  padding: 9px 16px; border-bottom: 1px solid var(--line);
+}
+.dayRow:last-child { border-bottom: none; }
+.dayName { font-weight: 600; font-size: 13.5px; color: var(--text); }
+.timeRange { display: flex; align-items: center; gap: 8px; }
+
+/* ---- Zonas ---- */
+.zoneRow {
+  display: grid; grid-template-columns: 34px 1fr 150px auto; align-items: center; gap: 10px;
+  padding: 10px 14px; border-bottom: 1px solid var(--line);
+}
+.zoneRow:last-child { border-bottom: none; }
+.zoneColor {
+  width: 30px; height: 30px; padding: 0; border: 1px solid var(--line); border-radius: 8px;
+  background: none; cursor: pointer;
+}
+.zoneArchived {
+  display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line);
+}
+.zoneArchived:last-child { border-bottom: none; }
+.dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.createRow {
+  display: grid; grid-template-columns: 34px 1fr 150px auto; align-items: center; gap: 10px;
+  padding: 12px 14px; background: var(--green-wash); border-bottom: 1px solid var(--line);
+}
+.tarifaInput { display: flex; align-items: center; gap: 5px; }
+.spacer { flex: 1; }
+
+/* ---- Cocineros ---- */
+.cookHead {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 14px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap;
+}
+.cookIdent { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+
+/* ---- Categorías ---- */
+.catRow {
+  display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 10px;
+  padding: 10px 12px; background: var(--surface-2); border-radius: 9px;
+}
+.catCount { font-size: 11.5px; color: var(--text-muted); }
+.sectionTag {
+  font-size: 11px; color: var(--text-muted); font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; margin-top: 6px;
+}
+
+/* ---- Reseñas listado ---- */
+.surveyRow {
+  display: grid; grid-template-columns: 1.4fr auto 1fr auto; align-items: center; gap: 12px;
+  padding: 11px 14px; border-bottom: 1px solid var(--line);
+}
+.surveyRow:last-child { border-bottom: none; }
+.stars { font-size: 12px; }
+.checkRow { display: flex; align-items: center; gap: 9px; cursor: pointer; }
+.divider { border: none; border-top: 1px solid var(--line); margin: 4px 0; }
+
+/* ---- Promociones ---- */
+.promoGrid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 12px;
+}
+.promoCard {
+  position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 13px;
+  padding: 14px; display: flex; flex-direction: column; gap: 10px;
+  transition: box-shadow .15s var(--ease-quart), border-color .15s;
+}
+.promoCard:hover { border-color: color-mix(in oklch, var(--green) 35%, var(--line)); box-shadow: 0 8px 18px -12px oklch(0.2 0.05 250 / .35); }
+.promoCard.dim { opacity: .65; }
+.promoMark {
+  align-self: flex-start; font-family: var(--font-display); font-weight: 800; font-size: 15px;
+  color: var(--green-ink); background: var(--green-wash); border-radius: 8px; padding: 4px 10px;
+}
+.promoTitle { font-weight: 700; font-size: 14.5px; color: var(--text); }
+.promoDesc { font-size: 12.5px; color: var(--text-muted); line-height: 1.4; }
+.promoMeta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 4px; }
+.promoActions { display: flex; align-items: center; gap: 6px; }
+
+.modalGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.chipPick {
+  border: 1px solid var(--line); background: var(--surface-2); color: var(--text);
+  border-radius: 999px; padding: 6px 12px; font-size: 12.5px; font-weight: 600; cursor: pointer;
+  transition: all .14s var(--ease-quart);
+}
+.chipPick:hover { border-color: var(--green); }
+.chipPick.sel { background: var(--green); color: var(--green-ink, #06281c); border-color: var(--green); }
+.chipWrap { display: flex; flex-wrap: wrap; gap: 6px; }
+.chipScroll { max-height: 220px; overflow-y: auto; }
+
+/* ---- Bot: secciones ---- */
+.botSections { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.botSection {
+  text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+  padding: 14px; display: flex; flex-direction: column; gap: 6px; cursor: pointer;
+  transition: border-color .14s var(--ease-quart), transform .12s var(--ease-quart);
+}
+.botSection:hover { border-color: var(--green); transform: translateY(-1px); }
+.botSecTop { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+.botSecTitle { font-weight: 700; font-size: 13.5px; color: var(--text); }
+.botSecCount { font-size: 11px; color: var(--text-muted); font-weight: 700; }
+
+/* ---- Bot: diagrama de flujo ---- */
+.flowScroll { overflow-x: auto; padding: 4px; }
+.flow { position: relative; }
+.flowEdges { position: absolute; inset: 0; color: var(--line); pointer-events: none; }
+.edge { fill: none; stroke: currentColor; stroke-width: 1.6; }
+.edge.back { stroke-dasharray: 4 4; opacity: .7; }
+.edgeLabel {
+  position: absolute; transform: translate(-50%, -50%); font-size: 10.5px; color: var(--text-muted);
+  background: var(--surface); padding: 1px 5px; border-radius: 5px; white-space: nowrap; pointer-events: none;
+}
+.node {
+  position: absolute; display: flex; flex-direction: column; justify-content: center; gap: 5px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 11px; padding: 10px 12px;
+  cursor: pointer; text-align: left; transition: border-color .14s var(--ease-quart), box-shadow .14s, transform .1s;
+}
+.node:hover { border-color: var(--green); box-shadow: 0 6px 16px -10px oklch(0.2 0.05 250 / .4); transform: translateY(-1px); }
+.nodeTitle { font-weight: 700; font-size: 12.5px; color: var(--text); line-height: 1.25; }
+.nodeMeta { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); }
+.nodeDot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); margin-left: 2px; }
+
+/* ---- Bot: editor de mensaje ---- */
+.botEdit { border: 1px solid var(--line); border-radius: 12px; overflow: clip; }
+.botEditHead {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+  padding: 12px 14px; border-bottom: 1px solid var(--line); background: var(--surface-2);
+}
+.botEditGrid { display: grid; grid-template-columns: 1fr 280px; gap: 14px; padding: 14px; }
+.botEditGrid.noPreview { grid-template-columns: 1fr; }
+.botField { display: flex; flex-direction: column; gap: 5px; }
+.botFieldLabel { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+.botTextarea {
+  width: 100%; resize: vertical; min-height: 84px; font-family: inherit; font-size: 13.5px;
+  padding: 9px 11px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); color: var(--text);
+}
+.botTextarea:focus { outline: none; border-color: var(--green); }
+.botVars { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.botEditPreview { display: flex; flex-direction: column; gap: 7px; }
+.botEditFoot { display: flex; align-items: center; gap: 8px; padding: 11px 14px; border-top: 1px solid var(--line); }
+.kwWrap { display: flex; flex-wrap: wrap; gap: 6px; min-height: 22px; }
+.kwChip { display: inline-flex; align-items: center; gap: 5px; }
+.kwChip button { border: none; background: none; cursor: pointer; color: inherit; display: inline-flex; padding: 0; }
+
+/* ---- WhatsApp preview ---- */
+.wa { display: flex; flex-direction: column; gap: 6px; }
+.waBubble {
+  position: relative; align-self: flex-start; max-width: 100%;
+  background: var(--surface-2); border-radius: 4px 12px 12px 12px;
+  padding: 8px 11px 18px; font-size: 13px; color: var(--text); line-height: 1.42;
+  box-shadow: 0 1px 1px oklch(0.2 0.05 250 / .12);
+}
+.waText { white-space: pre-wrap; word-break: break-word; }
+.waAction {
+  display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 8px; padding-top: 7px;
+  border-top: 1px solid var(--line); color: var(--blue); font-weight: 600; font-size: 12.5px;
+}
+.waTime { position: absolute; right: 9px; bottom: 5px; font-size: 10px; color: var(--text-muted); }
+.waButtons { display: flex; flex-direction: column; gap: 5px; }
+.waReplyBtn {
+  text-align: center; background: var(--surface); border: 1px solid var(--line); border-radius: 9px;
+  padding: 8px; color: var(--blue); font-weight: 600; font-size: 12.5px;
+}
+.waListHint { font-size: 11px; color: var(--text-muted); font-style: italic; }
+
+.subtle { color: var(--text-muted); font-size: 12.5px; }
+.numSm { width: 80px; }
+
+@media (max-width: 720px) {
+  .grid2, .modalGrid { grid-template-columns: 1fr; }
+  .botEditGrid { grid-template-columns: 1fr; }
+  .zoneRow, .createRow { grid-template-columns: 30px 1fr; grid-auto-rows: auto; }
+}

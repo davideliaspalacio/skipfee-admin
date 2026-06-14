@@ -1,0 +1,224 @@
+/* Despachos — rutas por zona sobre el lenguaje de marca.
+   Direcciones gestionadas a mano; el sistema solo ordena las paradas para
+   ahorrar km/gasolina. CSS module + tokens; sin colores hardcodeados. */
+
+.wrap { display: flex; flex-direction: column; gap: 18px; }
+
+/* Aviso: los domiciliarios no se registran en el sistema. */
+.callout {
+  display: flex; align-items: flex-start; gap: 11px;
+  background: var(--sun-wash, color-mix(in oklch, var(--sun) 16%, var(--surface)));
+  border: 1px solid color-mix(in oklch, var(--sun) 38%, var(--line));
+  border-radius: var(--r-lg, 14px);
+  padding: 13px 15px;
+  color: var(--text);
+}
+.calloutIcon { color: var(--sun-ink, var(--sun)); flex: none; margin-top: 1px; }
+.calloutBody { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.calloutBody b { font-size: 13.5px; font-weight: 700; }
+.calloutBody span { font-size: 12.5px; color: var(--text-muted); line-height: 1.45; }
+
+/* Layout de dos columnas: bandeja a la izquierda, rutas a la derecha. */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) 1fr;
+  gap: 18px;
+  align-items: start;
+}
+@media (max-width: 980px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+/* --- Bandeja de salida (sticky) --- */
+.tray {
+  position: sticky; top: 12px;
+  background: var(--surface-2); border: 1px solid var(--line);
+  border-radius: var(--r-lg, 14px); overflow: hidden;
+  display: flex; flex-direction: column; max-height: calc(100dvh - 40px);
+}
+.trayHead {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+  padding: 14px 15px 12px; border-bottom: 1px solid var(--line);
+}
+.trayTitle { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.trayTitle b { font-size: 14px; font-weight: 700; color: var(--text); }
+.trayTitle span { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+.sortbar {
+  display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+  padding: 11px 15px; border-bottom: 1px solid var(--line);
+}
+.sortLabel { font-size: 11.5px; color: var(--text-muted); }
+.sortBtn {
+  font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+  padding: 4px 10px; border-radius: var(--r-pill, 999px);
+  border: 1px solid var(--line); background: var(--surface); color: var(--text-muted);
+  transition: all .15s var(--ease-quart);
+}
+.sortBtn:hover { border-color: color-mix(in oklch, var(--green) 40%, var(--line)); color: var(--text); }
+.sortBtn.on { background: var(--green); border-color: var(--green); color: var(--green-ink); }
+
+.trayList {
+  display: flex; flex-direction: column; gap: 8px; padding: 12px;
+  overflow-y: auto; flex: 1; min-height: 80px;
+}
+.trayRow {
+  display: grid; grid-template-columns: 4px 1fr auto; gap: 11px; align-items: center;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 10px; padding: 9px 12px;
+}
+.pip { width: 4px; align-self: stretch; border-radius: 999px; min-height: 28px; }
+.trayRowMid { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.trayRowTop { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.num { font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--text-muted); }
+.trayName { font-weight: 600; font-size: 13.5px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.trayAddr { font-size: 11.5px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.trayRowEnd { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.zoneName { font-size: 11.5px; font-weight: 700; color: var(--text); white-space: nowrap; }
+
+/* --- Rutas --- */
+.routes { display: flex; flex-direction: column; gap: 16px; }
+
+.routeCard {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-xl, 16px); overflow: hidden;
+  box-shadow: 0 1px 2px oklch(0.5 0.05 250 / .05);
+}
+
+.routeHead {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 15px 16px; border-bottom: 1px solid var(--line);
+}
+.routeHeadLeft { display: flex; align-items: center; gap: 11px; min-width: 0; }
+.routeZonePill { width: 10px; height: 28px; border-radius: 999px; flex: none; }
+.routeZoneText { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.routeZoneName { font-family: var(--font-display); font-weight: 700; font-size: 15px; color: var(--text); }
+.routeZoneSub { font-size: 12px; color: var(--text-muted); }
+.recalc {
+  display: inline-flex; align-items: center; gap: 5px; font: inherit; font-size: 12px; font-weight: 600;
+  cursor: pointer; padding: 5px 11px; border-radius: var(--r-pill, 999px);
+  border: 1px solid var(--line); background: var(--surface); color: var(--text-muted);
+  transition: all .15s var(--ease-quart);
+}
+.recalc:hover { border-color: color-mix(in oklch, var(--green) 45%, var(--line)); color: var(--green-ink); }
+
+/* Cuerpo: mapa + stats */
+.routeBody {
+  display: grid; grid-template-columns: 1.3fr 1fr; gap: 14px; padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+}
+@media (max-width: 720px) {
+  .routeBody { grid-template-columns: 1fr; }
+}
+.mapWrap { display: flex; flex-direction: column; gap: 8px; }
+.mapLegend {
+  display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+  font-size: 11px; color: var(--text-muted);
+}
+.legendPill {
+  font-family: var(--font-mono); font-size: 9.5px; font-weight: 700; color: #fff;
+  padding: 2px 6px; border-radius: 4px; line-height: 1;
+}
+.legendNote { margin-left: auto; font-style: italic; }
+
+.routeStats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-content: start; }
+.routeStat {
+  background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px;
+  padding: 11px 13px; display: flex; flex-direction: column; gap: 3px;
+}
+.routeStat .lbl { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted); }
+.routeStat b { font-family: var(--font-display); font-weight: 700; font-size: 17px; color: var(--text); font-variant-numeric: tabular-nums; }
+.routeStat.save b { color: var(--green-ink); }
+.routeStat .sub { font-size: 11px; color: var(--text-muted); }
+
+/* Paradas */
+.stops { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.stopsHead {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 2px;
+}
+.stopsHead .kicker { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); }
+.stopsHead .hint { font-size: 11.5px; color: var(--text-muted); }
+
+.stop {
+  display: grid; grid-template-columns: 26px 1fr auto auto; gap: 11px; align-items: center;
+  background: var(--surface-2); border: 1px solid var(--line);
+  border-radius: 11px; padding: 9px 11px;
+  transition: border-color .15s var(--ease-quart);
+}
+.stop:hover { border-color: color-mix(in oklch, var(--green) 30%, var(--line)); }
+.stopNum {
+  width: 26px; height: 26px; border-radius: 50%; flex: none; color: #fff;
+  display: grid; place-items: center;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 700; line-height: 1;
+}
+.stopNum.ghost { background: var(--surface-3); color: var(--text-muted); }
+.stopMid { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.stopTop { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.stopName { font-weight: 600; font-size: 13.5px; color: var(--text); }
+.stopAddr { font-size: 11.5px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 4px; }
+.stopAddr svg { flex: none; color: var(--text-muted); }
+.manualTag {
+  font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+  color: var(--text-muted); background: var(--surface-3); padding: 1px 6px; border-radius: 5px;
+}
+.stopMeta { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; white-space: nowrap; }
+.stopMeta .phone { font-size: 11.5px; color: var(--text-muted); font-family: var(--font-mono); }
+.stopMeta .price { font-size: 12.5px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+
+.stopActions { display: flex; align-items: center; gap: 4px; }
+.iconBtn {
+  width: 28px; height: 28px; border-radius: 8px; flex: none; cursor: pointer;
+  display: grid; place-items: center; border: 1px solid var(--line); background: var(--surface);
+  color: var(--text-muted); transition: all .14s var(--ease-quart);
+}
+.iconBtn:hover:not(:disabled) { border-color: color-mix(in oklch, var(--green) 45%, var(--line)); color: var(--green-ink); }
+.iconBtn:disabled { opacity: .35; cursor: not-allowed; }
+.iconBtn.danger:hover:not(:disabled) { border-color: color-mix(in oklch, var(--coral) 50%, var(--line)); color: var(--coral); }
+.iconBtn.confirm { background: var(--green); border-color: var(--green); color: var(--green-ink); }
+.iconBtn.confirm:hover:not(:disabled) { background: var(--green-strong); color: var(--green-ink); }
+.iconBtn.confirm:disabled { opacity: .4; }
+
+/* Agregar parada manual */
+.addRow {
+  display: grid; grid-template-columns: 26px 1fr 1.4fr 130px auto; gap: 9px; align-items: center;
+  background: var(--green-wash); border: 1px dashed color-mix(in oklch, var(--green) 45%, var(--line));
+  border-radius: 11px; padding: 9px 11px;
+}
+@media (max-width: 640px) {
+  .addRow { grid-template-columns: 26px 1fr auto; }
+  .addRow .manualInput:nth-child(3), .addRow .manualInput:nth-child(4) { grid-column: 2 / 4; }
+}
+.manualInput {
+  font: inherit; font-size: 12.5px; padding: 6px 9px;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--text);
+  min-width: 0; width: 100%;
+}
+.manualInput:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px var(--green-wash); }
+.manualInput::placeholder { color: var(--text-muted); }
+
+.addTrigger {
+  display: inline-flex; align-items: center; gap: 6px; align-self: flex-start;
+  font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer;
+  padding: 8px 12px; border-radius: 10px; border: 1px dashed var(--line);
+  background: transparent; color: var(--text-muted); transition: all .15s var(--ease-quart);
+  width: 100%; justify-content: center;
+}
+.addTrigger:hover { border-color: var(--green); color: var(--green-ink); background: var(--green-wash); }
+
+/* Footer */
+.routeFooter {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding: 13px 16px; border-top: 1px solid var(--line); background: var(--surface-2);
+}
+.footerMeta { font-size: 12px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.footerActions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Empty state de paradas dentro de una zona */
+.stopsEmpty {
+  border: 1.5px dashed var(--line); border-radius: 10px; padding: 16px 12px; text-align: center;
+  font-size: 12px; color: var(--text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stop, .iconBtn, .sortBtn, .recalc, .addTrigger { transition: none; }
+}

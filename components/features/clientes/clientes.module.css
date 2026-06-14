@@ -1,0 +1,70 @@
+/* Clientes — directorio vivo sobre el lenguaje de marca (tokens + cards sharp). */
+
+.wrap { display: flex; flex-direction: column; gap: 16px; }
+
+/* Barra de control: chips de tag a la izquierda, búsqueda a la derecha */
+.controls {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 14px; flex-wrap: wrap;
+}
+.tagChips { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.tagChip {
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.tagCount {
+  font-family: var(--font-mono); font-size: 11px;
+  opacity: .65; font-weight: 600;
+}
+
+/* Celda de nombre (avatar + nombre + teléfono mono) */
+.who { display: flex; align-items: center; gap: 11px; min-width: 0; }
+.whoText { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.whoName {
+  font-weight: 600; font-size: 14px; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.phone {
+  font-family: var(--font-mono); font-size: 12px; color: var(--text-muted);
+  letter-spacing: -.01em;
+}
+
+/* Dirección + zona apiladas */
+.place { display: flex; flex-direction: column; gap: 2px; min-width: 0; max-width: 260px; }
+.addr {
+  font-size: 13px; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.zoneRow { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--text-muted); }
+.zoneDot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+
+/* Métricas numéricas */
+.count {
+  font-family: var(--font-mono); font-weight: 600; font-size: 14px; color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.countZero { color: var(--text-muted); font-weight: 500; }
+.ticket {
+  font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--green-ink);
+}
+.ticketEmpty { font-family: var(--font-mono); color: var(--text-muted); }
+
+/* Último pedido — relativo */
+.last { font-size: 13px; color: var(--text); white-space: nowrap; }
+.lastMuted { color: var(--text-muted); }
+.lastNever { color: var(--text-muted); font-family: var(--font-mono); }
+
+/* Live dot en la meta del panel */
+.live { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--text-muted); white-space: nowrap; }
+.liveDot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex: none; }
+.liveDot.on { animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+
+.err { color: var(--coral); font-size: 12.5px; }
+.resultMeta { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); }
+
+@media (max-width: 700px) {
+  .place { max-width: 150px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .liveDot.on { animation: none; }
+}

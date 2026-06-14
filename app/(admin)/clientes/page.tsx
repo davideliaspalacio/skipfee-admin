@@ -1,5 +1,5 @@
-import { Placeholder } from '@/components/ui/Placeholder';
+import { ClientesScreen } from '@/components/features/clientes/ClientesScreen';
 
 export default function ClientesPage() {
-  return <Placeholder title="Clientes" phase="Fase 5" />;
+  return <ClientesScreen />;
 }

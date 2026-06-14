@@ -1,5 +1,5 @@
-import { Placeholder } from '@/components/ui/Placeholder';
+import { DashboardScreen } from '@/components/features/dashboard/DashboardScreen';
 
 export default function DashboardPage() {
-  return <Placeholder title="Dashboard" phase="Fase 5 · Centro de operación" />;
+  return <DashboardScreen />;
 }

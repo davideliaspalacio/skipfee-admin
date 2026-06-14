@@ -1,0 +1,175 @@
+/* Catálogo — vitrina de productos sobre el lenguaje de marca (.tile / .grid-cards). */
+
+.wrap { display: flex; flex-direction: column; flex: 1; min-height: 0; gap: 16px; }
+
+/* Barra superior: tabs + búsqueda + nuevo */
+.toolbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+}
+.toolLeft { min-width: 0; flex: 1 1 auto; overflow-x: auto; }
+.toolRight { display: flex; align-items: center; gap: 10px; flex: none; }
+
+/* Grid de cards de marca */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(248px, 1fr));
+  gap: 16px;
+}
+
+/* Card de producto: .tile sharp con foto arriba */
+.card {
+  display: flex; flex-direction: column;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg);
+  overflow: hidden; position: relative;
+  transition: transform .22s var(--ease-quart), box-shadow .22s var(--ease-quart), border-color .18s var(--ease-quart);
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 44px -28px oklch(0.2 0.05 250 / .5);
+  border-color: color-mix(in oklch, var(--green) 38%, var(--line));
+}
+.card.off { opacity: .62; }
+.card.off:hover { opacity: .85; }
+
+/* Foto */
+.media {
+  position: relative; aspect-ratio: 4 / 3; background: var(--surface-2);
+  display: grid; place-items: center; overflow: hidden;
+}
+.media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mediaEmpty {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  color: var(--text-muted); font-size: 12px;
+}
+.mediaEmpty span { font-family: var(--font-mono); letter-spacing: .03em; }
+
+.catBadge {
+  position: absolute; left: 10px; top: 10px;
+  font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; letter-spacing: .02em;
+  color: var(--text); background: oklch(1 0 0 / .82); backdrop-filter: blur(6px);
+  padding: 3px 9px; border-radius: 999px; box-shadow: 0 1px 3px oklch(0.2 0.05 250 / .18);
+}
+:global(.dark) .catBadge { color: var(--on-ink); background: oklch(0.22 0.02 250 / .78); }
+
+.soldout {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  background: oklch(0.2 0.05 250 / .42); backdrop-filter: blur(1px);
+}
+.soldoutTag {
+  font-family: var(--font-display), sans-serif; font-weight: 800; font-size: 13px;
+  letter-spacing: .04em; text-transform: uppercase; color: #fff;
+  background: var(--coral); padding: 6px 14px; border-radius: 6px;
+  transform: rotate(-4deg); box-shadow: 0 6px 18px -6px oklch(0.2 0.05 250 / .6);
+}
+
+/* Acciones flotantes en la foto (aparecen al hover) */
+.mediaActions {
+  position: absolute; right: 10px; top: 10px; display: flex; gap: 6px;
+  opacity: 0; transform: translateY(-4px);
+  transition: opacity .16s var(--ease-quart), transform .16s var(--ease-quart);
+}
+.card:hover .mediaActions, .card:focus-within .mediaActions { opacity: 1; transform: none; }
+@media (hover: none) { .mediaActions { opacity: 1; transform: none; } }
+
+.fab {
+  width: 30px; height: 30px; display: grid; place-items: center;
+  border: none; border-radius: 8px; cursor: pointer;
+  background: oklch(1 0 0 / .9); color: var(--text); backdrop-filter: blur(6px);
+  box-shadow: 0 2px 8px -2px oklch(0.2 0.05 250 / .4);
+  transition: transform .12s var(--ease-quart), background .15s, color .15s;
+}
+.fab:hover { transform: translateY(-1px); background: #fff; }
+.fab.danger:hover { background: var(--coral); color: #fff; }
+:global(.dark) .fab { background: oklch(0.26 0.02 250 / .92); color: var(--on-ink); }
+:global(.dark) .fab:hover { background: oklch(0.3 0.02 250); }
+
+/* Cuerpo del card */
+.body { display: flex; flex-direction: column; gap: 7px; padding: 14px 14px 13px; flex: 1; }
+.name { font-family: var(--font-display), sans-serif; font-weight: 700; font-size: 15.5px; color: var(--text); line-height: 1.2; }
+.desc {
+  color: var(--text-muted); font-size: 12.5px; line-height: 1.4; margin: -1px 0 1px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.price {
+  font-family: var(--font-display), sans-serif; font-weight: 800; font-size: 1.15rem;
+  color: var(--green-ink); font-variant-numeric: tabular-nums;
+}
+.sold { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
+
+.cardFoot {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  margin-top: auto; padding-top: 11px; border-top: 1px solid var(--line);
+}
+.availRow { display: inline-flex; align-items: center; gap: 8px; }
+.availLbl { font-size: 12px; color: var(--text-muted); }
+.availLbl.on { color: var(--green-ink); font-weight: 600; }
+
+/* Toggle (switch) propio — no existe primitivo .switch */
+.toggle {
+  position: relative; width: 38px; height: 22px; flex: none;
+  border: none; border-radius: 999px; cursor: pointer; padding: 0;
+  background: var(--surface-3); transition: background .2s var(--ease-quart);
+}
+.toggle::after {
+  content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px;
+  border-radius: 50%; background: #fff; box-shadow: 0 1px 3px oklch(0.2 0.05 250 / .4);
+  transition: transform .2s var(--ease-quart);
+}
+.toggle.on { background: var(--green); }
+.toggle.on::after { transform: translateX(16px); }
+.toggle:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
+.toggle:disabled { opacity: .55; cursor: progress; }
+
+/* ===== Modal form ===== */
+.form { display: flex; flex-direction: column; gap: 16px; }
+.formRow { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 520px) { .formRow { grid-template-columns: 1fr; } }
+
+.priceHint { font-family: var(--font-mono); color: var(--green-ink); }
+
+/* Dropzone de imagen */
+.dropzone {
+  position: relative; border: 1.5px dashed var(--line); border-radius: var(--r-md);
+  background: var(--surface-2); min-height: 132px; display: grid; place-items: center;
+  cursor: pointer; overflow: hidden; padding: 16px;
+  transition: border-color .16s var(--ease-quart), background .16s var(--ease-quart);
+}
+.dropzone:hover { border-color: color-mix(in oklch, var(--green) 50%, var(--line)); }
+.dropzone.drag { border-color: var(--green); background: var(--green-wash); }
+.dropzone.hasImg { padding: 0; border-style: solid; cursor: default; min-height: 0; }
+.dzEmpty {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; pointer-events: none;
+}
+.dzIcon {
+  width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center;
+  background: var(--surface-3); color: var(--green-ink); margin-bottom: 2px;
+}
+.dzEmpty b { font-size: 13.5px; color: var(--text); }
+.dzEmpty span { font-size: 12px; color: var(--text-muted); }
+.dzEmpty u { color: var(--green-ink); }
+
+.dzPreview { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+.dzActions {
+  position: absolute; right: 10px; bottom: 10px; display: flex; gap: 7px;
+}
+
+/* Card de toggle "Disponible" dentro del modal */
+.availCard {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px; width: 100%;
+  text-align: left; padding: 14px; border: 1px solid var(--line); border-radius: var(--r-md);
+  background: var(--surface-2); cursor: pointer; font: inherit;
+  transition: border-color .15s var(--ease-quart), background .15s var(--ease-quart);
+}
+.availCard:hover { border-color: color-mix(in oklch, var(--green) 35%, var(--line)); }
+.availCard b { font-size: 13.5px; color: var(--text); }
+.availCard small { display: block; font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+/* Confirmación de borrado */
+.delText { font-size: 14.5px; color: var(--text); }
+.delText strong { font-weight: 700; }
+.delNote { margin-top: 12px; font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+@media (prefers-reduced-motion: reduce) {
+  .card:hover { transform: none; }
+  .toggle, .toggle::after { transition: none; }
+}
