@@ -1,0 +1,11 @@
+{
+  // Panel admin servido como ESTÁTICO en Cloudflare (Static Assets), igual que la landing.
+  // Requiere activar `output: "export"` en next.config.ts (Fase 7).
+  // Build: `npm run build`  ·  Deploy: `npx wrangler deploy`
+  "name": "skipfee-admin",
+  "compatibility_date": "2026-06-01",
+  "assets": {
+    "directory": "./out",
+    "not_found_handling": "single-page-application"
+  }
+}
