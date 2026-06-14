@@ -1,9 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Panel admin: SPA client-rendered detrás de login.
-  // En desarrollo NO usamos `output:'export'` (rompe rutas dinámicas y HMR).
-  // En la Fase 7 (deploy) se activa: output: "export" → carpeta out/ a Cloudflare.
+  // Panel admin: SPA client-rendered detrás de login → export estático a Cloudflare
+  // (mismo modelo que la landing). Sin rutas server, sin middleware, sin API routes.
+  // `next dev` sigue funcionando normal con esto activado.
+  output: "export",
   images: { unoptimized: true },
   poweredByHeader: false,
 };
