@@ -33,6 +33,8 @@ export default function PreviewConfiguracion() {
     c.setQueryData(settingsKeys.current(), mockSettings);
     c.setQueryData(productKeys.list(), mockProducts);
     c.setQueryData(zoneKeys.list(false), mockZones);
+    // ZonasPanel usa useZones(true) (incluye archivadas).
+    c.setQueryData(zoneKeys.list(true), mockZones);
     c.setQueryData(cookKeys.list(false), mockCooks);
     c.setQueryData(botMessageKeys.list(), mockBotMessages);
     // PromocionesPanel usa usePromotions(true) → key con includeArchived=true.
