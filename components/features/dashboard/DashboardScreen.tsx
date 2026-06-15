@@ -33,7 +33,7 @@ function statusLabel(status: string): string {
  */
 export function DashboardScreen() {
   const router = useRouter();
-  const { data: dash, isFetching } = useDashboard();
+  const { data: dash, isFetching, isError } = useDashboard();
   const { data: promotions } = useActivePromotions();
 
   // Primer match por discount_type / orden del endpoint (igual que el storefront).
@@ -42,6 +42,28 @@ export function DashboardScreen() {
 
   const attention: AttentionOrder[] = dash?.attentionOrders ?? [];
   const hasMix = !loading && dash.productMix.length > 0;
+
+  // Error de carga sin datos previos: no quedarse en skeletons para siempre.
+  if (isError && dash == null) {
+    return (
+      <div className={styles.wrap}>
+        <div className={styles.head}>
+          <div>
+            <div className={styles.headTitle}>Centro de operación</div>
+            <div className={styles.muted} style={{ fontSize: 13, marginTop: 2 }}>
+              El pulso de hoy · zona horaria Bogotá
+            </div>
+          </div>
+        </div>
+        <Panel title="Sin conexión con el backend">
+          <EmptyState
+            title="No se pudo cargar el panel"
+            sub="Revisa tu conexión con el backend e inténtalo de nuevo en unos segundos."
+          />
+        </Panel>
+      </div>
+    );
+  }
 
   const attnColumns: Column<AttentionOrder>[] = [
     {

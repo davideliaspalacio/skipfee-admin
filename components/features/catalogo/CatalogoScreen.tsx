@@ -189,7 +189,7 @@ export function CatalogoScreen() {
             <ProductCard
               key={p.id}
               product={p}
-              toggling={patchProduct.isPending}
+              toggling={patchProduct.isPending && patchProduct.variables?.productId === p.id}
               onToggle={() => toggleAvailable(p)}
               onEdit={() => openEdit(p)}
               onDelete={() => setConfirmDelete(p)}

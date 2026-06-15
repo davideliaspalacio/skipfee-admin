@@ -27,15 +27,22 @@ export function ChatThread({ chat }: { chat: Chat }) {
   // Burbujas optimistas: se muestran apenas el operador envía y se descartan en
   // cuanto el poll de 2s trae un mensaje saliente que las cubre.
   const [optimistic, setOptimistic] = useState<OptimisticMessage[]>([]);
+  // Línea base de salientes que el servidor YA tenía al empezar a enviar. Solo
+  // descartamos burbujas optimistas cuando el server SUPERA esta base — no contra
+  // el conteo absoluto de 'out' (que en chats con historial las borraría al instante).
+  const baselineOutRef = useRef(0);
+  const keySeqRef = useRef(0);
   useEffect(() => {
     setOptimistic([]);
+    baselineOutRef.current = 0;
   }, [chat.id]);
   useEffect(() => {
     if (optimistic.length === 0) return;
     const serverOut = messages.filter((m) => m.who === 'out').length;
-    if (serverOut > 0) {
-      // El servidor ya reflejó envíos; descartamos los optimistas más viejos.
-      setOptimistic((prev) => prev.slice(Math.min(prev.length, serverOut)));
+    const confirmed = serverOut - baselineOutRef.current;
+    if (confirmed > 0) {
+      setOptimistic((prev) => prev.slice(confirmed));
+      baselineOutRef.current = serverOut;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages]);
@@ -65,17 +72,22 @@ export function ChatThread({ chat }: { chat: Chat }) {
     const time = `${String(now.getHours()).padStart(2, '0')}:${String(
       now.getMinutes(),
     ).padStart(2, '0')}`;
-    setOptimistic((prev) => [
-      ...prev,
-      {
-        who: 'out',
-        text: msg.text,
-        time,
-        mediaUrl: msg.mediaUrl ?? null,
-        _optimistic: true,
-        _key: `o${Date.now()}`,
-      },
-    ]);
+    setOptimistic((prev) => {
+      if (prev.length === 0) {
+        baselineOutRef.current = messages.filter((m) => m.who === 'out').length;
+      }
+      return [
+        ...prev,
+        {
+          who: 'out',
+          text: msg.text,
+          time,
+          mediaUrl: msg.mediaUrl ?? null,
+          _optimistic: true,
+          _key: `o${keySeqRef.current++}`,
+        },
+      ];
+    });
   };
 
   return (

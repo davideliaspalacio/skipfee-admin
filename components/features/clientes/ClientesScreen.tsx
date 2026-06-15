@@ -169,7 +169,13 @@ export function ClientesScreen() {
     </span>
   );
 
-  const empty = isLoading ? (
+  const empty = error ? (
+    <EmptyState
+      icon={<Icon.Users size={22} />}
+      title="No se pudieron cargar los clientes"
+      sub="Revisa tu conexión con el backend e inténtalo de nuevo."
+    />
+  ) : isLoading ? (
     <ClientesTableSkeleton />
   ) : (
     <EmptyState

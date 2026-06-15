@@ -7,6 +7,7 @@ import { useIsDark } from '@/lib/hooks';
 import { useZones, usePatchZone, useCreateZone, useDeleteZone, useUnarchiveZone, useSettings } from '@/lib/queries';
 import { Modal } from '@/components/ui/Modal';
 import { RouteMap } from '@/components/ui/RouteMap';
+import { ZonaCoverageMap } from './ZonaCoverageMap';
 import styles from './configuracion.module.css';
 
 function zoneKey(z: Zone): string {
@@ -17,12 +18,9 @@ function zoneKey(z: Zone): string {
  * Panel "Zonas y tarifas": lista editable de zonas activas (nombre, tarifa,
  * color, centro lat/lng + radio de cobertura) + crear + archivar/desarchivar.
  *
- * SIMPLIFICACIÓN vs. Vite: el Vite app trae ZonaCoverageMap con dibujo de
- * polígono sobre Google Maps + Google Places + forma OSM. Acá lo reemplazamos
- * por edición de centro (lat/lng) + radio en metros (campo `coverageRadiusM`
- * que el backend ya soporta como respaldo), y un RouteMap que plotea el centro
- * de cada zona. El polígono fino (`coverage`) se deja para una iteración futura.
- * // TODO: portar el editor de polígono (ZonaCoverageMap) con dibujo en mapa.
+ * Cobertura: editor visual <ZonaCoverageMap> (portado del Vite app) — busca el
+ * barrio/comuna con Google Places y carga la forma real (polígono) de OSM, con
+ * fallback a centro + radio. Cada fila además tiene un editor rápido de centro+radio.
  */
 export function ZonasPanel() {
   const { data: zones, isLoading, isError } = useZones(true);
@@ -63,19 +61,7 @@ export function ZonasPanel() {
         {active.map(z => <ZonaRow key={zoneKey(z)} zone={z} />)}
       </div>
 
-      {stops.length > 0 && (
-        <div className={styles.card}>
-          <div className={styles.cardHead}>
-            <div>
-              <div className={styles.cardTitle}><Icon.Navigation size={15} /> Mapa de zonas</div>
-              <div className={styles.cardSub}>Centro de cada zona desde el local. Editá el centro y radio en cada zona.</div>
-            </div>
-          </div>
-          <div style={{ padding: 12 }}>
-            <RouteMap origin={origin} stops={stops} color="var(--green)" dark={dark} height={260} />
-          </div>
-        </div>
-      )}
+      {zones && active.length > 0 && <ZonaCoverageMap zones={active} />}
 
       {archived.length > 0 && (
         <div className={styles.card}>
