@@ -14,6 +14,8 @@ import {
  * evita prop-drilling y permite que la capa de transporte (sin React) y la UI
  * compartan exactamente la misma fuente de verdad.
  *
+ * Devuelve el code (string) de la empresa activa — el identificador de ruta.
+ *
  * SSR/export estático: el `getServerSnapshot` devuelve `null` (no hay empresa
  * en servidor); se hidrata en cliente tras `/api/auth/me`.
  */
@@ -26,10 +28,11 @@ export function useActiveCompany(): string | null {
 }
 
 /**
- * Cambia la empresa activa (owner multi-empresa). El cambio persiste en
+ * Cambia la empresa activa (owner multi-empresa). `code` es el identificador
+ * numérico de la empresa como string (p. ej. "1001"). El cambio persiste en
  * localStorage y re-renderiza la app; como las query keys de negocio incluyen
- * el slug, React Query sirve/recarga el caché de la nueva empresa sin mezclar.
+ * el code, React Query sirve/recarga el caché de la nueva empresa sin mezclar.
  */
-export function setActiveCompany(slug: string): void {
-  setActiveCompanySlug(slug);
+export function setActiveCompany(code: string): void {
+  setActiveCompanySlug(code);
 }

@@ -14,8 +14,14 @@ export interface AuthUser {
  */
 export type MembershipRole = 'platform' | 'super_admin' | 'admin' | 'cocina' | 'empaque';
 
-/** Una pertenencia del usuario a una empresa (multi-tenant). */
+/**
+ * Una pertenencia del usuario a una empresa (multi-tenant).
+ *
+ * `companyCode` (numérico) es el identificador de RUTA (`/api/<code>/…`).
+ * `companySlug`/`companyName` son solo para mostrar (etiquetas en la UI).
+ */
 export interface Membership {
+  companyCode: number;
   companySlug: string;
   companyName: string;
   role: MembershipRole;
@@ -23,12 +29,15 @@ export interface Membership {
 
 /**
  * Sesión hidratada desde `/api/auth/me`. Además del usuario trae las membresías
- * (empresas a las que pertenece + rol en cada una) y el slug de la empresa
- * activa elegida por el backend.
+ * (empresas a las que pertenece + rol en cada una), el code numérico de la
+ * empresa activa (identificador de ruta) y su slug (etiqueta visible).
  */
 export interface MeResult {
   user: AuthUser;
   memberships: Membership[];
+  /** Code numérico (string) de la empresa activa — identificador de ruta. */
+  activeCompanyCode: string | null;
+  /** Slug de la empresa activa — solo para mostrar. */
   activeCompanySlug: string | null;
 }
 
@@ -58,8 +67,9 @@ export async function logout(): Promise<void> {
 
 /**
  * Bootstrap de sesión. Devuelve usuario + membresías + empresa activa, y como
- * efecto secualdario hidrata el slug activo en la capa de transporte (para que
- * `tenantRequest` ya tenga prefijo). Devuelve `null` si no hay sesión (401).
+ * efecto secundario hidrata el code activo (identificador de ruta) en la capa de
+ * transporte (para que `tenantRequest` ya tenga prefijo `/api/<code>`). Devuelve
+ * `null` si no hay sesión (401).
  */
 export async function me(): Promise<MeResult | null> {
   try {
@@ -67,17 +77,22 @@ export async function me(): Promise<MeResult | null> {
       ok: true;
       user: AuthUser;
       memberships?: Membership[];
+      activeCompanyCode?: number | null;
       activeCompanySlug?: string | null;
     }>('/api/auth/me');
 
     const memberships = res.memberships ?? [];
-    const validSlugs = memberships.map((m) => m.companySlug);
-    hydrateActiveCompany(res.activeCompanySlug, validSlugs);
+    // El identificador de ruta es el code numérico; lo guardamos como string.
+    const validCodes = memberships.map((m) => String(m.companyCode));
+    const activeCodeStr =
+      res.activeCompanyCode != null ? String(res.activeCompanyCode) : null;
+    hydrateActiveCompany(activeCodeStr, validCodes);
 
     return {
       user: res.user,
       memberships,
-      activeCompanySlug: res.activeCompanySlug ?? validSlugs[0] ?? null,
+      activeCompanyCode: activeCodeStr ?? validCodes[0] ?? null,
+      activeCompanySlug: res.activeCompanySlug ?? memberships[0]?.companySlug ?? null,
     };
   } catch (err) {
     if (err instanceof ApiError && err.status === 401) {

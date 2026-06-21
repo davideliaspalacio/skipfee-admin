@@ -16,14 +16,16 @@ export function useMe() {
 /**
  * Rol efectivo del usuario en la empresa activa.
  *
- * Cruza las membresías (`useMe`) con el slug activo (`useActiveCompany`) y
- * devuelve el rol normalizado de esa empresa. Si aún no hay datos, cae a
- * `admin` (mismo default histórico de `normalizeRole`).
+ * Cruza las membresías (`useMe`) con el code activo (`useActiveCompany`, el
+ * identificador de ruta) y devuelve el rol normalizado de esa empresa. Si aún no
+ * hay datos, cae a `admin` (mismo default histórico de `normalizeRole`).
  */
 export function useActiveRole(): UserRole {
   const me = useMe();
-  const activeSlug = useActiveCompany();
-  const membership = me.data?.memberships.find((m) => m.companySlug === activeSlug);
+  const activeCode = useActiveCompany();
+  const membership = me.data?.memberships.find(
+    (m) => String(m.companyCode) === activeCode,
+  );
   // Fallback al rol del user (compat con backends que aún no mandan memberships).
   return normalizeRole(membership?.role ?? me.data?.user.role);
 }

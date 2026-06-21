@@ -60,6 +60,12 @@ export function EmpresasScreen() {
 
   const columns: Column<Company>[] = [
     {
+      key: 'code',
+      label: 'Código',
+      num: true,
+      render: c => <span className={styles.code}>{c.code}</span>,
+    },
+    {
       key: 'name',
       label: 'Empresa',
       render: c => (

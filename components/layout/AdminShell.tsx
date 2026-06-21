@@ -148,9 +148,10 @@ export function AdminShell({ user, children }: { user: AuthUser; children: React
 /**
  * Selector de empresa activa en la topbar (multi-tenant).
  *
- * - Con varias empresas (owner de la plataforma): `<select>` que cambia la
- *   empresa activa (`setActiveCompany`) — las query keys de negocio incluyen el
- *   slug, así React Query recarga el caché de la nueva empresa sin mezclar.
+ * - Con varias empresas (owner de la plataforma): `<select>` cuyo value es el
+ *   `companyCode` (identificador de ruta) y su label el `companyName`. Al cambiar
+ *   llama `setActiveCompany(String(code))` — las query keys de negocio incluyen
+ *   el code, así React Query recarga el caché de la nueva empresa sin mezclar.
  * - Con una sola empresa: etiqueta no editable con su nombre.
  * - Sin empresa (aún cargando): no renderiza nada.
  */
@@ -181,7 +182,7 @@ function CompanySwitcher() {
       style={{ maxWidth: 200 }}
     >
       {memberships.map((m) => (
-        <option key={m.companySlug} value={m.companySlug}>
+        <option key={m.companyCode} value={String(m.companyCode)}>
           {m.companyName}
         </option>
       ))}
