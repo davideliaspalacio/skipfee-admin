@@ -20,19 +20,7 @@ export default function PreviewPedidos() {
 
   return (
     <QueryClientProvider client={qc}>
-      <div className="shell">
-        <div className="shell-main" style={{ marginLeft: 0 }}>
-          <header className="topbar">
-            <div className="topbar-title">
-              <b>Pedidos</b>
-              <span>Preview · datos de ejemplo (sin backend)</span>
-            </div>
-          </header>
-          <main className="content">
-            <Kanban selectedId={null} onSelect={() => {}} />
-          </main>
-        </div>
-      </div>
+      <Kanban selectedId={null} onSelect={() => {}} />
     </QueryClientProvider>
   );
 }

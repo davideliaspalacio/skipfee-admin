@@ -304,3 +304,46 @@ textarea.input { resize: vertical; min-height: 84px; font-family: inherit; }
   .toast, .modal-card, .modal-backdrop { animation: none; }
   .skel { animation: none; }
 }
+
+/* ---------- Modo demo (onboarding → panel de prueba) ---------- */
+.demo-banner {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 9px clamp(16px, 3vw, 28px);
+  background: linear-gradient(90deg, var(--green-wash), color-mix(in oklch, var(--sun) 26%, var(--surface)));
+  border-bottom: 1px solid var(--line); font-size: 13px; color: var(--green-ink);
+}
+.demo-banner-badge {
+  font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+  background: var(--green); color: var(--green-ink); padding: 4px 9px; border-radius: 6px; flex: none;
+}
+.demo-banner-text { flex: 1; min-width: 0; }
+.demo-banner-cta { font-weight: 700; color: var(--green-ink); text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; flex: none; }
+.demo-banner-cta:hover { color: var(--green-strong); }
+/* candado en el rail / mobnav */
+.rail-item.is-locked { opacity: .6; }
+.rail-item.is-locked:hover { opacity: 1; }
+.rail-item .rail-lock {
+  position: absolute; bottom: 5px; right: 6px; width: 15px; height: 15px; border-radius: 5px;
+  display: grid; place-items: center; background: var(--ink-soft); color: var(--sun); border: 1px solid var(--ink-line);
+}
+.mobnav-item.is-locked { opacity: .6; }
+/* función bloqueada (upsell) */
+.demo-locked { display: grid; place-items: center; min-height: 60vh; padding: 24px; }
+.demo-locked-card {
+  max-width: 460px; text-align: center; background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-xl); padding: clamp(28px, 4vw, 44px);
+  box-shadow: 0 30px 70px -40px oklch(0.2 0.05 250 / .5);
+}
+.demo-locked-ic {
+  display: inline-grid; place-items: center; width: 64px; height: 64px; border-radius: 50%;
+  background: var(--green-wash); color: var(--green-strong);
+}
+.demo-locked-badge {
+  display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+  color: var(--green-ink); background: var(--green-wash); border: 1px solid color-mix(in oklch, var(--green) 40%, transparent);
+  padding: 4px 11px; border-radius: 999px; margin: 12px 0 4px;
+}
+.demo-locked-card h2 { font-size: 1.4rem; margin: 8px 0; color: var(--text); }
+.demo-locked-card p { color: var(--text-muted); font-size: 15px; margin: 0 auto; max-width: 40ch; }
+.demo-locked-card .btn { margin-top: 20px; }
+.demo-locked-fine { font-size: 12.5px; margin-top: 14px !important; }

@@ -28,21 +28,9 @@ export default function PreviewWhatsApp() {
 
   return (
     <QueryClientProvider client={qc}>
-      <div className="shell">
-        <div className="shell-main" style={{ marginLeft: 0 }}>
-          <header className="topbar">
-            <div className="topbar-title">
-              <b>WhatsApp</b>
-              <span>Preview · datos de ejemplo (sin backend)</span>
-            </div>
-          </header>
-          <main className="content">
-            <Suspense fallback={null}>
-              <WhatsAppScreen />
-            </Suspense>
-          </main>
-        </div>
-      </div>
+      <Suspense fallback={null}>
+        <WhatsAppScreen />
+      </Suspense>
     </QueryClientProvider>
   );
 }

@@ -20,19 +20,7 @@ export default function PreviewReportes() {
 
   return (
     <QueryClientProvider client={qc}>
-      <div className="shell">
-        <div className="shell-main" style={{ marginLeft: 0 }}>
-          <header className="topbar">
-            <div className="topbar-title">
-              <b>Reportes</b>
-              <span>Preview · datos de ejemplo (sin backend)</span>
-            </div>
-          </header>
-          <main className="content">
-            <ReportesScreen />
-          </main>
-        </div>
-      </div>
+      <ReportesScreen />
     </QueryClientProvider>
   );
 }
