@@ -48,8 +48,15 @@ lib/
 
 ## Auth y roles
 
-- `useMe()` valida sesión; el layout `(admin)` redirige a `/login` si no hay sesión (401).
-- Roles (`lib/roles.ts`): **`admin`** (todo), **`cocina`** (solo Pedidos, estados cocina/empacado), **`empaque`** (solo Pedidos, estados empacado/ruta). El rol filtra pantallas visibles y estados del kanban.
+- `useMe()` valida sesión y devuelve `{ user, memberships, activeCompanySlug }` (contrato multi-empresa de `GET /api/auth/me`); el layout `(admin)` redirige a `/login` si no hay sesión (401).
+- Roles (`lib/roles.ts`): **`super_admin`** y **`admin`** (todo dentro de su empresa), **`cocina`** (solo Pedidos, estados cocina/empacado), **`empaque`** (solo Pedidos, estados empacado/ruta). El rol viene de `memberships[].role` para la empresa activa (`useActiveRole`) y filtra pantallas visibles y estados del kanban.
+
+## Multi-empresa (transporte + contexto)
+
+- **Empresa activa:** `lib/api/activeCompany.ts` es el store de transporte (sin React) del slug activo; se hidrata desde `/api/auth/me` y se persiste en `localStorage` (`bs_active_company`) para el owner multi-empresa. `lib/queries/company.ts` (`useActiveCompany`/`setActiveCompany`) lo observa con `useSyncExternalStore`.
+- **Prefijo de ruta:** rutas de negocio → `tenantRequest`/`tenantMultipart` (en `lib/api/client.ts`) anteponen `/api/<activeCompanySlug>`. Rutas de plataforma/auth (`/api/auth/*`, `/api/platform/*`) siguen con `request`. Los `lib/api/<recurso>` de negocio usan paths relativos (`/orders`, `/products`, …).
+- **Query keys:** las keys de negocio (`lib/queries/keys.ts`) incluyen `['company', slug, …]` para no mezclar caché entre empresas. Las queries de negocio se gatean con `enabled: !!useActiveCompany()`.
+- **PENDIENTE:** pantalla de gestión de "Empresas" para el owner (CRUD + selector de empresa activa en la UI). El transporte ya lo soporta (`setActiveCompany`).
 
 ## Funcionalidades por módulo
 

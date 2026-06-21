@@ -1,4 +1,4 @@
-import { request } from './client';
+import { tenantRequest } from './client';
 
 export type DayKey = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun';
 
@@ -61,12 +61,12 @@ export interface Settings {
 }
 
 export async function fetchSettings(): Promise<Settings> {
-  const { settings } = await request<{ ok: true; settings: Settings }>('/api/settings');
+  const { settings } = await tenantRequest<{ ok: true; settings: Settings }>('/settings');
   return settings;
 }
 
 export async function patchSettings(body: Partial<Settings>): Promise<void> {
-  await request('/api/settings', {
+  await tenantRequest('/settings', {
     method: 'PATCH',
     body: JSON.stringify(body),
   });

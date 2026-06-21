@@ -1,9 +1,9 @@
-import { request } from './client';
+import { tenantRequest } from './client';
 import type { Zone } from '../data';
 
 export async function fetchZones(includeArchived = false): Promise<Zone[]> {
   const qs = includeArchived ? '?all=1' : '';
-  const { zones } = await request<{ ok: true; zones: Zone[] }>(`/api/zones${qs}`);
+  const { zones } = await tenantRequest<{ ok: true; zones: Zone[] }>(`/zones${qs}`);
   return zones;
 }
 
@@ -16,7 +16,7 @@ export interface CreateZoneBody {
 }
 
 export async function createZone(body: CreateZoneBody): Promise<Zone> {
-  const { zone } = await request<{ ok: true; zone: Zone }>('/api/zones', {
+  const { zone } = await tenantRequest<{ ok: true; zone: Zone }>('/zones', {
     method: 'POST',
     body: JSON.stringify(body),
   });
@@ -38,8 +38,8 @@ export type PatchZoneBody = {
 };
 
 export async function patchZone(zoneId: string, body: PatchZoneBody): Promise<Zone> {
-  const { zone } = await request<{ ok: true; zone: Zone }>(
-    `/api/zones/${encodeURIComponent(zoneId)}`,
+  const { zone } = await tenantRequest<{ ok: true; zone: Zone }>(
+    `/zones/${encodeURIComponent(zoneId)}`,
     {
       method: 'PATCH',
       body: JSON.stringify(body),
@@ -50,5 +50,5 @@ export async function patchZone(zoneId: string, body: PatchZoneBody): Promise<Zo
 
 /** Archiva la zona (soft-delete). El bot/admin dejan de ofrecerla. */
 export async function deleteZone(zoneId: string): Promise<void> {
-  await request(`/api/zones/${encodeURIComponent(zoneId)}`, { method: 'DELETE' });
+  await tenantRequest(`/zones/${encodeURIComponent(zoneId)}`, { method: 'DELETE' });
 }

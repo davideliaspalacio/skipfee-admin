@@ -1,8 +1,8 @@
-import { request, requestMultipart } from './client';
+import { tenantRequest, tenantMultipart } from './client';
 import type { Product } from '../data';
 
 export async function fetchProducts(): Promise<Product[]> {
-  const { products } = await request<{ ok: true; products: Product[] }>('/api/products');
+  const { products } = await tenantRequest<{ ok: true; products: Product[] }>('/products');
   return products;
 }
 
@@ -18,7 +18,7 @@ export interface CreateProductBody {
 }
 
 export async function createProduct(body: CreateProductBody): Promise<Product> {
-  const { product } = await request<{ ok: true; product: Product }>('/api/products', {
+  const { product } = await tenantRequest<{ ok: true; product: Product }>('/products', {
     method: 'POST',
     body: JSON.stringify(body),
   });
@@ -42,8 +42,8 @@ export interface PatchProductBody {
 }
 
 export async function patchProduct(productId: string, body: PatchProductBody): Promise<Product> {
-  const { product } = await request<{ ok: true; product: Product }>(
-    `/api/products/${productId}`,
+  const { product } = await tenantRequest<{ ok: true; product: Product }>(
+    `/products/${productId}`,
     {
       method: 'PATCH',
       body: JSON.stringify(body),
@@ -53,7 +53,7 @@ export async function patchProduct(productId: string, body: PatchProductBody): P
 }
 
 export async function deleteProduct(productId: string): Promise<void> {
-  await request<{ ok: true }>(`/api/products/${productId}`, { method: 'DELETE' });
+  await tenantRequest<{ ok: true }>(`/products/${productId}`, { method: 'DELETE' });
 }
 
 /**
@@ -63,8 +63,8 @@ export async function deleteProduct(productId: string): Promise<void> {
 export async function uploadProductImage(productId: string, file: File): Promise<Product> {
   const form = new FormData();
   form.append('file', file);
-  const { product } = await requestMultipart<{ ok: true; product: Product; url: string }>(
-    `/api/products/${productId}/image`,
+  const { product } = await tenantMultipart<{ ok: true; product: Product; url: string }>(
+    `/products/${productId}/image`,
     form,
   );
   return product;

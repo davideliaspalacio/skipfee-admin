@@ -11,15 +11,18 @@ import {
   type PatchPromotionBody,
 } from '../api';
 import { promotionKeys } from './keys';
+import { useActiveCompany } from './company';
 import { pushToast } from '../toast';
 
 const PROMOTIONS_POLL_MS = 15_000;
 const ACTIVE_PROMOTIONS_POLL_MS = 60_000;
 
 export function usePromotions(includeArchived = false) {
+  const company = useActiveCompany();
   return useQuery<Promotion[]>({
     queryKey: promotionKeys.list(includeArchived),
     queryFn: () => fetchPromotions(includeArchived),
+    enabled: !!company,
     refetchInterval: PROMOTIONS_POLL_MS,
     refetchIntervalInBackground: false,
   });
@@ -31,9 +34,11 @@ export function usePromotions(includeArchived = false) {
  * porque las promos no cambian rápido.
  */
 export function useActivePromotions() {
+  const company = useActiveCompany();
   return useQuery<ActivePromotion[]>({
     queryKey: promotionKeys.active(),
     queryFn: () => fetchActivePromotions(),
+    enabled: !!company,
     refetchInterval: ACTIVE_PROMOTIONS_POLL_MS,
     refetchIntervalInBackground: false,
   });

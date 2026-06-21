@@ -1,14 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchSettings, patchSettings, type Settings } from '../api';
 import { settingsKeys } from './keys';
+import { useActiveCompany } from './company';
 import { pushToast } from '../toast';
 
 const SETTINGS_POLL_MS = 60_000;
 
 export function useSettings() {
+  const company = useActiveCompany();
   return useQuery<Settings>({
     queryKey: settingsKeys.current(),
     queryFn: () => fetchSettings(),
+    enabled: !!company,
     refetchInterval: SETTINGS_POLL_MS,
     refetchIntervalInBackground: false,
   });

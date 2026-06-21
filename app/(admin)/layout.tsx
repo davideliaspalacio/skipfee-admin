@@ -36,5 +36,5 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  return <AdminShell user={me.data}>{children}</AdminShell>;
+  return <AdminShell user={me.data.user}>{children}</AdminShell>;
 }

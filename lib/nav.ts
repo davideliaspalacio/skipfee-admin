@@ -8,7 +8,8 @@ export type ScreenId =
   | 'dashboard'
   | 'clientes'
   | 'reportes'
-  | 'configuracion';
+  | 'configuracion'
+  | 'empresas';
 
 export interface NavItem {
   id: ScreenId;
@@ -30,6 +31,9 @@ export const NAV: NavItem[] = [
   { id: 'clientes',      label: 'Clientes',      icon: 'Users',         shortcut: 'L', path: '/clientes' },
   { id: 'reportes',      label: 'Reportes',      icon: 'BarChart',      shortcut: 'R', path: '/reportes' },
   { id: 'configuracion', label: 'Configuración', icon: 'Settings',      shortcut: ',', path: '/configuracion' },
+  // Solo visible para el owner de la plataforma (rol `platform`). El filtrado por
+  // rol lo hace `visibleScreenIds` en AdminShell.
+  { id: 'empresas',      label: 'Empresas',      icon: 'Layers',        shortcut: 'E', path: '/empresas' },
 ];
 
 /** Mapa rápido id → path para construir Links sin escanear NAV. */
@@ -57,4 +61,5 @@ export const SCREEN_TITLES: Record<ScreenId, { title: string; sub: string }> = {
   reportes:      { title: 'Reportes',      sub: 'Métricas del negocio' },
   despachos:     { title: 'Despachos',     sub: 'Pedidos listos + rutas optimizadas' },
   configuracion: { title: 'Configuración', sub: 'Zonas, horarios, bot y equipo' },
+  empresas:      { title: 'Empresas',      sub: 'Gestión de empresas de la plataforma' },
 };

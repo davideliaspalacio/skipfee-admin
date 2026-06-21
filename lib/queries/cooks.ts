@@ -9,14 +9,17 @@ import {
   type PatchCookBody,
 } from '../api';
 import { cookKeys } from './keys';
+import { useActiveCompany } from './company';
 import { pushToast } from '../toast';
 
 const COOKS_POLL_MS = 60_000;
 
 export function useCooks(includeArchived = false) {
+  const company = useActiveCompany();
   return useQuery<Cook[]>({
     queryKey: cookKeys.list(includeArchived),
     queryFn: () => fetchCooks(includeArchived),
+    enabled: !!company,
     refetchInterval: COOKS_POLL_MS,
     refetchIntervalInBackground: false,
   });

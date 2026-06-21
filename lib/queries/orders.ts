@@ -10,6 +10,7 @@ import {
 } from '../api';
 import type { Order, StatusId } from '../data';
 import { orderKeys } from './keys';
+import { useActiveCompany } from './company';
 import { pushToast } from '../toast';
 
 const ORDERS_LIST_POLL_MS = 4000;
@@ -17,29 +18,33 @@ const ORDER_DETAIL_POLL_MS = 4000;
 const ORDERS_STATS_POLL_MS = 10_000;
 
 export function useOrders(filter: OrdersFilter = {}) {
+  const company = useActiveCompany();
   return useQuery<Order[]>({
     queryKey: orderKeys.list(filter),
     queryFn: () => fetchOrders(filter),
+    enabled: !!company,
     refetchInterval: ORDERS_LIST_POLL_MS,
     refetchIntervalInBackground: false,
   });
 }
 
 export function useOrdersStats({ enabled = true }: { enabled?: boolean } = {}) {
+  const company = useActiveCompany();
   return useQuery<OrdersStats>({
     queryKey: orderKeys.stats(),
     queryFn: fetchOrdersStats,
     refetchInterval: ORDERS_STATS_POLL_MS,
     refetchIntervalInBackground: false,
-    enabled,
+    enabled: enabled && !!company,
   });
 }
 
 export function useOrder(orderId: string | null | undefined) {
+  const company = useActiveCompany();
   return useQuery<Order | null>({
     queryKey: orderKeys.detail(orderId ?? ''),
     queryFn: () => fetchOrder(orderId as string),
-    enabled: !!orderId,
+    enabled: !!orderId && !!company,
     refetchInterval: ORDER_DETAIL_POLL_MS,
     refetchIntervalInBackground: false,
   });

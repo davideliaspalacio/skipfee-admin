@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Icon } from '@/lib/icons';
 import { NAV, MOB_NAV, SCREEN_PATHS, SCREEN_TITLES, type ScreenId } from '@/lib/nav';
 import { useActiveScreen, useScreenNav, useDarkMode } from '@/lib/hooks';
-import { normalizeRole, visibleScreenIds } from '@/lib/roles';
-import { useLogout } from '@/lib/queries';
+import { visibleScreenIds } from '@/lib/roles';
+import { useActiveRole, useLogout, useMe, useActiveCompany, setActiveCompany } from '@/lib/queries';
 import type { AuthUser } from '@/lib/api';
 
 function initialsOf(email: string): string {
@@ -26,7 +26,7 @@ export function AdminShell({ user, children }: { user: AuthUser; children: React
   const [dark, setDark] = useDarkMode();
   const logout = useLogout();
 
-  const role = normalizeRole(user.role);
+  const role = useActiveRole();
   const allowed = useMemo(() => new Set<ScreenId>(visibleScreenIds(role)), [role]);
 
   const navItems = useMemo(() => NAV.filter((n) => allowed.has(n.id)), [allowed]);
@@ -101,6 +101,7 @@ export function AdminShell({ user, children }: { user: AuthUser; children: React
             <span>{title.sub}</span>
           </div>
           <div className="topbar-actions">
+            <CompanySwitcher />
             <button type="button" className="iconbtn hide-mob" onClick={() => setDark(!dark)} aria-label={dark ? 'Tema claro' : 'Tema oscuro'}>
               <ThemeIcon dark={dark} />
             </button>
@@ -141,6 +142,50 @@ export function AdminShell({ user, children }: { user: AuthUser; children: React
         })}
       </nav>
     </div>
+  );
+}
+
+/**
+ * Selector de empresa activa en la topbar (multi-tenant).
+ *
+ * - Con varias empresas (owner de la plataforma): `<select>` que cambia la
+ *   empresa activa (`setActiveCompany`) — las query keys de negocio incluyen el
+ *   slug, así React Query recarga el caché de la nueva empresa sin mezclar.
+ * - Con una sola empresa: etiqueta no editable con su nombre.
+ * - Sin empresa (aún cargando): no renderiza nada.
+ */
+function CompanySwitcher() {
+  const me = useMe();
+  const active = useActiveCompany();
+  const memberships = me.data?.memberships ?? [];
+
+  if (memberships.length === 0) return null;
+
+  if (memberships.length === 1) {
+    return (
+      <span className="user-chip hide-mob" aria-label="Empresa activa">
+        <span className="meta">
+          <small>Empresa</small>
+          <b>{memberships[0].companyName}</b>
+        </span>
+      </span>
+    );
+  }
+
+  return (
+    <select
+      className="select hide-mob"
+      value={active ?? ''}
+      onChange={(e) => setActiveCompany(e.target.value)}
+      aria-label="Empresa activa"
+      style={{ maxWidth: 200 }}
+    >
+      {memberships.map((m) => (
+        <option key={m.companySlug} value={m.companySlug}>
+          {m.companyName}
+        </option>
+      ))}
+    </select>
   );
 }
 

@@ -2,14 +2,17 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchZones, patchZone, createZone, deleteZone, type CreateZoneBody, type PatchZoneBody } from '../api';
 import type { Zone } from '../data';
 import { zoneKeys } from './keys';
+import { useActiveCompany } from './company';
 import { pushToast } from '../toast';
 
 const ZONES_POLL_MS = 60_000;
 
 export function useZones(includeArchived = false) {
+  const company = useActiveCompany();
   return useQuery<Zone[]>({
     queryKey: zoneKeys.list(includeArchived),
     queryFn: () => fetchZones(includeArchived),
+    enabled: !!company,
     refetchInterval: ZONES_POLL_MS,
     refetchIntervalInBackground: false,
   });

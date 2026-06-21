@@ -1,4 +1,4 @@
-import { request } from './client';
+import { tenantRequest } from './client';
 
 /**
  * Mensajes del bot editables (Configuración → Mensajes del bot).
@@ -46,7 +46,7 @@ export interface PatchBotMessageBody {
 }
 
 export async function fetchBotMessages(): Promise<BotMessage[]> {
-  const { messages } = await request<{ ok: true; messages: BotMessage[] }>('/api/bot/messages');
+  const { messages } = await tenantRequest<{ ok: true; messages: BotMessage[] }>('/bot/messages');
   return messages;
 }
 
@@ -55,7 +55,7 @@ export async function patchBotMessage(
   key: string,
   body: PatchBotMessageBody,
 ): Promise<{ warnings?: string[] }> {
-  return request<{ ok: true; warnings?: string[] }>(`/api/bot/messages/${encodeURIComponent(key)}`, {
+  return tenantRequest<{ ok: true; warnings?: string[] }>(`/bot/messages/${encodeURIComponent(key)}`, {
     method: 'PATCH',
     body: JSON.stringify(body),
   });
@@ -63,5 +63,5 @@ export async function patchBotMessage(
 
 /** Restaura el mensaje a su default (borra el override). */
 export async function resetBotMessage(key: string): Promise<void> {
-  await request(`/api/bot/messages/${encodeURIComponent(key)}`, { method: 'DELETE' });
+  await tenantRequest(`/bot/messages/${encodeURIComponent(key)}`, { method: 'DELETE' });
 }

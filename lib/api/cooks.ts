@@ -1,4 +1,4 @@
-import { request } from './client';
+import { tenantRequest } from './client';
 import type { WeekHours } from './settings';
 
 export interface Cook {
@@ -11,7 +11,7 @@ export interface Cook {
 
 export async function fetchCooks(includeArchived = false): Promise<Cook[]> {
   const qs = includeArchived ? '?all=1' : '';
-  const { cooks } = await request<{ ok: true; cooks: Cook[] }>(`/api/cooks${qs}`);
+  const { cooks } = await tenantRequest<{ ok: true; cooks: Cook[] }>(`/cooks${qs}`);
   return cooks;
 }
 
@@ -21,7 +21,7 @@ export interface CreateCookBody {
 }
 
 export async function createCook(body: CreateCookBody): Promise<Cook> {
-  const { cook } = await request<{ ok: true; cook: Cook }>('/api/cooks', {
+  const { cook } = await tenantRequest<{ ok: true; cook: Cook }>('/cooks', {
     method: 'POST',
     body: JSON.stringify(body),
   });
@@ -36,8 +36,8 @@ export interface PatchCookBody {
 }
 
 export async function patchCook(cookId: string, body: PatchCookBody): Promise<Cook> {
-  const { cook } = await request<{ ok: true; cook: Cook }>(
-    `/api/cooks/${encodeURIComponent(cookId)}`,
+  const { cook } = await tenantRequest<{ ok: true; cook: Cook }>(
+    `/cooks/${encodeURIComponent(cookId)}`,
     {
       method: 'PATCH',
       body: JSON.stringify(body),
@@ -48,5 +48,5 @@ export async function patchCook(cookId: string, body: PatchCookBody): Promise<Co
 
 /** Archiva el cocinero (soft-delete). Deja de recibir asignaciones nuevas. */
 export async function deleteCook(cookId: string): Promise<void> {
-  await request(`/api/cooks/${encodeURIComponent(cookId)}`, { method: 'DELETE' });
+  await tenantRequest(`/cooks/${encodeURIComponent(cookId)}`, { method: 'DELETE' });
 }

@@ -1,14 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchRewards, approveReward, rejectReward, type Reward, type RewardStatus } from '../api';
 import { rewardKeys } from './keys';
+import { useActiveCompany } from './company';
 import { pushToast } from '../toast';
 
 const REWARDS_POLL_MS = 30_000;
 
 export function useRewards(status: RewardStatus = 'pendiente') {
+  const company = useActiveCompany();
   return useQuery<Reward[]>({
     queryKey: rewardKeys.list(status),
     queryFn: () => fetchRewards(status),
+    enabled: !!company,
     refetchInterval: REWARDS_POLL_MS,
     refetchIntervalInBackground: false,
   });
