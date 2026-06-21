@@ -19,10 +19,11 @@ import type { ReportPeriod } from '../api/reports';
 import { getActiveCompanySlug } from '../api';
 
 /**
- * Prefijo de empresa para las keys de negocio. Incluir el slug activo aísla el
- * caché de React Query por empresa: al cambiar de empresa, las queries de
- * negocio cuelgan de otra rama y no se mezclan datos. Las keys de plataforma
- * (`authKeys`) NO llevan prefijo.
+ * Prefijo de empresa para las keys de negocio. Incluir el code activo (el valor
+ * del store, el identificador numérico de la empresa) aísla el caché de React
+ * Query por empresa: al cambiar de empresa, las queries de negocio cuelgan de
+ * otra rama y no se mezclan datos. Las keys de plataforma (`authKeys`) NO llevan
+ * prefijo.
  *
  * Se lee con una función (no constante) porque las keys se construyen en cada
  * render: así reflejan siempre la empresa activa actual.

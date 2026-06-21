@@ -72,21 +72,23 @@ export function tenantMultipart<T>(path: string, form: FormData): Promise<T> {
 /**
  * Antepone el prefijo de empresa activa a un path de recurso de negocio.
  * `path` debe empezar con `/` (ej. `/orders`, `/orders/123/status`) y se
- * traduce a `/api/<companySlug>/<path>`. Lanza si no hay empresa activa: los
- * hooks de negocio nunca deberían disparar una query/mutación sin slug (lo
- * controlan con `enabled`), así que llegar aquí sin slug es un bug.
+ * traduce a `/api/<companyCode>/<path>` (ej. `/api/1001/orders`). El valor del
+ * store es el código numérico de la empresa (como string), no el slug. Lanza si
+ * no hay empresa activa: los hooks de negocio nunca deberían disparar una
+ * query/mutación sin empresa (lo controlan con `enabled`), así que llegar aquí
+ * sin code es un bug.
  */
 function tenantPath(path: string): string {
-  const slug = getActiveCompanySlug();
-  if (!slug) {
+  const code = getActiveCompanySlug();
+  if (!code) {
     throw new ApiError(0, 'No hay empresa activa seleccionada');
   }
   const clean = path.startsWith('/') ? path : `/${path}`;
-  return `/api/${encodeURIComponent(slug)}${clean}`;
+  return `/api/${encodeURIComponent(code)}${clean}`;
 }
 
 /**
- * `request` para rutas de negocio: antepone `/api/<companySlug>`. Las rutas de
+ * `request` para rutas de negocio: antepone `/api/<companyCode>`. Las rutas de
  * plataforma/auth (`/api/auth/*`, `/api/platform/*`) siguen usando `request`.
  */
 export function tenantRequest<T>(path: string, init?: RequestInit): Promise<T> {

@@ -1,68 +1,74 @@
 /**
  * Empresa activa (multi-tenant).
  *
- * Backend multi-empresa: las rutas de negocio cuelgan de `/api/<companySlug>/…`,
- * donde `<companySlug>` es el slug de la empresa. Este módulo guarda el slug
- * activo en memoria (fuente de verdad para `tenantRequest`) y, para el caso del
- * owner con varias empresas, lo persiste en `localStorage` para recordar la
+ * Backend multi-empresa: las rutas de negocio cuelgan de `/api/<companyCode>/…`,
+ * donde `<companyCode>` es el **código numérico** de la empresa (p. ej. `1001`),
+ * guardado aquí como string ("1001"). El slug/nombre se conservan solo como
+ * etiqueta visible; el identificador de RUTA es el code. Este módulo guarda el
+ * code activo en memoria (fuente de verdad para `tenantRequest`) y, para el caso
+ * del owner con varias empresas, lo persiste en `localStorage` para recordar la
  * última elección.
  *
  * Vive en la capa de transporte (sin React) para que `client.ts` lo lea sin
  * crear una dependencia circular con `lib/queries`. La capa de React lo observa
  * vía `subscribeActiveCompany` (ver `lib/queries/company.ts`).
  *
- * SSR/export estático: en servidor `window` no existe → el slug arranca `null`
+ * SSR/export estático: en servidor `window` no existe → el code arranca `null`
  * y se hidrata en cliente desde `/api/auth/me`. Mientras sea `null`, las queries
  * de negocio NO deben dispararse (los hooks lo controlan con `enabled`).
+ *
+ * Nota de nombres: las funciones conservan el sufijo `Slug` por compatibilidad
+ * de imports, pero el VALOR que manejan es el companyCode (string), no el slug.
  */
 
 const ACTIVE_COMPANY_STORAGE_KEY = 'bs_active_company';
 
-let activeCompanySlug: string | null = null;
+let activeCompanyCode: string | null = null;
 const listeners = new Set<() => void>();
 
-/** Slug de la empresa activa, o `null` si aún no se ha hidratado. */
+/** Code (numérico, como string) de la empresa activa, o `null` si no se hidrató. */
 export function getActiveCompanySlug(): string | null {
-  return activeCompanySlug;
+  return activeCompanyCode;
 }
 
 /**
- * Fija el slug activo y notifica a los observadores. Persiste en localStorage
+ * Fija el code activo y notifica a los observadores. Persiste en localStorage
  * (útil para el owner multi-empresa que cambia de empresa). Pasar `null` lo
- * limpia (logout).
+ * limpia (logout). El argumento es el companyCode como string (p. ej. "1001").
  */
-export function setActiveCompanySlug(slug: string | null): void {
-  if (activeCompanySlug === slug) return;
-  activeCompanySlug = slug;
+export function setActiveCompanySlug(code: string | null): void {
+  if (activeCompanyCode === code) return;
+  activeCompanyCode = code;
   if (typeof window !== 'undefined') {
-    if (slug) window.localStorage.setItem(ACTIVE_COMPANY_STORAGE_KEY, slug);
+    if (code) window.localStorage.setItem(ACTIVE_COMPANY_STORAGE_KEY, code);
     else window.localStorage.removeItem(ACTIVE_COMPANY_STORAGE_KEY);
   }
   for (const l of listeners) l();
 }
 
-/** Slug persistido de una sesión anterior (solo cliente). */
+/** Code persistido de una sesión anterior (solo cliente). */
 export function getStoredActiveCompanySlug(): string | null {
   if (typeof window === 'undefined') return null;
   return window.localStorage.getItem(ACTIVE_COMPANY_STORAGE_KEY);
 }
 
 /**
- * Hidrata el slug activo a partir de la respuesta de `/api/auth/me`.
- * Si el slug persistido sigue siendo una membresía válida, lo respeta; si no,
- * cae al `activeCompanySlug` que dicta el backend.
+ * Hidrata el code activo a partir de la respuesta de `/api/auth/me`.
+ * Si el code persistido sigue siendo una membresía válida, lo respeta; si no,
+ * cae al `activeCompanyCode` que dicta el backend. `validCodes` son los codes
+ * (string) de las membresías del usuario.
  */
 export function hydrateActiveCompany(
   activeFromServer: string | null | undefined,
-  validSlugs: string[],
+  validCodes: string[],
 ): void {
   const stored = getStoredActiveCompanySlug();
   const next =
-    stored && validSlugs.includes(stored)
+    stored && validCodes.includes(stored)
       ? stored
-      : activeFromServer && validSlugs.includes(activeFromServer)
+      : activeFromServer && validCodes.includes(activeFromServer)
         ? activeFromServer
-        : (validSlugs[0] ?? null);
+        : (validCodes[0] ?? null);
   setActiveCompanySlug(next);
 }
 

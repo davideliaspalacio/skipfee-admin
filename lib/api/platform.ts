@@ -13,6 +13,8 @@ export type CompanyStatus = 'active' | 'suspended';
 
 export interface Company {
   id: string;
+  /** Código numérico de la empresa — identificador de ruta (`/api/<code>/…`). */
+  code: number;
   slug: string;
   name: string;
   status: CompanyStatus;

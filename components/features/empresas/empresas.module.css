@@ -29,6 +29,13 @@
   font-family: var(--font-mono, ui-monospace, monospace);
 }
 
+/* Código numérico de la empresa (identificador de ruta). */
+.code {
+  font-weight: 600;
+  color: var(--text);
+  font-family: var(--font-mono, ui-monospace, monospace);
+}
+
 .unauth {
   display: flex;
   align-items: center;
