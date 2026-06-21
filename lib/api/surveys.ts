@@ -1,4 +1,4 @@
-import { request } from './client';
+import { tenantRequest } from './client';
 
 export interface Survey {
   id: string;
@@ -18,6 +18,6 @@ export async function fetchSurveys(opts: { days?: number; ratingMax?: number } =
   const qs = new URLSearchParams();
   qs.set('days', String(opts.days ?? 90));
   if (opts.ratingMax != null) qs.set('ratingMax', String(opts.ratingMax));
-  const { surveys } = await request<{ ok: true; surveys: Survey[] }>(`/api/surveys?${qs.toString()}`);
+  const { surveys } = await tenantRequest<{ ok: true; surveys: Survey[] }>(`/surveys?${qs.toString()}`);
   return surveys;
 }

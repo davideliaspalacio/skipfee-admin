@@ -1,4 +1,4 @@
-import { request, requestMultipart } from './client';
+import { tenantRequest, tenantMultipart } from './client';
 import type { Chat, ChatMessage } from '../data';
 
 export interface ChatsFilter {
@@ -13,12 +13,12 @@ export interface ChatsStats {
 }
 
 export async function fetchChatsStats(): Promise<ChatsStats> {
-  const { total, pending, unread } = await request<{
+  const { total, pending, unread } = await tenantRequest<{
     ok: true;
     total: number;
     pending: number;
     unread: number;
-  }>('/api/chats/stats');
+  }>('/chats/stats');
   return { total, pending, unread };
 }
 
@@ -26,32 +26,32 @@ export async function fetchChats(params: ChatsFilter = {}): Promise<Chat[]> {
   const search = new URLSearchParams();
   if (params.status) search.set('status', params.status);
   const qs = search.toString();
-  const { chats } = await request<{ ok: true; chats: Chat[] }>(
-    `/api/chats${qs ? '?' + qs : ''}`,
+  const { chats } = await tenantRequest<{ ok: true; chats: Chat[] }>(
+    `/chats${qs ? '?' + qs : ''}`,
   );
   return chats;
 }
 
 export async function fetchChatMessages(chatId: string): Promise<ChatMessage[]> {
-  const { messages } = await request<{ ok: true; messages: ChatMessage[] }>(
-    `/api/chats/${encodeURIComponent(chatId)}/messages`,
+  const { messages } = await tenantRequest<{ ok: true; messages: ChatMessage[] }>(
+    `/chats/${encodeURIComponent(chatId)}/messages`,
   );
   return messages;
 }
 
 export async function chatTakeover(chatId: string): Promise<void> {
-  await request(`/api/chats/${encodeURIComponent(chatId)}/takeover`, { method: 'POST' });
+  await tenantRequest(`/chats/${encodeURIComponent(chatId)}/takeover`, { method: 'POST' });
 }
 
 export async function chatRelease(chatId: string): Promise<void> {
-  await request(`/api/chats/${encodeURIComponent(chatId)}/release`, { method: 'POST' });
+  await tenantRequest(`/chats/${encodeURIComponent(chatId)}/release`, { method: 'POST' });
 }
 
 export async function sendChatMessage(
   chatId: string,
   payload: { body?: string; imageUrl?: string },
 ): Promise<void> {
-  await request(`/api/chats/${encodeURIComponent(chatId)}/messages`, {
+  await tenantRequest(`/chats/${encodeURIComponent(chatId)}/messages`, {
     method: 'POST',
     body: JSON.stringify(payload),
   });
@@ -60,8 +60,8 @@ export async function sendChatMessage(
 export async function uploadChatImage(chatId: string, file: File): Promise<string> {
   const form = new FormData();
   form.append('file', file);
-  const { url } = await requestMultipart<{ ok: true; url: string }>(
-    `/api/chats/${encodeURIComponent(chatId)}/upload-image`,
+  const { url } = await tenantMultipart<{ ok: true; url: string }>(
+    `/chats/${encodeURIComponent(chatId)}/upload-image`,
     form,
   );
   return url;

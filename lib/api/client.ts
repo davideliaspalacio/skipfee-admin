@@ -11,6 +11,8 @@
  * variable para todo el frontend.
  */
 
+import { getActiveCompanySlug } from './activeCompany';
+
 const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL as string | undefined)?.replace(/\/$/, '') ?? '';
 
 const TOKEN_STORAGE_KEY = 'bs_access_token';
@@ -60,6 +62,35 @@ export async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw new ApiError(res.status, msg, body);
   }
   return body as T;
+}
+
+/** `requestMultipart` con prefijo de empresa activa (subidas de negocio). */
+export function tenantMultipart<T>(path: string, form: FormData): Promise<T> {
+  return requestMultipart<T>(tenantPath(path), form);
+}
+
+/**
+ * Antepone el prefijo de empresa activa a un path de recurso de negocio.
+ * `path` debe empezar con `/` (ej. `/orders`, `/orders/123/status`) y se
+ * traduce a `/api/<companySlug>/<path>`. Lanza si no hay empresa activa: los
+ * hooks de negocio nunca deberían disparar una query/mutación sin slug (lo
+ * controlan con `enabled`), así que llegar aquí sin slug es un bug.
+ */
+function tenantPath(path: string): string {
+  const slug = getActiveCompanySlug();
+  if (!slug) {
+    throw new ApiError(0, 'No hay empresa activa seleccionada');
+  }
+  const clean = path.startsWith('/') ? path : `/${path}`;
+  return `/api/${encodeURIComponent(slug)}${clean}`;
+}
+
+/**
+ * `request` para rutas de negocio: antepone `/api/<companySlug>`. Las rutas de
+ * plataforma/auth (`/api/auth/*`, `/api/platform/*`) siguen usando `request`.
+ */
+export function tenantRequest<T>(path: string, init?: RequestInit): Promise<T> {
+  return request<T>(tenantPath(path), init);
 }
 
 /**

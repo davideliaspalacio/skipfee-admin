@@ -14,8 +14,8 @@ import {
 } from '@dnd-kit/core';
 import { Icon } from '@/lib/icons';
 import { STATUSES, ZONES, type StatusId } from '@/lib/data';
-import { useMe, useOrders, useUpdateOrderStatus } from '@/lib/queries';
-import { normalizeRole, visibleStatusIds } from '@/lib/roles';
+import { useActiveRole, useOrders, useUpdateOrderStatus } from '@/lib/queries';
+import { visibleStatusIds } from '@/lib/roles';
 import { OrderCard, DraggableOrderCard } from './OrderCard';
 import { KanbanColumn } from './KanbanColumn';
 import styles from './pedidos.module.css';
@@ -38,7 +38,7 @@ export function Kanban({
   const updateStatus = useUpdateOrderStatus();
   const ordersList = orders ?? [];
 
-  const role = normalizeRole(useMe().data?.role);
+  const role = useActiveRole();
   const allowedStatusIds = visibleStatusIds(role);
   const visibleStatuses = STATUSES.filter((s) => allowedStatusIds.includes(s.id));
 

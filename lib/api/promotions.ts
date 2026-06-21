@@ -1,4 +1,4 @@
-import { request } from './client';
+import { tenantRequest } from './client';
 
 /**
  * Cliente HTTP para promotions. Espejo del contrato del backend:
@@ -34,8 +34,8 @@ export interface Promotion {
 
 export async function fetchPromotions(includeArchived = false): Promise<Promotion[]> {
   const qs = includeArchived ? '?all=1' : '';
-  const { promotions } = await request<{ ok: true; promotions: Promotion[] }>(
-    `/api/promotions${qs}`,
+  const { promotions } = await tenantRequest<{ ok: true; promotions: Promotion[] }>(
+    `/promotions${qs}`,
   );
   return promotions;
 }
@@ -59,8 +59,8 @@ export interface ActivePromotion extends Promotion {
 }
 
 export async function fetchActivePromotions(): Promise<ActivePromotion[]> {
-  const { promotions } = await request<{ ok: true; promotions: ActivePromotion[] }>(
-    '/api/promotions/active',
+  const { promotions } = await tenantRequest<{ ok: true; promotions: ActivePromotion[] }>(
+    '/promotions/active',
   );
   return promotions;
 }
@@ -79,7 +79,7 @@ export interface CreatePromotionBody {
 }
 
 export async function createPromotion(body: CreatePromotionBody): Promise<Promotion> {
-  const { promotion } = await request<{ ok: true; promotion: Promotion }>('/api/promotions', {
+  const { promotion } = await tenantRequest<{ ok: true; promotion: Promotion }>('/promotions', {
     method: 'POST',
     body: JSON.stringify(body),
   });
@@ -102,8 +102,8 @@ export interface PatchPromotionBody {
 }
 
 export async function patchPromotion(id: string, body: PatchPromotionBody): Promise<Promotion> {
-  const { promotion } = await request<{ ok: true; promotion: Promotion }>(
-    `/api/promotions/${id}`,
+  const { promotion } = await tenantRequest<{ ok: true; promotion: Promotion }>(
+    `/promotions/${id}`,
     { method: 'PATCH', body: JSON.stringify(body) },
   );
   return promotion;
@@ -114,8 +114,8 @@ export async function patchPromotion(id: string, body: PatchPromotionBody): Prom
  * y devuelve la fila actualizada para refrescar la caché sin un GET extra.
  */
 export async function deletePromotion(id: string): Promise<Promotion> {
-  const { promotion } = await request<{ ok: true; promotion: Promotion }>(
-    `/api/promotions/${id}`,
+  const { promotion } = await tenantRequest<{ ok: true; promotion: Promotion }>(
+    `/promotions/${id}`,
     { method: 'DELETE' },
   );
   return promotion;

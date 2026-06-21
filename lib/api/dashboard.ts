@@ -1,4 +1,4 @@
-import { request } from './client';
+import { tenantRequest } from './client';
 
 export interface DashboardData {
   salesAmount: number;
@@ -11,5 +11,5 @@ export interface DashboardData {
 }
 
 export async function fetchDashboard(): Promise<DashboardData> {
-  return await request<DashboardData>('/api/dashboard/today');
+  return await tenantRequest<DashboardData>('/dashboard/today');
 }

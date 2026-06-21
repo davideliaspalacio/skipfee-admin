@@ -1,4 +1,4 @@
-import { ApiError, request } from './client';
+import { ApiError, tenantRequest } from './client';
 import type { Order, StatusId } from '../data';
 
 export interface OrdersFilter {
@@ -12,11 +12,11 @@ export interface OrdersStats {
 }
 
 export async function fetchOrdersStats(): Promise<OrdersStats> {
-  const { active, completedToday } = await request<{
+  const { active, completedToday } = await tenantRequest<{
     ok: true;
     active: number;
     completedToday: number;
-  }>('/api/orders/stats');
+  }>('/orders/stats');
   return { active, completedToday };
 }
 
@@ -25,16 +25,16 @@ export async function fetchOrders(params: OrdersFilter = {}): Promise<Order[]> {
   if (params.status) search.set('status', params.status);
   if (params.zoneId) search.set('zoneId', params.zoneId);
   const qs = search.toString();
-  const { orders } = await request<{ ok: true; orders: Order[] }>(
-    `/api/orders${qs ? '?' + qs : ''}`,
+  const { orders } = await tenantRequest<{ ok: true; orders: Order[] }>(
+    `/orders${qs ? '?' + qs : ''}`,
   );
   return orders;
 }
 
 export async function fetchOrder(orderId: string): Promise<Order | null> {
   try {
-    const { order } = await request<{ ok: true; order: Order }>(
-      `/api/orders/${encodeURIComponent(orderId)}`,
+    const { order } = await tenantRequest<{ ok: true; order: Order }>(
+      `/orders/${encodeURIComponent(orderId)}`,
     );
     return order;
   } catch (err) {
@@ -44,7 +44,7 @@ export async function fetchOrder(orderId: string): Promise<Order | null> {
 }
 
 export async function patchOrderStatus(orderId: string, status: StatusId): Promise<void> {
-  await request(`/api/orders/${orderId}/status`, {
+  await tenantRequest(`/orders/${orderId}/status`, {
     method: 'PATCH',
     body: JSON.stringify({ status }),
   });
@@ -52,7 +52,7 @@ export async function patchOrderStatus(orderId: string, status: StatusId): Promi
 
 /** Reasignación manual del cocinero de un pedido. `cookId: null` lo deja sin asignar. */
 export async function patchOrderCook(orderId: string, cookId: string | null): Promise<void> {
-  await request(`/api/orders/${orderId}/cook`, {
+  await tenantRequest(`/orders/${orderId}/cook`, {
     method: 'PATCH',
     body: JSON.stringify({ cookId }),
   });

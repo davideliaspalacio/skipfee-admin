@@ -1,4 +1,4 @@
-import { request } from './client';
+import { tenantRequest } from './client';
 
 export type ReportPeriod = '7d' | '30d' | '90d';
 
@@ -25,5 +25,5 @@ export interface ReportsData {
 }
 
 export async function fetchReports(period: ReportPeriod = '30d'): Promise<ReportsData> {
-  return await request<ReportsData>(`/api/reports/summary?period=${period}`);
+  return await tenantRequest<ReportsData>(`/reports/summary?period=${period}`);
 }

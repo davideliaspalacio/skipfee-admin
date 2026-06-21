@@ -10,14 +10,17 @@ import {
 } from '../api';
 import type { Product } from '../data';
 import { productKeys } from './keys';
+import { useActiveCompany } from './company';
 import { pushToast } from '../toast';
 
 const PRODUCTS_POLL_MS = 10_000;
 
 export function useProducts() {
+  const company = useActiveCompany();
   return useQuery<Product[]>({
     queryKey: productKeys.list(),
     queryFn: () => fetchProducts(),
+    enabled: !!company,
     refetchInterval: PRODUCTS_POLL_MS,
     refetchIntervalInBackground: false,
   });

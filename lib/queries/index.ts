@@ -8,6 +8,8 @@
 
 export * from './keys';
 export * from './auth';
+export * from './company';
+export * from './platform';
 export * from './orders';
 export * from './chats';
 export * from './products';

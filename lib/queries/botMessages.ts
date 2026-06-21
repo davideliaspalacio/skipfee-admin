@@ -7,12 +7,15 @@ import {
   type PatchBotMessageBody,
 } from '../api/botMessages';
 import { botMessageKeys } from './keys';
+import { useActiveCompany } from './company';
 import { pushToast } from '../toast';
 
 export function useBotMessages() {
+  const company = useActiveCompany();
   return useQuery<BotMessage[]>({
     queryKey: botMessageKeys.list(),
     queryFn: () => fetchBotMessages(),
+    enabled: !!company,
   });
 }
 

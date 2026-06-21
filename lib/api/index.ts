@@ -6,10 +6,24 @@
  * con React Query.
  */
 
-export { ApiError, getStoredToken, setStoredToken, request } from './client';
+export { ApiError, getStoredToken, setStoredToken, request, tenantRequest } from './client';
+
+export {
+  getActiveCompanySlug,
+  setActiveCompanySlug,
+  subscribeActiveCompany,
+} from './activeCompany';
 
 export { login, logout, me } from './auth';
-export type { AuthUser } from './auth';
+export type { AuthUser, Membership, MembershipRole, MeResult } from './auth';
+
+export { listCompanies, createCompany } from './platform';
+export type {
+  Company,
+  CompanyStatus,
+  CreateCompanyBody,
+  CreateCompanyResult,
+} from './platform';
 
 export { fetchOrders, fetchOrder, fetchOrdersStats, patchOrderStatus, patchOrderCook } from './orders';
 export type { OrdersFilter, OrdersStats } from './orders';
