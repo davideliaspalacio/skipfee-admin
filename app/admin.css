@@ -347,3 +347,56 @@ textarea.input { resize: vertical; min-height: 84px; font-family: inherit; }
 .demo-locked-card p { color: var(--text-muted); font-size: 15px; margin: 0 auto; max-width: 40ch; }
 .demo-locked-card .btn { margin-top: 20px; }
 .demo-locked-fine { font-size: 12.5px; margin-top: 14px !important; }
+
+/* ---------- Recorrido guiado (driver.js) ---------- */
+.driver-popover.skipfee-tour {
+  background: var(--surface); color: var(--text); border-radius: var(--r-lg);
+  box-shadow: 0 24px 60px -24px oklch(0.12 0.04 250 / .6); max-width: 340px;
+}
+.driver-popover.skipfee-tour .driver-popover-title { font-family: var(--font-display), sans-serif; font-size: 17px; color: var(--text); }
+.driver-popover.skipfee-tour .driver-popover-description { font-size: 14px; line-height: 1.5; color: var(--text-muted); }
+.driver-popover.skipfee-tour .driver-popover-description b { color: var(--text); }
+.driver-popover.skipfee-tour .driver-popover-footer { gap: 8px; margin-top: 10px; }
+.driver-popover.skipfee-tour .driver-popover-footer button {
+  text-shadow: none; border-radius: 10px; font-family: var(--font-sans), sans-serif;
+  font-weight: 600; font-size: 13px; padding: 9px 15px; border: none; cursor: pointer; transition: background .15s;
+}
+.driver-popover.skipfee-tour .driver-popover-next-btn { background: var(--green); color: var(--green-ink); }
+.driver-popover.skipfee-tour .driver-popover-next-btn:hover { background: var(--green-strong); }
+.driver-popover.skipfee-tour .driver-popover-prev-btn { background: var(--surface-2); color: var(--text); }
+.driver-popover.skipfee-tour .driver-popover-prev-btn:hover { background: var(--surface-3); }
+.driver-popover.skipfee-tour .driver-popover-arrow { color: var(--surface); }
+
+/* botón flotante para (re)lanzar el recorrido */
+.demo-tour-fab {
+  position: fixed; right: 18px; bottom: 18px; z-index: 70;
+  display: inline-flex; align-items: center; gap: 8px; padding: 11px 16px;
+  border-radius: var(--r-pill); border: none; cursor: pointer;
+  background: var(--ink); color: var(--on-ink);
+  font-family: var(--font-sans), sans-serif; font-weight: 600; font-size: 14px;
+  box-shadow: 0 12px 28px -10px oklch(0.12 0.04 250 / .6); transition: transform .12s var(--ease-quart);
+}
+.demo-tour-fab:hover { transform: translateY(-2px); }
+.demo-tour-fab svg { color: var(--green); }
+@media (max-width: 1023px) {
+  .demo-tour-fab { bottom: 78px; padding: 13px; border-radius: 50%; }
+  .demo-tour-fab span { display: none; }
+}
+
+/* modal final del recorrido */
+.demo-final {
+  position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: 20px;
+  background: oklch(0.12 0.04 250 / .55); backdrop-filter: blur(2px); animation: fade .2s ease;
+}
+.demo-final-card {
+  width: min(460px, 100%); background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-xl); padding: clamp(28px, 4vw, 40px); text-align: center;
+  box-shadow: 0 40px 80px -30px oklch(0.2 0.05 250 / .6); animation: modal-in .28s var(--ease-expo);
+}
+.demo-final-emoji { font-size: 48px; line-height: 1; display: block; margin-bottom: 8px; }
+.demo-final-card h2 { font-size: 1.5rem; margin: 6px 0; color: var(--text); }
+.demo-final-card p { color: var(--text-muted); font-size: 15px; line-height: 1.55; max-width: 38ch; margin: 0 auto; }
+.demo-final-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 22px; }
+.demo-final-actions .btn { width: 100%; }
+.demo-final-skip { margin-top: 14px; background: none; border: none; color: var(--text-muted); font-family: inherit; font-size: 13px; cursor: pointer; text-decoration: underline; }
+.demo-final-skip:hover { color: var(--text); }
