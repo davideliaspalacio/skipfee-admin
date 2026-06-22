@@ -12,6 +12,10 @@ export interface TourStep {
   element?: string;
   /** Selector alternativo en móvil (si difiere). */
   elementMobile?: string;
+  /** Lado preferido del popover respecto al elemento (driver.js). Si se omite, driver lo decide solo. */
+  side?: 'top' | 'bottom' | 'left' | 'right';
+  /** Alineación del popover sobre ese lado (driver.js). */
+  align?: 'start' | 'center' | 'end';
   /** Etiqueta de sección para la barra de progreso. */
   section: string;
   title: string;
@@ -114,6 +118,8 @@ export const TOUR_STEPS: TourStep[] = [
   {
     screen: 'despachos',
     element: '.btn-primary',
+    side: 'bottom',
+    align: 'end',
     section: 'Despachos',
     title: '🛵 Despacha la ruta en un clic',
     description:
@@ -132,6 +138,8 @@ export const TOUR_STEPS: TourStep[] = [
   {
     screen: 'catalogo',
     element: '.btn-primary',
+    side: 'bottom',
+    align: 'end',
     section: 'Catálogo',
     title: '➕ Crea y edita platos en segundos',
     description:

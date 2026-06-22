@@ -208,6 +208,8 @@ export function TourController() {
     const popover = {
       title: step.title,
       description: step.description,
+      ...(step.side ? { side: step.side } : {}),
+      ...(step.align ? { align: step.align } : {}),
       showButtons: (idx > 0 ? ['previous', 'next'] : ['next']) as Array<'previous' | 'next'>,
       nextBtnText: isLast ? 'Terminar →' : 'Siguiente →',
       prevBtnText: '← Atrás',
@@ -220,14 +222,25 @@ export function TourController() {
     let timer = 0;
     let tries = 0;
     const run = () => {
-      const el = sel ? document.querySelector(sel) : null;
+      const el = sel ? (document.querySelector(sel) as HTMLElement | null) : null;
       if (sel && !el && tries < 12) {
         tries += 1;
         timer = window.setTimeout(run, 110);
         return;
       }
-      if (sel && el) d.highlight({ element: sel, popover });
-      else d.highlight({ popover });
+      if (sel && el) {
+        // Centra el elemento destino en pantalla ANTES de resaltar. Así el foco
+        // es claro aunque el usuario haya hecho scroll (lo "sube" automáticamente)
+        // y driver calcula la posición del popover sobre una geometría ya estable
+        // — evita popovers descuadrados como el de "Crea y edita platos" (paso 13).
+        el.scrollIntoView({ behavior: 'auto', block: 'center', inline: 'nearest' });
+        // Espera un frame a que el scroll asiente y recién ahí resalta.
+        timer = window.setTimeout(() => d.highlight({ element: sel, popover }), 70);
+      } else {
+        // Paso centrado (sin selector): llevamos la vista arriba para enfocar.
+        window.scrollTo({ top: 0, behavior: 'auto' });
+        d.highlight({ popover });
+      }
     };
     timer = window.setTimeout(run, 90);
     return () => window.clearTimeout(timer);
