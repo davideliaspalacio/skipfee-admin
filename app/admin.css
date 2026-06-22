@@ -304,3 +304,102 @@ textarea.input { resize: vertical; min-height: 84px; font-family: inherit; }
   .toast, .modal-card, .modal-backdrop { animation: none; }
   .skel { animation: none; }
 }
+
+/* ---------- Modo demo (onboarding → panel de prueba) ---------- */
+.demo-banner {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 9px clamp(16px, 3vw, 28px);
+  background: linear-gradient(90deg, var(--green-wash), color-mix(in oklch, var(--sun) 26%, var(--surface)));
+  border-bottom: 1px solid var(--line); font-size: 13px; color: var(--green-ink);
+}
+.demo-banner-badge {
+  font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+  background: var(--green); color: var(--green-ink); padding: 4px 9px; border-radius: 6px; flex: none;
+}
+.demo-banner-text { flex: 1; min-width: 0; }
+.demo-banner-cta { font-weight: 700; color: var(--green-ink); text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; flex: none; }
+.demo-banner-cta:hover { color: var(--green-strong); }
+/* candado en el rail / mobnav */
+.rail-item.is-locked { opacity: .6; }
+.rail-item.is-locked:hover { opacity: 1; }
+.rail-item .rail-lock {
+  position: absolute; bottom: 5px; right: 6px; width: 15px; height: 15px; border-radius: 5px;
+  display: grid; place-items: center; background: var(--ink-soft); color: var(--sun); border: 1px solid var(--ink-line);
+}
+.mobnav-item.is-locked { opacity: .6; }
+/* función bloqueada (upsell) */
+.demo-locked { display: grid; place-items: center; min-height: 60vh; padding: 24px; }
+.demo-locked-card {
+  max-width: 460px; text-align: center; background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--r-xl); padding: clamp(28px, 4vw, 44px);
+  box-shadow: 0 30px 70px -40px oklch(0.2 0.05 250 / .5);
+}
+.demo-locked-ic {
+  display: inline-grid; place-items: center; width: 64px; height: 64px; border-radius: 50%;
+  background: var(--green-wash); color: var(--green-strong);
+}
+.demo-locked-badge {
+  display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+  color: var(--green-ink); background: var(--green-wash); border: 1px solid color-mix(in oklch, var(--green) 40%, transparent);
+  padding: 4px 11px; border-radius: 999px; margin: 12px 0 4px;
+}
+.demo-locked-card h2 { font-size: 1.4rem; margin: 8px 0; color: var(--text); }
+.demo-locked-card p { color: var(--text-muted); font-size: 15px; margin: 0 auto; max-width: 40ch; }
+.demo-locked-card .btn { margin-top: 20px; }
+.demo-locked-fine { font-size: 12.5px; margin-top: 14px !important; }
+
+/* ---------- Recorrido guiado (driver.js) ---------- */
+/* Modales GRANDES en desktop. */
+.driver-popover.skipfee-tour {
+  background: var(--surface); color: var(--text); border-radius: var(--r-lg);
+  box-shadow: 0 30px 70px -28px oklch(0.10 0.04 250 / .7);
+  max-width: 520px; padding: 26px 28px 22px;
+}
+.driver-popover.skipfee-tour .driver-popover-title {
+  font-family: var(--font-display), sans-serif; font-size: 24px; line-height: 1.15;
+  letter-spacing: -.01em; color: var(--text); margin-bottom: 10px;
+}
+.driver-popover.skipfee-tour .driver-popover-description { font-size: 16px; line-height: 1.6; color: var(--text-muted); }
+.driver-popover.skipfee-tour .driver-popover-description b { color: var(--text); font-weight: 700; }
+.driver-popover.skipfee-tour .driver-popover-footer { gap: 10px; margin-top: 20px; }
+.driver-popover.skipfee-tour .driver-popover-footer button {
+  text-shadow: none; border-radius: 12px; font-family: var(--font-display), sans-serif;
+  font-weight: 700; font-size: 15px; padding: 12px 22px; border: none; cursor: pointer;
+  transition: background .15s, transform .12s var(--ease-quart);
+}
+.driver-popover.skipfee-tour .driver-popover-next-btn { background: var(--green); color: var(--green-ink); box-shadow: 0 4px 0 var(--green-shadow); }
+.driver-popover.skipfee-tour .driver-popover-next-btn:hover { background: var(--green-strong); transform: translateY(-1px); }
+.driver-popover.skipfee-tour .driver-popover-prev-btn { background: var(--surface-2); color: var(--text); }
+.driver-popover.skipfee-tour .driver-popover-prev-btn:hover { background: var(--surface-3); }
+.driver-popover.skipfee-tour .driver-popover-arrow { color: var(--surface); }
+@media (max-width: 1023px) {
+  .driver-popover.skipfee-tour { max-width: min(92vw, 400px); padding: 20px 20px 16px; }
+  .driver-popover.skipfee-tour .driver-popover-title { font-size: 19px; }
+  .driver-popover.skipfee-tour .driver-popover-description { font-size: 14.5px; }
+  .driver-popover.skipfee-tour .driver-popover-footer button { font-size: 14px; padding: 11px 18px; }
+}
+
+/* barra de progreso del recorrido (siempre por encima del overlay) */
+.tour-progress { position: fixed; top: 0; left: 0; right: 0; z-index: 2147483000; background: var(--ink); color: var(--on-ink); box-shadow: 0 6px 20px -8px oklch(0.10 0.04 250 / .7); }
+.tour-progress-track { height: 6px; background: oklch(1 0 0 / .12); }
+.tour-progress-track > span { display: block; height: 100%; background: var(--green); border-radius: 0 99px 99px 0; transition: width .4s var(--ease-expo); }
+.tour-progress-meta { display: flex; align-items: center; gap: 12px; padding: 9px clamp(14px, 3vw, 26px); }
+.tour-progress-section { font-family: var(--font-display), sans-serif; font-weight: 700; font-size: 14px; }
+.tour-progress-count { font-family: var(--mono); font-size: 12px; color: var(--on-ink-muted); }
+.tour-progress-mute { margin-left: auto; background: oklch(1 0 0 / .1); border: none; color: inherit; cursor: pointer; border-radius: 9px; padding: 5px 10px; font-size: 14px; line-height: 1; }
+.tour-progress-mute:hover { background: oklch(1 0 0 / .18); }
+
+/* botón flotante para (re)lanzar el recorrido */
+.demo-tour-fab { position: fixed; right: 18px; bottom: 18px; z-index: 70; display: inline-flex; align-items: center; gap: 8px; padding: 11px 16px; border-radius: var(--r-pill); border: none; cursor: pointer; background: var(--ink); color: var(--on-ink); font-family: var(--font-sans), sans-serif; font-weight: 600; font-size: 14px; box-shadow: 0 12px 28px -10px oklch(0.12 0.04 250 / .6); transition: transform .12s var(--ease-quart); }
+.demo-tour-fab:hover { transform: translateY(-2px); }
+.demo-tour-fab svg { color: var(--green); }
+@media (max-width: 1023px) { .demo-tour-fab { bottom: 78px; padding: 13px; border-radius: 50%; } .demo-tour-fab span { display: none; } }
+
+/* modal final del recorrido (sin escape: siempre lleva a una acción) */
+.demo-final { position: fixed; inset: 0; z-index: 2147483001; display: grid; place-items: center; padding: 20px; background: oklch(0.10 0.04 250 / .62); backdrop-filter: blur(3px); animation: fade .2s ease; }
+.demo-final-card { width: min(500px, 100%); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-xl); padding: clamp(30px, 4vw, 44px); text-align: center; box-shadow: 0 40px 90px -30px oklch(0.2 0.05 250 / .7); animation: modal-in .28s var(--ease-expo); }
+.demo-final-emoji { font-size: 54px; line-height: 1; display: block; margin-bottom: 8px; }
+.demo-final-card h2 { font-size: 1.7rem; margin: 6px 0; color: var(--text); }
+.demo-final-card p { color: var(--text-muted); font-size: 15.5px; line-height: 1.55; max-width: 40ch; margin: 0 auto; }
+.demo-final-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+.demo-final-actions .btn { width: 100%; }

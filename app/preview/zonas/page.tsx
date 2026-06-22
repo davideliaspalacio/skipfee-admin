@@ -20,19 +20,7 @@ export default function PreviewZonas() {
 
   return (
     <QueryClientProvider client={qc}>
-      <div className="shell">
-        <div className="shell-main" style={{ marginLeft: 0 }}>
-          <header className="topbar">
-            <div className="topbar-title">
-              <b>Zonas</b>
-              <span>Preview · editor de cobertura (sin backend)</span>
-            </div>
-          </header>
-          <main className="content">
-            <ZonasPanel />
-          </main>
-        </div>
-      </div>
+      <ZonasPanel />
     </QueryClientProvider>
   );
 }
