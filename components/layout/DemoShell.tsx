@@ -9,6 +9,7 @@ import { useDemo } from '@/lib/demo';
 import { isScreenUnlocked, minPlanFor, PLAN_NAMES } from '@/lib/plans';
 import { DemoBanner } from '@/components/ui/DemoBanner';
 import { FeatureLocked } from '@/components/ui/FeatureLocked';
+import { useTourActive } from '@/lib/tourActive';
 
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://skipfee.co').replace(/\/+$/, '');
 
@@ -39,7 +40,10 @@ export function DemoShell({ children }: { children: React.ReactNode }) {
   const [dark, setDark] = useDarkMode();
 
   const active = screenFromPath(pathname);
-  const locked = active != null && !isScreenUnlocked(plan, active);
+  const tourActive = useTourActive();
+  // Durante el recorrido mostramos las pantallas REALES aunque el plan las bloquee,
+  // para que el tour pueda enseñar toda la plataforma (el rail sigue con sus candados).
+  const locked = active != null && !isScreenUnlocked(plan, active) && !tourActive;
   const brandInitial = negocio.trim().charAt(0).toUpperCase() || 'S';
   const t = active ? SCREEN_TITLES[active] : { title: negocio, sub: 'Panel de demostración' };
 
