@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { NAV, SCREEN_PATHS, type ScreenId } from './nav';
 
-export const THEME_KEY = 'skipfee-admin-theme';
+export const RAIL_COLLAPSED_KEY = 'skipfee-admin-rail-collapsed';
 
 const DEFAULT_SCREEN: ScreenId = 'pedidos';
 const VALID_SCREENS = new Set<ScreenId>(NAV.map(n => n.id));
@@ -38,36 +38,29 @@ export function useIsDesktop(minWidth = 1024): boolean {
   return isDesktop;
 }
 
-export function useDarkMode(): [boolean, (v: boolean) => void] {
-  const [dark, setDark] = useState<boolean>(() => {
-    if (typeof document === 'undefined') return false;
-    return document.documentElement.getAttribute('data-theme') === 'dark';
-  });
+export function useRailCollapsed(): [boolean, (v: boolean) => void] {
+  const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
     try {
-      window.localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light');
+      setCollapsed(window.localStorage.getItem(RAIL_COLLAPSED_KEY) === 'true');
     } catch {
       /* ignore */
     }
-  }, [dark]);
+  }, []);
 
-  return [dark, setDark];
+  const set = useCallback((v: boolean) => {
+    setCollapsed(v);
+    try {
+      window.localStorage.setItem(RAIL_COLLAPSED_KEY, v ? 'true' : 'false');
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  return [collapsed, set];
 }
 
-/**
- * Lee el tema actual del atributo `data-theme` y re-renderiza al cambiar.
- * Para componentes hoja que necesitan reaccionar a dark/light (ej: emoji picker).
- */
 export function useIsDark(): boolean {
-  const read = () =>
-    typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme') === 'dark';
-  const [dark, setDark] = useState<boolean>(read);
-  useEffect(() => {
-    const obs = new MutationObserver(() => setDark(read()));
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-    return () => obs.disconnect();
-  }, []);
-  return dark;
+  return false;
 }

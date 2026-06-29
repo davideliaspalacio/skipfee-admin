@@ -36,8 +36,7 @@ export function DashboardScreen() {
   const { data: dash, isFetching, isError } = useDashboard();
   const { data: promotions } = useActivePromotions();
 
-  // Primer match por discount_type / orden del endpoint (igual que el storefront).
-  const promo = promotions?.[0];
+  const activePromotions = promotions ?? [];
   const loading = dash == null;
 
   const attention: AttentionOrder[] = dash?.attentionOrders ?? [];
@@ -115,7 +114,7 @@ export function DashboardScreen() {
 
   return (
     <div className={styles.wrap}>
-      {promo && <PromoBanner promo={promo} />}
+      {activePromotions.length > 0 && <PromoBanner promotions={activePromotions} />}
 
       <div className={styles.head}>
         <div>

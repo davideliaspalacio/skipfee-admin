@@ -4,7 +4,7 @@ import { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Icon } from '@/lib/icons';
 import { NAV, MOB_NAV, SCREEN_PATHS, SCREEN_TITLES, type ScreenId } from '@/lib/nav';
-import { useActiveScreen, useScreenNav, useDarkMode } from '@/lib/hooks';
+import { useActiveScreen, useScreenNav, useRailCollapsed } from '@/lib/hooks';
 import { visibleScreenIds } from '@/lib/roles';
 import { useActiveRole, useLogout, useMe, useActiveCompany, setActiveCompany } from '@/lib/queries';
 import type { AuthUser } from '@/lib/api';
@@ -17,13 +17,13 @@ function initialsOf(email: string): string {
 /**
  * Shell del admin: rail (desktop) + topbar + nav inferior (mobile) + contenido.
  * Filtra navegación por rol, marca la screen activa por URL, atajos de teclado,
- * toggle de tema y logout. Reemplaza al App.tsx / DesktopLayout / MobileLayout del Vite app.
+ * colapso del rail y logout. Reemplaza al App.tsx / DesktopLayout / MobileLayout del Vite app.
  */
 export function AdminShell({ user, children }: { user: AuthUser; children: React.ReactNode }) {
   const router = useRouter();
   const active = useActiveScreen();
   const goScreen = useScreenNav();
-  const [dark, setDark] = useDarkMode();
+  const [railCollapsed, setRailCollapsed] = useRailCollapsed();
   const logout = useLogout();
 
   const role = useActiveRole();
@@ -61,10 +61,26 @@ export function AdminShell({ user, children }: { user: AuthUser; children: React
   const title = SCREEN_TITLES[active];
 
   return (
-    <div className="shell">
+    <div className={`shell${railCollapsed ? ' is-rail-collapsed' : ''}`}>
       {/* Rail vertical (desktop) */}
       <aside className="rail">
-        <div className="rail-brand" aria-label="Skipfee">S</div>
+        <div className="rail-head">
+          <div className="rail-brand" aria-label="Skipfee">S</div>
+          <div className="rail-brand-text" aria-hidden={railCollapsed}>
+            <b>Skipfee</b>
+            <span>Operación</span>
+          </div>
+          <button
+            type="button"
+            className="rail-toggle"
+            onClick={() => setRailCollapsed(!railCollapsed)}
+            aria-label={railCollapsed ? 'Expandir barra lateral' : 'Plegar barra lateral'}
+            aria-expanded={!railCollapsed}
+            title={railCollapsed ? 'Expandir' : 'Plegar'}
+          >
+            {railCollapsed ? <Icon.Chevron size={18} /> : <Icon.ChevronLeft size={18} />}
+          </button>
+        </div>
         <nav className="rail-nav" aria-label="Navegación principal">
           {navItems.map((item) => {
             const Ico = Icon[item.icon];
@@ -79,17 +95,16 @@ export function AdminShell({ user, children }: { user: AuthUser; children: React
                 onClick={() => goScreen(item.id)}
               >
                 {Ico ? <Ico size={21} /> : null}
+                <span className="rail-label">{item.label}</span>
                 <span className="tip">{item.label}</span>
               </button>
             );
           })}
         </nav>
         <div className="rail-foot">
-          <button type="button" className="iconbtn" onClick={() => setDark(!dark)} aria-label={dark ? 'Tema claro' : 'Tema oscuro'}>
-            <ThemeIcon dark={dark} />
-          </button>
-          <button type="button" className="iconbtn" onClick={handleLogout} aria-label="Cerrar sesión">
+          <button type="button" className="iconbtn rail-foot-action" onClick={handleLogout} aria-label="Cerrar sesión">
             <Icon.LogOut size={20} />
+            <span className="rail-foot-label">Cerrar sesión</span>
           </button>
         </div>
       </aside>
@@ -102,9 +117,6 @@ export function AdminShell({ user, children }: { user: AuthUser; children: React
           </div>
           <div className="topbar-actions">
             <CompanySwitcher />
-            <button type="button" className="iconbtn hide-mob" onClick={() => setDark(!dark)} aria-label={dark ? 'Tema claro' : 'Tema oscuro'}>
-              <ThemeIcon dark={dark} />
-            </button>
             <div className="user-chip">
               <span className="av">{initialsOf(user.email)}</span>
               <span className="meta">
@@ -164,7 +176,7 @@ function CompanySwitcher() {
 
   if (memberships.length === 1) {
     return (
-      <span className="user-chip hide-mob" aria-label="Empresa activa">
+      <span className="user-chip company-chip hide-mob" aria-label="Empresa activa">
         <span className="meta">
           <small>Empresa</small>
           <b>{memberships[0].companyName}</b>
@@ -175,11 +187,10 @@ function CompanySwitcher() {
 
   return (
     <select
-      className="select hide-mob"
+      className="select company-select hide-mob"
       value={active ?? ''}
       onChange={(e) => setActiveCompany(e.target.value)}
       aria-label="Empresa activa"
-      style={{ maxWidth: 200 }}
     >
       {memberships.map((m) => (
         <option key={m.companyCode} value={String(m.companyCode)}>
@@ -187,18 +198,5 @@ function CompanySwitcher() {
         </option>
       ))}
     </select>
-  );
-}
-
-function ThemeIcon({ dark }: { dark: boolean }) {
-  return dark ? (
-    <svg width={19} height={19} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="4" />
-      <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
-    </svg>
-  ) : (
-    <svg width={19} height={19} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
-    </svg>
   );
 }
