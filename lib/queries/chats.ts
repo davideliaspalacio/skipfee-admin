@@ -5,6 +5,7 @@ import {
   fetchChatMessages,
   fetchChats,
   fetchChatsStats,
+  markChatRead,
   sendChatMessage,
   uploadChatImage,
   type ChatsFilter,
@@ -76,6 +77,52 @@ export function useChatRelease() {
     },
     onError: err => {
       pushToast({ kind: 'error', message: `No se pudo liberar el chat: ${err.message}` });
+    },
+  });
+}
+
+export function useMarkChatRead() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (chatId: string) => markChatRead(chatId),
+    onMutate: async (chatId) => {
+      await qc.cancelQueries({ queryKey: chatKeys.lists() });
+      await qc.cancelQueries({ queryKey: chatKeys.stats() });
+
+      const previousLists = qc.getQueriesData<Chat[]>({ queryKey: chatKeys.lists() });
+      const previousStats = qc.getQueryData<ChatsStats>(chatKeys.stats());
+      let hadUnread = false;
+
+      qc.setQueriesData<Chat[]>({ queryKey: chatKeys.lists() }, (old) => {
+        if (!old) return old;
+        return old.map((chat) => {
+          if (chat.id !== chatId) return chat;
+          if (chat.unread > 0) hadUnread = true;
+          return { ...chat, unread: 0 };
+        });
+      });
+
+      if (hadUnread && previousStats) {
+        qc.setQueryData<ChatsStats>(chatKeys.stats(), {
+          ...previousStats,
+          unread: Math.max(0, previousStats.unread - 1),
+        });
+      }
+
+      return { previousLists, previousStats };
+    },
+    onError: (err, _chatId, context) => {
+      for (const [key, value] of context?.previousLists ?? []) {
+        qc.setQueryData(key, value);
+      }
+      if (context?.previousStats) {
+        qc.setQueryData(chatKeys.stats(), context.previousStats);
+      }
+      pushToast({ kind: 'error', message: `No se pudo marcar el chat como leído: ${err.message}` });
+    },
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: chatKeys.lists() });
+      qc.invalidateQueries({ queryKey: chatKeys.stats() });
     },
   });
 }
