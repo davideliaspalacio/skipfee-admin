@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Icon } from '@/lib/icons';
 import type { Chat } from '@/lib/data';
-import { useChats, useChatsStats, useRewards } from '@/lib/queries';
+import { useChats, useChatsStats, useMarkChatRead, useRewards } from '@/lib/queries';
 import { ChatList, type ChatTabKey } from './ChatList';
 import { ChatThread } from './ChatThread';
 import { ContextPanel } from './ContextPanel';
@@ -21,6 +21,7 @@ export function WhatsAppScreen() {
 
   const { data: stats } = useChatsStats();
   const unread = stats?.unread ?? 0;
+  const markRead = useMarkChatRead();
 
   // Reseñas pendientes: marcamos en la lista qué chats esperan aprobación del
   // postre. Comparamos por dígitos del teléfono y filtramos vacíos para que un
@@ -57,6 +58,12 @@ export function WhatsAppScreen() {
   }, [chats]);
 
   const selected = chats.find((c) => c.id === selectedId) ?? null;
+
+  useEffect(() => {
+    if (!selected || selected.unread <= 0) return;
+    markRead.mutate(selected.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected?.id, selected?.unread]);
 
   return (
     <div className={styles.wrap}>
