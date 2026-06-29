@@ -20,6 +20,7 @@ export {
   fetchChatMessages,
   chatTakeover,
   chatRelease,
+  markChatRead,
   sendChatMessage,
   uploadChatImage,
 } from './chats';

@@ -47,6 +47,10 @@ export async function chatRelease(chatId: string): Promise<void> {
   await request(`/api/chats/${encodeURIComponent(chatId)}/release`, { method: 'POST' });
 }
 
+export async function markChatRead(chatId: string): Promise<void> {
+  await request(`/api/chats/${encodeURIComponent(chatId)}/read`, { method: 'POST' });
+}
+
 export async function sendChatMessage(
   chatId: string,
   payload: { body?: string; imageUrl?: string },
