@@ -354,24 +354,24 @@ export function DespachosScreen() {
 
                       <div className={styles.routeStats}>
                         <div className={styles.routeStat}>
-                          <span className="lbl">Distancia</span>
+                          <span className={styles.lbl}>Distancia</span>
                           <b>{r.km} km</b>
-                          <span className="sub">−{r.savedKm} km vs libre</span>
+                          <span className={styles.sub}>−{r.savedKm} km vs libre</span>
                         </div>
                         <div className={styles.routeStat}>
-                          <span className="lbl">Tiempo</span>
+                          <span className={styles.lbl}>Tiempo</span>
                           <b>~{r.minutes} min</b>
-                          <span className="sub">incl. paradas</span>
+                          <span className={styles.sub}>incl. paradas</span>
                         </div>
                         <div className={`${styles.routeStat} ${styles.save}`}>
-                          <span className="lbl">Ahorro</span>
+                          <span className={styles.lbl}>Ahorro</span>
                           <b>{COP(r.fuelSaved)}</b>
-                          <span className="sub">en gasolina</span>
+                          <span className={styles.sub}>en gasolina</span>
                         </div>
                         <div className={styles.routeStat}>
-                          <span className="lbl">Tickets</span>
+                          <span className={styles.lbl}>Tickets</span>
                           <b>{COP(r.stops.reduce((a, s) => a + s.total, 0))}</b>
-                          <span className="sub">{r.stops.length} pedidos</span>
+                          <span className={styles.sub}>{r.stops.length} pedidos</span>
                         </div>
                       </div>
                     </div>
@@ -379,8 +379,8 @@ export function DespachosScreen() {
 
                   <div className={styles.stops}>
                     <div className={styles.stopsHead}>
-                      <span className="kicker">Orden de entrega</span>
-                      <span className="hint">
+                      <span className={styles.kicker}>Orden de entrega</span>
+                      <span className={styles.hint}>
                         {r.stops.length === 0 ? 'sin paradas — agrega una abajo' : 'edita el orden o elimina paradas'}
                       </span>
                     </div>
@@ -406,8 +406,8 @@ export function DespachosScreen() {
                           </span>
                         </div>
                         <div className={styles.stopMeta}>
-                          <span className="phone">{s.phone}</span>
-                          {s.total > 0 && <span className="price">{COP(s.total)}</span>}
+                          <span className={styles.phone}>{s.phone}</span>
+                          {s.total > 0 && <span className={styles.price}>{COP(s.total)}</span>}
                         </div>
                         <div className={styles.stopActions}>
                           <button
