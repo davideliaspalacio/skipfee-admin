@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   title: "Skipfee · Panel",
   description: "Panel administrativo de Skipfee",
   robots: { index: false, follow: false },
+  icons: { icon: "/skipfeeIconMain.png", shortcut: "/skipfeeIconMain.png", apple: "/skipfeeIconMain.png" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
