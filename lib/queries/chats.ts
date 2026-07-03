@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   chatRelease,
   chatTakeover,
+  fetchChatByPhone,
   fetchChatMessages,
   fetchChats,
   fetchChatsStats,
@@ -28,6 +29,17 @@ export function useChats(filter: ChatsFilter = {}) {
     enabled: !!company,
     refetchInterval: CHATS_POLL_MS,
     refetchIntervalInBackground: false,
+  });
+}
+
+export function useChatByPhone(phone: string | null) {
+  const company = useActiveCompany();
+  const normalized = phone?.trim() ?? '';
+  return useQuery<Chat | null>({
+    queryKey: chatKeys.lookupByPhone(normalized),
+    queryFn: () => fetchChatByPhone(normalized),
+    enabled: !!normalized && !!company,
+    staleTime: 15_000,
   });
 }
 
@@ -90,6 +102,7 @@ export function useMarkChatRead() {
       await qc.cancelQueries({ queryKey: chatKeys.stats() });
 
       const previousLists = qc.getQueriesData<Chat[]>({ queryKey: chatKeys.lists() });
+      const previousLookups = qc.getQueriesData<Chat | null>({ queryKey: chatKeys.lookups() });
       const previousStats = qc.getQueryData<ChatsStats>(chatKeys.stats());
       let hadUnread = false;
 
@@ -102,6 +115,12 @@ export function useMarkChatRead() {
         });
       });
 
+      qc.setQueriesData<Chat | null>({ queryKey: chatKeys.lookups() }, (old) => {
+        if (!old || old.id !== chatId) return old;
+        if (old.unread > 0) hadUnread = true;
+        return { ...old, unread: 0 };
+      });
+
       if (hadUnread && previousStats) {
         qc.setQueryData<ChatsStats>(chatKeys.stats(), {
           ...previousStats,
@@ -109,10 +128,13 @@ export function useMarkChatRead() {
         });
       }
 
-      return { previousLists, previousStats };
+      return { previousLists, previousLookups, previousStats };
     },
     onError: (err, _chatId, context) => {
       for (const [key, value] of context?.previousLists ?? []) {
+        qc.setQueryData(key, value);
+      }
+      for (const [key, value] of context?.previousLookups ?? []) {
         qc.setQueryData(key, value);
       }
       if (context?.previousStats) {

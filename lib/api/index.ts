@@ -30,6 +30,7 @@ export type { OrdersFilter, OrdersStats } from './orders';
 
 export {
   fetchChats,
+  fetchChatByPhone,
   fetchChatsStats,
   fetchChatMessages,
   chatTakeover,

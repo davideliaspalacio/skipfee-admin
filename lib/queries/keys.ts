@@ -63,6 +63,8 @@ export const chatKeys = {
   },
   lists: () => [...chatKeys.all, 'list'] as const,
   list: (filter: ChatsFilter) => [...chatKeys.lists(), filter] as const,
+  lookups: () => [...chatKeys.all, 'lookup'] as const,
+  lookupByPhone: (phone: string) => [...chatKeys.lookups(), 'phone', phone] as const,
   messages: (chatId: string) => [...chatKeys.all, 'messages', chatId] as const,
   stats: () => [...chatKeys.all, 'stats'] as const,
 };
