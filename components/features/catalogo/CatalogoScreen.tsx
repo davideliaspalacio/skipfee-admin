@@ -54,12 +54,18 @@ export function CatalogoScreen() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return products.filter(
-      (p) =>
-        (cat === 'all' || p.cat === cat) &&
-        (!q || p.name.toLowerCase().includes(q)),
-    );
-  }, [products, cat, query]);
+    // En "Todos" el grid agrupa por categoría siguiendo el orden configurado
+    // (Configuración → Categorías); sort estable → dentro de cada categoría
+    // se preserva el orden por nombre que ya trae la API.
+    const rank = new Map(categories.map((c, i) => [c, i]));
+    return products
+      .filter(
+        (p) =>
+          (cat === 'all' || p.cat === cat) &&
+          (!q || p.name.toLowerCase().includes(q)),
+      )
+      .sort((a, b) => (rank.get(a.cat) ?? categories.length) - (rank.get(b.cat) ?? categories.length));
+  }, [products, cat, query, categories]);
 
   const submitting = createProduct.isPending || patchProduct.isPending || uploadImage.isPending;
 
