@@ -3,6 +3,7 @@ import type { Chat, ChatMessage } from '../data';
 
 export interface ChatsFilter {
   status?: 'bot' | 'human' | 'pending';
+  phone?: string;
 }
 
 export interface ChatsStats {
@@ -25,11 +26,18 @@ export async function fetchChatsStats(): Promise<ChatsStats> {
 export async function fetchChats(params: ChatsFilter = {}): Promise<Chat[]> {
   const search = new URLSearchParams();
   if (params.status) search.set('status', params.status);
+  if (params.phone) search.set('phone', params.phone);
   const qs = search.toString();
   const { chats } = await tenantRequest<{ ok: true; chats: Chat[] }>(
     `/chats${qs ? '?' + qs : ''}`,
   );
   return chats;
+}
+
+export async function fetchChatByPhone(phone: string): Promise<Chat | null> {
+  if (!phone.trim()) return null;
+  const chats = await fetchChats({ phone });
+  return chats[0] ?? null;
 }
 
 export async function fetchChatMessages(chatId: string): Promise<ChatMessage[]> {

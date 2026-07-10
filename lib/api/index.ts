@@ -28,8 +28,22 @@ export type {
 export { fetchOrders, fetchOrder, fetchOrdersStats, patchOrderStatus, patchOrderCook } from './orders';
 export type { OrdersFilter, OrdersStats } from './orders';
 
+export { fetchChannels, updateChannelAction, simulateChannelOrder } from './channels';
+export type {
+  ChannelAction,
+  ChannelKind,
+  ChannelMode,
+  ChannelProvider,
+  ChannelRequirement,
+  ChannelStatus,
+  ChannelsOverview,
+  ChannelsSummary,
+  SalesChannel,
+} from './channels';
+
 export {
   fetchChats,
+  fetchChatByPhone,
   fetchChatsStats,
   fetchChatMessages,
   chatTakeover,

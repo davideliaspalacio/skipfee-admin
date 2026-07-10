@@ -18,6 +18,7 @@ export * from './cooks';
 export * from './settings';
 export * from './botMessages';
 export * from './dashboard';
+export * from './channels';
 export * from './reports';
 export * from './customers';
 export * from './promotions';

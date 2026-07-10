@@ -19,6 +19,7 @@ const ALL_SCREENS: ScreenId[] = [
   'dashboard',
   'pedidos',
   'whatsapp',
+  'canales',
   'catalogo',
   'despachos',
   'clientes',
@@ -36,6 +37,7 @@ const UNLOCKS: Record<PlanId, ScreenId[]> = {
 /** Plan mínimo que desbloquea cada pantalla (para el mensaje de upsell). */
 const MIN_PLAN_FOR_SCREEN: Partial<Record<ScreenId, PlanId>> = {
   despachos: 'negocio',
+  canales: 'negocio',
   clientes: 'negocio',
   reportes: 'negocio',
   configuracion: 'negocio',

@@ -63,6 +63,8 @@ export const chatKeys = {
   },
   lists: () => [...chatKeys.all, 'list'] as const,
   list: (filter: ChatsFilter) => [...chatKeys.lists(), filter] as const,
+  lookups: () => [...chatKeys.all, 'lookup'] as const,
+  lookupByPhone: (phone: string) => [...chatKeys.lookups(), 'phone', phone] as const,
   messages: (chatId: string) => [...chatKeys.all, 'messages', chatId] as const,
   stats: () => [...chatKeys.all, 'stats'] as const,
 };
@@ -107,6 +109,13 @@ export const dashboardKeys = {
     return [...companyScope(), 'dashboard'] as const;
   },
   today: () => [...dashboardKeys.all, 'today'] as const,
+};
+
+export const channelKeys = {
+  get all() {
+    return [...companyScope(), 'channels'] as const;
+  },
+  overview: () => [...channelKeys.all, 'overview'] as const,
 };
 
 export const reportKeys = {

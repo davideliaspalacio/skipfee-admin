@@ -4,7 +4,14 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Icon } from '@/lib/icons';
 import type { Chat } from '@/lib/data';
-import { useChats, useChatsStats, useMarkChatRead, useRewards } from '@/lib/queries';
+import {
+  useChatByPhone,
+  useActiveCompany,
+  useChats,
+  useChatsStats,
+  useMarkChatRead,
+  useRewards,
+} from '@/lib/queries';
 import { ChatList, type ChatTabKey } from './ChatList';
 import { ChatThread } from './ChatThread';
 import { ContextPanel } from './ContextPanel';
@@ -13,8 +20,10 @@ import styles from './whatsapp.module.css';
 
 export function WhatsAppScreen() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [pinnedChat, setPinnedChat] = useState<Chat | null>(null);
   const [tab, setTab] = useState<ChatTabKey>('todos');
   const [search, setSearch] = useState('');
+  const activeCompany = useActiveCompany();
 
   const { data: chatsData, isFetching } = useChats();
   const chats: Chat[] = chatsData ?? [];
@@ -38,26 +47,53 @@ export function WhatsAppScreen() {
   // query (replace) para no atrapar back/forward en la selección consumida.
   const router = useRouter();
   const searchParams = useSearchParams();
+  const wantedPhone = searchParams.get('phone')?.trim() ?? '';
+  const { data: linkedChat, isFetched: linkedChatFetched, isFetching: linkedChatFetching } =
+    useChatByPhone(wantedPhone);
   const consumedPhoneParam = useRef(false);
+
+  useEffect(() => {
+    setPinnedChat(null);
+    setSelectedId(null);
+    consumedPhoneParam.current = false;
+  }, [activeCompany]);
+
+  const listChats = pinnedChat && !chats.some((c) => c.id === pinnedChat.id)
+    ? [pinnedChat, ...chats]
+    : chats;
+
   useEffect(() => {
     if (consumedPhoneParam.current) return;
-    if (chats.length === 0) return;
-    const wanted = searchParams.get('phone');
-    if (!wanted) return;
+    if (!wantedPhone) return;
+
+    const target = chats.find((c) => digitsOnly(c.phone) === digitsOnly(wantedPhone));
+    if (target) {
+      setPinnedChat(null);
+      setSelectedId(target.id);
+      consumedPhoneParam.current = true;
+      router.replace('/whatsapp');
+      return;
+    }
+
+    if (!linkedChatFetched) return;
+
+    if (linkedChat) {
+      setPinnedChat(linkedChat);
+      setSelectedId(linkedChat.id);
+    }
     consumedPhoneParam.current = true;
-    const target = chats.find((c) => digitsOnly(c.phone) === digitsOnly(wanted));
-    if (target) setSelectedId(target.id);
     router.replace('/whatsapp');
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chats, searchParams]);
+  }, [chats, linkedChat, linkedChatFetched, wantedPhone]);
 
   // Auto-seleccionar el primer chat cuando llegan datos.
   useEffect(() => {
-    if (!selectedId && chats.length > 0) setSelectedId(chats[0].id);
+    if (wantedPhone && !consumedPhoneParam.current) return;
+    if (!selectedId && listChats.length > 0) setSelectedId(listChats[0].id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chats]);
+  }, [listChats, wantedPhone]);
 
-  const selected = chats.find((c) => c.id === selectedId) ?? null;
+  const selected = listChats.find((c) => c.id === selectedId) ?? null;
 
   useEffect(() => {
     if (!selected || selected.unread <= 0) return;
@@ -68,15 +104,18 @@ export function WhatsAppScreen() {
   return (
     <div className={styles.wrap}>
       <ChatList
-        chats={chats}
+        chats={listChats}
         selectedId={selectedId}
-        onSelect={setSelectedId}
+        onSelect={(id) => {
+          setSelectedId(id);
+          if (pinnedChat && pinnedChat.id !== id) setPinnedChat(null);
+        }}
         tab={tab}
         onTab={setTab}
         search={search}
         onSearch={setSearch}
         unread={unread}
-        live={isFetching}
+        live={isFetching || linkedChatFetching}
         phonesPendingReview={phonesPendingReview}
       />
 
@@ -89,7 +128,7 @@ export function WhatsAppScreen() {
               <Icon.MessageCircle size={26} />
             </span>
             <span className={styles.placeholderTitle}>
-              {chats.length === 0 ? 'Aún no hay conversaciones' : 'Selecciona una conversación'}
+              {listChats.length === 0 ? 'Aún no hay conversaciones' : 'Selecciona una conversación'}
             </span>
             <span style={{ fontSize: 13 }}>
               Los chats de WhatsApp aparecen aquí en tiempo real.

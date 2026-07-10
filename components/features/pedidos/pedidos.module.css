@@ -68,6 +68,10 @@
   font-size: 10px; font-weight: 700; color: var(--sun-ink); background: oklch(0.87 0.15 92 / .25);
   padding: 2px 6px; border-radius: 5px; white-space: nowrap;
 }
+.channelBadge {
+  font-size: 10px; font-weight: 800; color: var(--green-ink); background: var(--green-soft);
+  padding: 2px 6px; border-radius: 5px; white-space: nowrap;
+}
 .name { font-weight: 600; font-size: 14px; color: var(--text); display: block; }
 .items { color: var(--text-muted); font-size: 12px; margin-top: 2px; line-height: 1.35; }
 .meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
