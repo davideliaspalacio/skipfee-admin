@@ -111,6 +111,13 @@ export const dashboardKeys = {
   today: () => [...dashboardKeys.all, 'today'] as const,
 };
 
+export const channelKeys = {
+  get all() {
+    return [...companyScope(), 'channels'] as const;
+  },
+  overview: () => [...channelKeys.all, 'overview'] as const,
+};
+
 export const reportKeys = {
   get all() {
     return [...companyScope(), 'reports'] as const;

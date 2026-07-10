@@ -76,6 +76,8 @@ export function PedidoDetail({
     updateStatus.mutate({ id: o.id, status });
   };
   const nextStage = idx >= 0 && idx < STAGES.length - 1 ? STAGES[idx + 1] : null;
+  const channelProvider = o.channel?.provider ?? 'whatsapp';
+  const showChannelDetails = channelProvider !== 'whatsapp';
 
   return shell(
     <>
@@ -123,6 +125,40 @@ export function PedidoDetail({
         <span className={styles.panelSub}>{o.zoneName}</span>
         <RouteMap origin={origin} stops={[{ id: o.id, lat: o.lat, lng: o.lng }]} color={zoneColor} dark={dark} />
       </section>
+
+      {showChannelDetails && (
+        <section className={styles.section}>
+          <span className={styles.sectionTitle}>Canal externo</span>
+          <div className={styles.row}>
+            <span className={styles.rowLbl}>Canal</span>
+            <span className={styles.rowVal}>{providerLabel(channelProvider)}</span>
+          </div>
+          {o.channel?.externalOrderId && (
+            <div className={styles.row}>
+              <span className={styles.rowLbl}>ID externo</span>
+              <span className={styles.rowVal}>{o.channel.externalOrderId}</span>
+            </div>
+          )}
+          {o.channel?.status && (
+            <div className={styles.row}>
+              <span className={styles.rowLbl}>Estado externo</span>
+              <span className={styles.rowVal}>{o.channel.status}</span>
+            </div>
+          )}
+          {o.channel?.deliveryMethod && (
+            <div className={styles.row}>
+              <span className={styles.rowLbl}>Entrega externa</span>
+              <span className={styles.rowVal}>{o.channel.deliveryMethod}</span>
+            </div>
+          )}
+          {(o.channel?.commission ?? 0) > 0 && (
+            <div className={styles.row}>
+              <span className={styles.rowLbl}>Comisión estimada</span>
+              <span className={styles.rowVal}>{COP(o.channel?.commission ?? 0)}</span>
+            </div>
+          )}
+        </section>
+      )}
 
       <section className={styles.section}>
         <span className={styles.sectionTitle}>Items</span>
@@ -197,4 +233,13 @@ export function PedidoDetail({
     </>,
     `Hace ${o.minutos} min · ${o.paymentMethod}`,
   );
+}
+
+function providerLabel(provider: string): string {
+  if (provider === 'rappi') return 'Rappi';
+  if (provider === 'didi') return 'DiDi Food';
+  if (provider === 'storefront') return 'Tienda directa';
+  if (provider === 'manual') return 'POS manual';
+  if (provider === 'ubereats') return 'Uber Eats';
+  return provider;
 }

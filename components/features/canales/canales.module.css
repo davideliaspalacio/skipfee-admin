@@ -1,0 +1,195 @@
+.wrap {
+  display: grid;
+  gap: 18px;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.metric {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 14px;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.metric span,
+.metric small,
+.muted {
+  color: var(--text-muted);
+}
+
+.metric span {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  font-weight: 800;
+}
+
+.metric b {
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.45rem;
+  color: var(--text);
+  line-height: 1;
+}
+
+.metric small {
+  font-size: 12px;
+}
+
+.banner {
+  border: 1px solid color-mix(in oklch, var(--sun) 50%, var(--line));
+  background: color-mix(in oklch, var(--sun) 18%, var(--surface));
+  color: var(--text);
+  border-radius: 8px;
+  padding: 11px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.channelCell {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.channelCell b,
+.channelCell small {
+  display: block;
+}
+
+.channelCell b {
+  color: var(--text);
+}
+
+.channelCell small {
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.channelIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  color: var(--green-ink);
+  background: color-mix(in oklch, var(--green-wash) 74%, transparent);
+  flex: 0 0 auto;
+}
+
+.subValue {
+  display: block;
+  color: var(--text-muted);
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.errorText {
+  color: var(--coral);
+}
+
+.rowActions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  min-width: 160px;
+}
+
+.rowActions :global(.btn) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, .6fr);
+  gap: 12px;
+}
+
+.mix {
+  display: grid;
+  gap: 12px;
+}
+
+.mix div {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 10px;
+  align-items: center;
+  color: var(--text-muted);
+}
+
+.mix b {
+  grid-column: 2;
+  color: var(--text);
+  font-size: .93rem;
+}
+
+.swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.docs {
+  margin-top: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.docs a {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+  padding: 9px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.docs a:hover {
+  background: var(--surface-2);
+}
+
+@media (max-width: 980px) {
+  .metrics,
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .metric {
+    padding: 12px;
+  }
+
+  .channelIcon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .rowActions {
+    min-width: 120px;
+    flex-wrap: wrap;
+  }
+}

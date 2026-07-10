@@ -12,6 +12,7 @@ const ALL_STATUS: StatusId[] = ['nuevo', 'pagado', 'cocina', 'empacado', 'ruta',
 const ALL_SCREENS: ScreenId[] = [
   'pedidos',
   'whatsapp',
+  'canales',
   'despachos',
   'catalogo',
   'dashboard',

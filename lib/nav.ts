@@ -3,6 +3,7 @@ import type { IconName } from './icons';
 export type ScreenId =
   | 'pedidos'
   | 'whatsapp'
+  | 'canales'
   | 'despachos'
   | 'catalogo'
   | 'dashboard'
@@ -25,6 +26,7 @@ export interface NavItem {
 export const NAV: NavItem[] = [
   { id: 'pedidos',       label: 'Pedidos',       icon: 'LayoutGrid',    shortcut: 'P', path: '/pedidos' },
   { id: 'whatsapp',      label: 'WhatsApp',      icon: 'MessageCircle', shortcut: 'W', path: '/whatsapp' },
+  { id: 'canales',       label: 'Canales',       icon: 'Wifi',          shortcut: 'N', path: '/canales' },
   { id: 'despachos',     label: 'Despachos',     icon: 'Route',         shortcut: 'M', path: '/despachos' },
   { id: 'catalogo',      label: 'Catálogo',      icon: 'Package',       shortcut: 'C', path: '/catalogo' },
   { id: 'dashboard',     label: 'Dashboard',     icon: 'Home',          shortcut: 'D', path: '/dashboard' },
@@ -46,7 +48,7 @@ export const MOB_NAV: ScreenId[] = ['pedidos', 'whatsapp', 'despachos', 'dashboa
 
 // Remaining screens — surfaced via the "Más" bottom sheet, grouped by section.
 export const MOB_NAV_MORE_SECTIONS: Array<{ label: string; items: ScreenId[] }> = [
-  { label: 'Operación', items: ['catalogo'] },
+  { label: 'Operación', items: ['canales', 'catalogo'] },
   { label: 'Negocio',   items: ['clientes', 'reportes', 'configuracion'] },
 ];
 
@@ -56,6 +58,7 @@ export const SCREEN_TITLES: Record<ScreenId, { title: string; sub: string }> = {
   dashboard:     { title: 'Dashboard',     sub: 'Resumen del día' },
   pedidos:       { title: 'Pedidos',       sub: '13 activos · 42 completados hoy' },
   whatsapp:      { title: 'WhatsApp',      sub: '8 conversaciones · 3 pendientes' },
+  canales:       { title: 'Canales',       sub: 'Fuentes de pedidos e integraciones' },
   catalogo:      { title: 'Catálogo',      sub: 'Productos en oferta' },
   clientes:      { title: 'Clientes',      sub: 'Registrados desde pedidos y WhatsApp' },
   reportes:      { title: 'Reportes',      sub: 'Métricas del negocio' },

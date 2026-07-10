@@ -21,6 +21,8 @@ export const OrderCard = forwardRef<HTMLDivElement, OrderCardProps>(function Ord
   ref,
 ) {
   const zoneColor = ZONES.find((z) => z.id === order.zone)?.color ?? 'var(--green)';
+  const provider = order.channel?.provider ?? 'whatsapp';
+  const showChannel = provider !== 'whatsapp';
   const cls = [
     styles.card,
     selected ? styles.selected : '',
@@ -39,6 +41,7 @@ export const OrderCard = forwardRef<HTMLDivElement, OrderCardProps>(function Ord
         <div className={styles.cardTopLeft}>
           <span className={styles.num}>#{order.number}</span>
           {order.unpaid && <span className={styles.unpaidBadge}>Sin pagar</span>}
+          {showChannel && <span className={styles.channelBadge}>{providerLabel(provider)}</span>}
         </div>
         <UrgencyChip minutes={order.minutos} />
       </div>
@@ -66,6 +69,15 @@ export const OrderCard = forwardRef<HTMLDivElement, OrderCardProps>(function Ord
     </div>
   );
 });
+
+function providerLabel(provider: string): string {
+  if (provider === 'rappi') return 'Rappi';
+  if (provider === 'didi') return 'DiDi';
+  if (provider === 'storefront') return 'Tienda';
+  if (provider === 'manual') return 'Manual';
+  if (provider === 'ubereats') return 'Uber';
+  return provider;
+}
 
 /** Tarjeta arrastrable que se registra en el DndContext. */
 export function DraggableOrderCard({

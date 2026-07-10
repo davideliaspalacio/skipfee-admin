@@ -109,6 +109,15 @@ export interface Order {
   note: string | null;
   lat: number;
   lng: number;
+  channel?: {
+    provider: string;
+    externalOrderId: string | null;
+    externalStoreId: string | null;
+    status: string | null;
+    deliveryMethod: string | null;
+    commission: number;
+    discount: number;
+  };
 }
 
 const ORDER_SAMPLES = [
