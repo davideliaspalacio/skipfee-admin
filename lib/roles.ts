@@ -5,12 +5,17 @@ import type { ScreenId } from './nav';
  * `platform` es el rol del OWNER de la plataforma (lo asigna `/api/auth/me`
  * cuando el usuario está en `platform_admins`). Ve todas las empresas y, además
  * de las pantallas de operación, la pantalla de gestión "Empresas".
+ *
+ * `mesero` opera el salón (mesas, cuentas, split de pago). Ve "Salón" y
+ * "Pedidos" (para seguir el estado en cocina), nada más.
  */
-export type UserRole = 'platform' | 'super_admin' | 'admin' | 'cocina' | 'empaque';
+export type UserRole = 'platform' | 'super_admin' | 'admin' | 'cocina' | 'empaque' | 'mesero';
 
 const ALL_STATUS: StatusId[] = ['nuevo', 'pagado', 'cocina', 'empacado', 'ruta', 'entregado'];
 const ALL_SCREENS: ScreenId[] = [
+  'primerosPasos',
   'pedidos',
+  'salon',
   'whatsapp',
   'canales',
   'despachos',
@@ -28,6 +33,7 @@ const STATUS_BY_ROLE: Record<UserRole, StatusId[]> = {
   admin: ALL_STATUS,
   cocina: ['cocina', 'empacado'],
   empaque: ['empacado', 'ruta'],
+  mesero: ALL_STATUS,
 };
 
 const SCREENS_BY_ROLE: Record<UserRole, ScreenId[]> = {
@@ -37,6 +43,7 @@ const SCREENS_BY_ROLE: Record<UserRole, ScreenId[]> = {
   admin: ALL_SCREENS,
   cocina: ['pedidos'],
   empaque: ['pedidos'],
+  mesero: ['salon', 'pedidos'],
 };
 
 export function normalizeRole(raw: string | null | undefined): UserRole {
@@ -44,7 +51,8 @@ export function normalizeRole(raw: string | null | undefined): UserRole {
     raw === 'platform' ||
     raw === 'super_admin' ||
     raw === 'cocina' ||
-    raw === 'empaque'
+    raw === 'empaque' ||
+    raw === 'mesero'
   ) {
     return raw;
   }
