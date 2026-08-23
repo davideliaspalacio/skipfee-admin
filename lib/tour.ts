@@ -3,15 +3,28 @@ import type { ScreenId } from './nav';
 // Guion del recorrido guiado del demo (driver.js), multipágina y completo: recorre
 // TODAS las áreas de la plataforma resaltando la feature más potente de cada una.
 // `element` se resalta; sin `element` el popover sale centrado (modal). `section`
-// alimenta la barra de progreso. Copy vendedor (es-CO) mapeado a selectores
-// globales estables (admin.css/brand.css), ya que los componentes usan CSS modules.
+// alimenta la barra de progreso. Copy vendedor (es-CO).
+//
+// Los objetivos se apuntan con anclas `data-tour="…"` puestas en el componente
+// concreto (los CSS modules hacen ilegibles las clases reales). NO uses clases
+// genéricas de marca (.panel, .content, .chip, .btn-primary…): hay varias por
+// pantalla, `querySelector` coge la primera y el foco acaba en el sitio
+// equivocado — o peor, sobre un contenedor más grande que la pantalla, que es
+// como no resaltar nada. Únicas excepciones: los elementos del shell
+// `.demo-banner`, `.rail` y `.mobnav` (uno por pantalla) y `.rail-item.is-locked`,
+// que a propósito resalta el primer candado del rail (cuál sea depende del plan).
 
 export interface TourStep {
   screen: ScreenId;
-  /** Selector global estable a resaltar en desktop. Vacío = popover central. */
+  /** Selector estable a resaltar en desktop (preferir `[data-tour="…"]`). Vacío = popover central. */
   element?: string;
   /** Selector alternativo en móvil (si difiere). */
   elementMobile?: string;
+  /**
+   * Selector de un control a pulsar ANTES de resaltar (p. ej. abrir la pestaña
+   * que contiene el objetivo, que si no ni siquiera está montada en el DOM).
+   */
+  pre?: string;
   /** Lado preferido del popover respecto al elemento (driver.js). Si se omite, driver lo decide solo. */
   side?: 'top' | 'bottom' | 'left' | 'right';
   /** Alineación del popover sobre ese lado (driver.js). */
@@ -46,6 +59,8 @@ export const TOUR_STEPS: TourStep[] = [
     screen: 'dashboard',
     element: '.rail',
     elementMobile: '.mobnav',
+    side: 'right',
+    align: 'center',
     section: 'Navegación',
     title: '🧭 Tu centro de mando',
     description:
@@ -55,7 +70,7 @@ export const TOUR_STEPS: TourStep[] = [
   // ── Dashboard ───────────────────────────────────────────────────────────
   {
     screen: 'dashboard',
-    element: '.dtable',
+    element: '[data-tour="dash-atencion"]',
     section: 'Dashboard',
     title: '🚨 Lo que requiere tu atención, primero',
     description:
@@ -63,7 +78,9 @@ export const TOUR_STEPS: TourStep[] = [
   },
   {
     screen: 'dashboard',
-    element: '.panel',
+    element: '[data-tour="dash-graficas"]',
+    side: 'bottom',
+    align: 'start',
     section: 'Dashboard',
     title: '📈 El pulso de hoy: ventas 7 días y mix en vivo',
     description:
@@ -73,7 +90,7 @@ export const TOUR_STEPS: TourStep[] = [
   // ── Pedidos ─────────────────────────────────────────────────────────────
   {
     screen: 'pedidos',
-    element: '.input-search',
+    element: '[data-tour="pedidos-buscar"]',
     section: 'Pedidos',
     title: '🔥 Tu cocina en vivo, sin comisiones',
     description:
@@ -81,7 +98,7 @@ export const TOUR_STEPS: TourStep[] = [
   },
   {
     screen: 'pedidos',
-    element: '.chip',
+    element: '[data-tour="pedidos-zonas"]',
     section: 'Pedidos',
     title: '⏱️ Filtra por zona y caza los demorados',
     description:
@@ -91,7 +108,7 @@ export const TOUR_STEPS: TourStep[] = [
   // ── WhatsApp ────────────────────────────────────────────────────────────
   {
     screen: 'whatsapp',
-    element: '.input-search',
+    element: '[data-tour="wa-bandeja"]',
     section: 'WhatsApp',
     title: '🤖 Tu bot vende solo, tú entras cuando quieras',
     description:
@@ -99,7 +116,9 @@ export const TOUR_STEPS: TourStep[] = [
   },
   {
     screen: 'whatsapp',
-    element: '.content',
+    element: '[data-tour="wa-resena"]',
+    side: 'bottom',
+    align: 'center',
     section: 'Post-venta',
     title: '🍰 Aprueba reseñas y regala postre sin salir del chat',
     description:
@@ -109,7 +128,7 @@ export const TOUR_STEPS: TourStep[] = [
   // ── Despachos ───────────────────────────────────────────────────────────
   {
     screen: 'despachos',
-    element: '.stats',
+    element: '[data-tour="despachos-kpis"]',
     section: 'Despachos',
     title: '🗺️ Rutas optimizadas que te ahorran gasolina',
     description:
@@ -117,7 +136,7 @@ export const TOUR_STEPS: TourStep[] = [
   },
   {
     screen: 'despachos',
-    element: '.btn-primary',
+    element: '[data-tour="despachos-despachar"]',
     side: 'bottom',
     align: 'end',
     section: 'Despachos',
@@ -129,7 +148,7 @@ export const TOUR_STEPS: TourStep[] = [
   // ── Catálogo ────────────────────────────────────────────────────────────
   {
     screen: 'catalogo',
-    element: '.tablist',
+    element: '[data-tour="catalogo-categorias"]',
     section: 'Catálogo',
     title: '🍔 Tu menú, ordenado por categoría',
     description:
@@ -137,7 +156,7 @@ export const TOUR_STEPS: TourStep[] = [
   },
   {
     screen: 'catalogo',
-    element: '.btn-primary',
+    element: '[data-tour="catalogo-nuevo"]',
     side: 'bottom',
     align: 'end',
     section: 'Catálogo',
@@ -149,7 +168,7 @@ export const TOUR_STEPS: TourStep[] = [
   // ── Clientes ────────────────────────────────────────────────────────────
   {
     screen: 'clientes',
-    element: '.stats',
+    element: '[data-tour="clientes-kpis"]',
     section: 'Clientes',
     title: '📊 Tu CRM lee la plata, no solo nombres',
     description:
@@ -157,7 +176,9 @@ export const TOUR_STEPS: TourStep[] = [
   },
   {
     screen: 'clientes',
-    element: '.dtable',
+    // La tabla entera mide más que un portátil (1366×768): resaltamos una fila,
+    // que es justo lo que describe el copy (ticket, última compra, etiqueta).
+    element: '[data-tour="clientes-directorio"] tbody tr:first-child',
     section: 'Clientes',
     title: '👑 Directorio vivo: quién gasta y cuándo volvió',
     description:
@@ -167,7 +188,9 @@ export const TOUR_STEPS: TourStep[] = [
   // ── Reportes ────────────────────────────────────────────────────────────
   {
     screen: 'reportes',
-    element: '.content',
+    element: '[data-tour="reportes-financiero"]',
+    side: 'right',
+    align: 'start',
     section: 'Reportes',
     title: '💰 Tu plata, sin comisiones de por medio',
     description:
@@ -175,7 +198,7 @@ export const TOUR_STEPS: TourStep[] = [
   },
   {
     screen: 'reportes',
-    element: '.dtable',
+    element: '[data-tour="reportes-zonas"]',
     section: 'Reportes',
     title: '📍 Qué zona te deja más plata',
     description:
@@ -185,15 +208,21 @@ export const TOUR_STEPS: TourStep[] = [
   // ── Configuración ───────────────────────────────────────────────────────
   {
     screen: 'configuracion',
-    element: '.tablist',
+    element: '[data-tour="config-tabs"]',
+    side: 'bottom',
+    align: 'start',
     section: 'Configuración',
-    title: '⚙️ El cerebro de tu bot, en 8 pestañas',
+    title: '⚙️ El cerebro de tu bot, en un solo lugar',
     description:
-      'Acá controlas <b>todo</b> sin tocar código: zonas con tarifa que el bot cobra solo, horarios, cocineros, <b>mensajes del bot editables</b>, promociones automáticas y reseñas. Cambias algo y el bot lo aplica al instante en WhatsApp.',
+      'Acá controlas <b>todo</b> sin tocar código: zonas con tarifa que el bot cobra solo, horarios, cocineros y meseros, <b>mensajes del bot editables</b>, promociones automáticas y reseñas. Cambias algo y el bot lo aplica al instante en WhatsApp.',
   },
   {
     screen: 'configuracion',
-    element: '.content',
+    // La pestaña "Reseñas" no está montada hasta que se abre: el tour la abre solo.
+    pre: '[data-tour="tab-resenas"]',
+    element: '[data-tour="config-resenas"]',
+    // En móvil la tarjeta entera no cabe (los campos se apilan): basta la cabecera.
+    elementMobile: '[data-tour="config-resenas-head"]',
     section: 'Post-venta',
     title: '⭐ Pide reseña y regala postre, automático',
     description:

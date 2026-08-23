@@ -93,13 +93,10 @@ export function DemoShell({ children }: { children: React.ReactNode }) {
             <button type="button" className="iconbtn hide-mob" onClick={() => setDark(!dark)} aria-label={dark ? 'Tema claro' : 'Tema oscuro'}>
               {dark ? <Icon.Sun size={19} /> : <Icon.Moon size={19} />}
             </button>
-            <div className="user-chip">
-              <span className="av">{brandInitial}</span>
-              <span className="meta">
-                <b>{negocio}</b>
-                <small>Plan {PLAN_NAMES[plan]}</small>
-              </span>
-            </div>
+            <span className="company-fixed hide-mob">{negocio}</span>
+            <span className="user-chip" title={`Plan ${PLAN_NAMES[plan]}`}>
+              {brandInitial}
+            </span>
           </div>
         </header>
 

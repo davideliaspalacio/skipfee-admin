@@ -79,6 +79,24 @@ export function TourController() {
   const [muted, setMuted] = useState(false);
   const driverRef = useRef<ReturnType<typeof driver> | null>(null);
 
+  // El blip lo lee por ref: si `goNext` dependiera del estado `muted`, silenciar
+  // volvería a ejecutar el efecto del paso actual (re-click de `pre` + parpadeo).
+  const mutedRef = useRef(false);
+  useEffect(() => {
+    mutedRef.current = muted;
+  }, [muted]);
+
+  // Un paso tarda en montarse (cambio de pantalla + reintentos hasta encontrar el
+  // objetivo). Mientras tanto sigue visible el popover del paso ANTERIOR: si el
+  // usuario le da a "Siguiente" ahí, se salta pasos y driver queda desincronizado
+  // (foco congelado en el elemento viejo). Durante la transición ocultamos el
+  // popover (CSS .tour-busy) y bloqueamos avanzar/retroceder.
+  const busyRef = useRef(false);
+  const setBusy = useCallback((v: boolean) => {
+    busyRef.current = v;
+    if (typeof document !== 'undefined') document.documentElement.classList.toggle('tour-busy', v);
+  }, []);
+
   // Cargar preferencia de sonido.
   useEffect(() => {
     try {
@@ -100,16 +118,28 @@ export function TourController() {
   }, []);
 
   // Señal al shell: durante el tour se ven las pantallas reales (sin candado).
-  // Además forzamos scroll instantáneo: el scroll-behavior:smooth del <html>
-  // descuadra el posicionamiento de los popovers de driver al cambiar de foco.
+  // Además:
+  //  · forzamos scroll instantáneo (el scroll-behavior:smooth del <html> descuadra
+  //    el posicionamiento de los popovers de driver al cambiar de foco);
+  //  · marcamos <html class="tour-open"> para que el panel baje los px de la barra
+  //    de progreso (fija arriba): si no, lo que resaltamos en la franja superior
+  //    —el aviso de modo demo, o el propio popover— queda tapado por ella.
   useEffect(() => {
     setTourActive(active);
     const html = typeof document !== 'undefined' ? document.documentElement : null;
     if (active && html) {
       const prev = html.style.scrollBehavior;
       html.style.scrollBehavior = 'auto';
+      html.classList.add('tour-open');
+      // Alto real de la barra → el CSS baja el panel exactamente eso (nunca menos).
+      const bar = document.querySelector('.tour-progress');
+      if (bar) html.style.setProperty('--tour-bar-h', `${Math.ceil(bar.getBoundingClientRect().height)}px`);
       return () => {
         html.style.scrollBehavior = prev;
+        html.style.removeProperty('--tour-bar-h');
+        html.classList.remove('tour-open');
+        html.classList.remove('tour-busy');
+        busyRef.current = false;
         setTourActive(false);
       };
     }
@@ -126,6 +156,11 @@ export function TourController() {
       stageRadius: 12,
       popoverClass: 'skipfee-tour',
       animate: true,
+      // El elemento resaltado NO debe ser clicable: driver le devuelve los
+      // pointer-events a él y a todos sus hijos, y en el paso del rail eso deja
+      // al visitante clicar cualquier enlace del menú (o el "Volver a skipfee.co")
+      // y salirse del recorrido. Aquí solo se mira y se pulsa "Siguiente".
+      disableActiveInteraction: true,
     });
     driverRef.current = d;
     return () => {
@@ -134,8 +169,72 @@ export function TourController() {
     };
   }, [active]);
 
+  // driver.js marca el elemento resaltado con .driver-active-element y al pasar
+  // al siguiente solo desmarca el que su transición (un bucle de rAF de 400 ms)
+  // alcanzó a confirmar como activo. Si el rAF no corre —pestaña en segundo
+  // plano mientras el tour avanza— las marcas se ACUMULAN (lo vimos con 5 a la
+  // vez), y eso rompe el foco de dos formas vía driver.css: devuelve
+  // `pointer-events` a esos elementos —se puede clicar fuera del paso y salirse
+  // del recorrido— y le mete `overflow:hidden` a sus padres con
+  // `:has(> .driver-active-element)`. Barremos las marcas antes de cada resalte.
+  const clearStageMarks = useCallback(() => {
+    document.querySelectorAll('.driver-active-element').forEach((el) => {
+      el.classList.remove('driver-active-element', 'driver-no-interaction');
+      el.removeAttribute('aria-haspopup');
+      el.removeAttribute('aria-expanded');
+      el.removeAttribute('aria-controls');
+    });
+  }, []);
+
+  // driver coloca el popover sin saber de la barra de progreso (fija arriba): si
+  // el objetivo está en la franja superior, el popover sube hasta quedar con el
+  // título tapado. Lo devolvemos a la zona visible tras posicionarlo.
+  const clampPopover = useCallback(() => {
+    const pop = document.querySelector('.driver-popover') as HTMLElement | null;
+    // driver lo tiene oculto mientras monta el paso: medirlo daría 0×0.
+    if (!pop || pop.style.display === 'none') return;
+    const barH = document.querySelector('.tour-progress')?.getBoundingClientRect().height ?? 0;
+    const r = pop.getBoundingClientRect();
+    const min = barH + 10;
+    const max = Math.max(min, window.innerHeight - r.height - 10);
+    const top = r.top < min ? min : r.top > max ? max : null;
+    if (top == null) return;
+    // driver lo ancla unas veces por `top` y otras por `bottom`: si dejamos los
+    // dos puestos el popover se estira entre ambos.
+    pop.style.bottom = 'auto';
+    pop.style.top = `${top}px`;
+  }, []);
+
+  // driver reposiciona el popover en cada scroll/resize sin saber de la barra, y
+  // el tour hace scrollable cualquier pantalla (el panel baja 48 px), así que una
+  // rueda de ratón bastaba para volver a meter el popover debajo. Re-encuadramos
+  // después de que driver haya recolocado (por eso el rAF) y re-medimos la barra,
+  // que puede cambiar de alto al redimensionar.
+  useEffect(() => {
+    if (!active) return;
+    let raf = 0;
+    const onViewportChange = () => {
+      window.cancelAnimationFrame(raf);
+      raf = window.requestAnimationFrame(() => {
+        const bar = document.querySelector('.tour-progress');
+        if (bar) {
+          document.documentElement.style.setProperty('--tour-bar-h', `${Math.ceil(bar.getBoundingClientRect().height)}px`);
+        }
+        clampPopover();
+      });
+    };
+    window.addEventListener('scroll', onViewportChange, { passive: true });
+    window.addEventListener('resize', onViewportChange);
+    return () => {
+      window.cancelAnimationFrame(raf);
+      window.removeEventListener('scroll', onViewportChange);
+      window.removeEventListener('resize', onViewportChange);
+    };
+  }, [active, clampPopover]);
+
   const goNext = useCallback(() => {
-    playBlip(muted);
+    if (busyRef.current) return;
+    playBlip(mutedRef.current);
     setIdx((i) => {
       if (i >= steps.length - 1) {
         driverRef.current?.destroy();
@@ -150,9 +249,12 @@ export function TourController() {
       }
       return i + 1;
     });
-  }, [steps.length, muted]);
+  }, [steps.length]);
 
-  const goPrev = useCallback(() => setIdx((i) => Math.max(0, i - 1)), []);
+  const goPrev = useCallback(() => {
+    if (busyRef.current) return;
+    setIdx((i) => Math.max(0, i - 1));
+  }, []);
 
   const startTour = useCallback(() => {
     setShowFinal(false);
@@ -195,13 +297,29 @@ export function TourController() {
     if (!active) return;
     const step = steps[idx];
     if (!step) return;
+    setBusy(true);
+
+    let timer = 0;
+    let raf = 0;
+    let tries = 0;
+    // Red de seguridad: el tour no tiene botón de cerrar (allowClose:false), así
+    // que si `busy` se quedara colgado —una navegación que no aterriza, una
+    // excepción a mitad del montaje— el visitante se quedaría ante un overlay
+    // negro sin salida. Peor caso legítimo ≈ 3 s (reintentos de `pre` + elemento).
+    const watchdog = window.setTimeout(() => setBusy(false), 6000);
+    const cleanup = () => {
+      window.clearTimeout(timer);
+      window.clearTimeout(watchdog);
+      window.cancelAnimationFrame(raf);
+    };
+
     const target = `/preview/${step.screen}`;
     if (pathname !== target) {
       router.push(target);
-      return;
+      return cleanup; // al llegar a la pantalla nueva el efecto vuelve a correr
     }
     const d = driverRef.current;
-    if (!d) return;
+    if (!d) return cleanup;
 
     const sel = isMobile() && step.elementMobile ? step.elementMobile : step.element;
     const isLast = idx >= steps.length - 1;
@@ -219,8 +337,12 @@ export function TourController() {
 
     // Tras cambiar de pantalla, el elemento destino puede tardar en montar.
     // Reintentamos hasta encontrarlo antes de caer a modal centrado.
-    let timer = 0;
-    let tries = 0;
+    // driver reposiciona el popover a mitad de su transición (~400 ms), así que
+    // vigilamos unos frames antes de dar el paso por colocado.
+    const settle = (until: number) => {
+      clampPopover();
+      if (Date.now() < until) raf = window.requestAnimationFrame(() => settle(until));
+    };
     const run = () => {
       const el = sel ? (document.querySelector(sel) as HTMLElement | null) : null;
       if (sel && !el && tries < 12) {
@@ -235,16 +357,43 @@ export function TourController() {
         // — evita popovers descuadrados como el de "Crea y edita platos" (paso 13).
         el.scrollIntoView({ behavior: 'auto', block: 'center', inline: 'nearest' });
         // Espera un frame a que el scroll asiente y recién ahí resalta.
-        timer = window.setTimeout(() => d.highlight({ element: sel, popover }), 70);
+        timer = window.setTimeout(() => {
+          clearStageMarks();
+          d.highlight({ element: sel, popover });
+          setBusy(false);
+          settle(Date.now() + 700);
+        }, 70);
       } else {
         // Paso centrado (sin selector): llevamos la vista arriba para enfocar.
         window.scrollTo({ top: 0, behavior: 'auto' });
+        clearStageMarks();
         d.highlight({ popover });
+        setBusy(false);
+        settle(Date.now() + 700);
       }
     };
-    timer = window.setTimeout(run, 90);
-    return () => window.clearTimeout(timer);
-  }, [active, idx, pathname, steps, router, goNext, goPrev]);
+
+    // Algunos objetivos viven dentro de una pestaña que hay que abrir primero
+    // (si no, ni siquiera están en el DOM y el paso hablaría de algo invisible).
+    let preTries = 0;
+    const openThenRun = () => {
+      if (!step.pre) return run();
+      const btn = document.querySelector(step.pre) as HTMLElement | null;
+      if (!btn) {
+        if (preTries < 12) {
+          preTries += 1;
+          timer = window.setTimeout(openThenRun, 110);
+          return;
+        }
+        return run();
+      }
+      btn.click();
+      timer = window.setTimeout(run, 220); // deja montar el panel de la pestaña
+    };
+
+    timer = window.setTimeout(openThenRun, 90);
+    return cleanup;
+  }, [active, idx, pathname, steps, router, goNext, goPrev, setBusy, clearStageMarks, clampPopover]);
 
   const onAgendar = () => {
     if (CAL_URL) return void window.open(CAL_URL, '_blank', 'noopener');
