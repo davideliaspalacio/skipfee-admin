@@ -10,11 +10,15 @@ export * from './keys';
 export * from './auth';
 export * from './company';
 export * from './platform';
+export * from './payments';
 export * from './orders';
 export * from './chats';
 export * from './products';
 export * from './zones';
 export * from './cooks';
+export * from './tables';
+export * from './waiters';
+export * from './tabs';
 export * from './settings';
 export * from './botMessages';
 export * from './dashboard';
@@ -24,3 +28,13 @@ export * from './customers';
 export * from './promotions';
 export * from './rewards';
 export * from './surveys';
+
+export {
+  useWhatsAppProvider,
+  useWhatsAppSession,
+  useUpdateWhatsAppProvider,
+  useConnectWhatsAppSession,
+  useLogoutWhatsAppSession,
+} from './whatsapp';
+
+export { useOnboarding, useExtraerCarta, useImportarCarta } from './onboarding';

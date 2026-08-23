@@ -14,16 +14,28 @@ export {
   subscribeActiveCompany,
 } from './activeCompany';
 
-export { login, logout, me } from './auth';
+export { login, logout, redeemPass, me, requestPasswordReset, resetPassword } from './auth';
 export type { AuthUser, Membership, MembershipRole, MeResult } from './auth';
 
-export { listCompanies, createCompany } from './platform';
+export {
+  listCompanies,
+  createCompany,
+  updateCompany,
+  fetchPlatformSettings,
+  patchPlatformSettings,
+} from './platform';
 export type {
   Company,
   CompanyStatus,
+  CompanyPlan,
   CreateCompanyBody,
   CreateCompanyResult,
+  PlatformSettings,
+  UpdateCompanyBody,
 } from './platform';
+
+export { fetchPayments, updatePayments } from './payments';
+export type { PaymentEnv, PaymentMode, PaymentsConfig, UpdatePaymentsBody } from './payments';
 
 export { fetchOrders, fetchOrder, fetchOrdersStats, patchOrderStatus, patchOrderCook } from './orders';
 export type { OrdersFilter, OrdersStats } from './orders';
@@ -69,7 +81,25 @@ export type { CreateZoneBody, PatchZoneBody } from './zones';
 export { fetchCooks, createCook, patchCook, deleteCook } from './cooks';
 export type { Cook, CreateCookBody, PatchCookBody } from './cooks';
 
-export { fetchSettings, patchSettings } from './settings';
+export { fetchTables, createTable, patchTable, deleteTable } from './tables';
+export type { DiningTable, CreateTableBody, PatchTableBody } from './tables';
+
+export { fetchWaiters, createWaiter, patchWaiter, deleteWaiter } from './waiters';
+export type { Waiter, CreateWaiterBody, PatchWaiterBody } from './waiters';
+
+export {
+  fetchOpenTabs,
+  fetchTab,
+  openTableTab,
+  addTabItems,
+  sendTabKitchen,
+  patchTab,
+  fetchTabSplit,
+  payTabCash,
+} from './tabs';
+export type { Tab, TabItem, TabItemInput, PatchTabBody, SplitView, SplitShare, PayCashBody } from './tabs';
+
+export { fetchSettings, patchSettings, uploadLogo } from './settings';
 export type { Settings } from './settings';
 
 export { fetchRewards, approveReward, rejectReward } from './rewards';
@@ -113,3 +143,29 @@ export type {
   CreatePromotionBody,
   PatchPromotionBody,
 } from './promotions';
+
+export {
+  fetchWhatsAppProvider,
+  updateWhatsAppProvider,
+  fetchWhatsAppSession,
+  connectWhatsAppSession,
+  logoutWhatsAppSession,
+  qrToDataUrl,
+} from './whatsapp';
+export type {
+  WhatsAppProviderKind,
+  WhatsAppProviderConfig,
+  WhatsAppSession,
+  WhatsAppSessionResult,
+  SessionStatus,
+  UpdateProviderBody,
+} from './whatsapp';
+
+export { fetchOnboarding, extraerCarta, importarCarta } from './onboarding';
+export type {
+  EstadoOnboarding,
+  PasoOnboarding,
+  CartaExtraida,
+  ProductoExtraido,
+  ProductoAImportar,
+} from './onboarding';
