@@ -20,6 +20,8 @@ import type {
   ChannelsOverview,
   SalesChannel,
 } from '@/lib/api';
+import { WhatsAppConnect } from './WhatsAppConnect';
+import { PagosConnect } from './PagosConnect';
 import styles from './canales.module.css';
 
 const fallbackOverview: ChannelsOverview = {
@@ -311,6 +313,12 @@ export function CanalesScreen() {
           <span>Vista previa visual. Inicia sesión y selecciona empresa para simular pedidos.</span>
         </div>
       ) : null}
+
+      {/* WhatsApp va primero: sin él conectado no entra ningún pedido, así que
+          es la puerta de entrada del resto de la pantalla. */}
+      {activeCompany ? <WhatsAppConnect /> : null}
+
+      {activeCompany ? <PagosConnect /> : null}
 
       <div className={styles.metrics}>
         <div className={styles.metric}>

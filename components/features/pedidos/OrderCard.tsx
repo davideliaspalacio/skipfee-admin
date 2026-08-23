@@ -76,6 +76,7 @@ function providerLabel(provider: string): string {
   if (provider === 'storefront') return 'Tienda';
   if (provider === 'manual') return 'Manual';
   if (provider === 'ubereats') return 'Uber';
+  if (provider === 'presencial') return 'Mesa';
   return provider;
 }
 

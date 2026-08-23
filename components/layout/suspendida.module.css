@@ -1,0 +1,50 @@
+/* Pantalla completa: el panel no está detrás, está en pausa. Mostrar el rail
+   con todo roto detrás sería peor que no mostrarlo. */
+.pantalla {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--paper);
+}
+
+.tarjeta {
+  width: min(560px, 100%);
+  display: grid;
+  gap: 18px;
+  padding: 30px clamp(22px, 5vw, 34px) 28px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 30px 60px -40px oklch(0 0 0 / .5);
+}
+
+.icono {
+  width: 44px; height: 44px; border-radius: 13px; display: grid; place-items: center;
+  background: color-mix(in oklch, var(--sun) 18%, var(--surface));
+  border: 1px solid color-mix(in oklch, var(--sun) 40%, var(--line));
+  color: var(--sun-ink);
+}
+.tarjeta h1 {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.5rem, 3.4vw, 1.9rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.entrada { margin: -6px 0 0; font-size: 14.5px; line-height: 1.6; color: var(--text-muted); }
+.entrada b { color: var(--text); font-weight: 700; }
+
+.lista {
+  list-style: none; margin: 0; padding: 14px 0 0; display: grid; gap: 13px;
+  border-top: 1px solid var(--line);
+}
+.lista li {
+  display: grid; grid-template-columns: 17px 1fr; gap: 11px; align-items: start;
+  font-size: 13.5px; line-height: 1.55; color: var(--text-muted);
+}
+.lista svg { color: var(--green-strong); margin-top: 2px; }
+.lista b { color: var(--text); font-weight: 700; }
+
+.acciones { display: flex; flex-wrap: wrap; gap: 10px; padding-top: 4px; }

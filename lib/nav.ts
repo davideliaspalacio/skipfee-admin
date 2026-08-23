@@ -1,7 +1,9 @@
 import type { IconName } from './icons';
 
 export type ScreenId =
+  | 'primerosPasos'
   | 'pedidos'
+  | 'salon'
   | 'whatsapp'
   | 'canales'
   | 'despachos'
@@ -15,6 +17,8 @@ export type ScreenId =
 export interface NavItem {
   id: ScreenId;
   label: string;
+  /** Etiqueta corta para la barra inferior de mobile, donde caben ~9 caracteres. */
+  shortLabel?: string;
   icon: IconName;
   badge?: string;
   badgeAlert?: boolean;
@@ -24,7 +28,11 @@ export interface NavItem {
 }
 
 export const NAV: NavItem[] = [
+  // Puesta en marcha. AdminShell la oculta cuando el negocio ya recibió su
+  // primer pedido: es una pantalla de arranque, no un módulo permanente.
+  { id: 'primerosPasos', label: 'Primeros pasos', shortLabel: 'Empezar', icon: 'Compass', shortcut: '1', path: '/primeros-pasos' },
   { id: 'pedidos',       label: 'Pedidos',       icon: 'LayoutGrid',    shortcut: 'P', path: '/pedidos' },
+  { id: 'salon',         label: 'Salón',         icon: 'Receipt',       shortcut: 'S', path: '/salon' },
   { id: 'whatsapp',      label: 'WhatsApp',      icon: 'MessageCircle', shortcut: 'W', path: '/whatsapp' },
   { id: 'canales',       label: 'Canales',       icon: 'Wifi',          shortcut: 'N', path: '/canales' },
   { id: 'despachos',     label: 'Despachos',     icon: 'Route',         shortcut: 'M', path: '/despachos' },
@@ -44,19 +52,22 @@ export const SCREEN_PATHS: Record<ScreenId, string> = Object.fromEntries(
 ) as Record<ScreenId, string>;
 
 // Primary mobile tabs: 4 high-frequency screens always one tap away.
-export const MOB_NAV: ScreenId[] = ['pedidos', 'whatsapp', 'despachos', 'dashboard'];
+export const MOB_NAV: ScreenId[] = ['pedidos', 'salon', 'whatsapp', 'dashboard'];
 
 // Remaining screens — surfaced via the "Más" bottom sheet, grouped by section.
 export const MOB_NAV_MORE_SECTIONS: Array<{ label: string; items: ScreenId[] }> = [
-  { label: 'Operación', items: ['canales', 'catalogo'] },
+  { label: 'Puesta en marcha', items: ['primerosPasos'] },
+  { label: 'Operación', items: ['despachos', 'canales', 'catalogo'] },
   { label: 'Negocio',   items: ['clientes', 'reportes', 'configuracion'] },
 ];
 
 export const MOB_NAV_MORE: ScreenId[] = MOB_NAV_MORE_SECTIONS.flatMap(s => s.items);
 
 export const SCREEN_TITLES: Record<ScreenId, { title: string; sub: string }> = {
+  primerosPasos: { title: 'Primeros pasos', sub: 'Lo que falta para empezar a vender' },
   dashboard:     { title: 'Dashboard',     sub: 'Resumen del día' },
   pedidos:       { title: 'Pedidos',       sub: '13 activos · 42 completados hoy' },
+  salon:         { title: 'Salón',         sub: 'Mesas, cuentas y meseros' },
   whatsapp:      { title: 'WhatsApp',      sub: '8 conversaciones · 3 pendientes' },
   canales:       { title: 'Canales',       sub: 'Fuentes de pedidos e integraciones' },
   catalogo:      { title: 'Catálogo',      sub: 'Productos en oferta' },

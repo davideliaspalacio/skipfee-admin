@@ -6,7 +6,18 @@ import { Icon } from '@/lib/icons';
 import { NAV, MOB_NAV, SCREEN_PATHS, SCREEN_TITLES, type ScreenId } from '@/lib/nav';
 import { useActiveScreen, useScreenNav, useRailCollapsed } from '@/lib/hooks';
 import { visibleScreenIds } from '@/lib/roles';
-import { useActiveRole, useLogout, useMe, useActiveCompany, setActiveCompany } from '@/lib/queries';
+import {
+  useActiveRole,
+  useActiveMembership,
+  useLogout,
+  useMe,
+  useActiveCompany,
+  setActiveCompany,
+} from '@/lib/queries';
+import { useOnboarding } from '@/lib/queries/onboarding';
+import { RecorridoPanel } from '@/components/features/onboarding/RecorridoPanel';
+import { AvisoPrueba } from './AvisoPrueba';
+import { AvisoWhatsApp } from './AvisoWhatsApp';
 import type { AuthUser } from '@/lib/api';
 
 function initialsOf(email: string): string {
@@ -27,15 +38,78 @@ export function AdminShell({ user, children }: { user: AuthUser; children: React
   const logout = useLogout();
 
   const role = useActiveRole();
+  const membresia = useActiveMembership();
   const allowed = useMemo(() => new Set<ScreenId>(visibleScreenIds(role)), [role]);
 
-  const navItems = useMemo(() => NAV.filter((n) => allowed.has(n.id)), [allowed]);
-  const mobItems = useMemo(() => MOB_NAV.filter((id) => allowed.has(id)), [allowed]);
+  // "Primeros pasos" desaparece del rail cuando ya no queda nada por hacer —no
+  // cuando llega el primer pedido: un negocio puede vender por WhatsApp sin
+  // haber conectado su número, y ahí el recorrido todavía sirve. Se filtra solo
+  // de la navegación, no de `allowed`: quien esté parado en la pantalla justo
+  // cuando se completa no debe salir expulsado de ella.
+  const { data: onboarding } = useOnboarding();
+  const arrancado = onboarding ? onboarding.completados >= onboarding.total : false;
+
+  // Mientras el negocio no pueda vender, el panel entero está bajo llave menos
+  // Primeros pasos. Es deliberado: un tablero de pedidos vacío, un catálogo sin
+  // productos y unos reportes en cero no le enseñan nada a quien acaba de
+  // entrar — le enseñan que la plataforma no hace nada. Mejor un solo camino,
+  // corto y claro, y que todo lo demás aparezca cuando ya tenga sentido.
+  //
+  // Solo aplica a quien puede resolverlo (dueño/admin). Cocina y empaque no
+  // configuran nada: encerrarlos sería castigarlos por algo ajeno. El owner de
+  // plataforma tampoco: entra a arreglar empresas de otros.
+  const puedeConfigurar = role === 'super_admin' || role === 'admin';
+  // El candado mira la HISTORIA, no el instante: a un negocio que ya estuvo
+  // operativo y al que se le cayó WhatsApp no se le cierra el panel ni se le
+  // repite el onboarding. Un canal caído no es un negocio sin montar — para eso
+  // está la franja de arriba.
+  const yaOperó = !!membresia?.operativoDesde;
+  const bajoLlave = puedeConfigurar && onboarding ? !onboarding.puedeVender && !yaOperó : false;
+  const pendientes = onboarding ? onboarding.total - onboarding.completados : 0;
+
+  // El recorrido por el panel arranca justo cuando se cae el candado. Las
+  // condiciones dicen "recién abierto", no "puede vender":
+  //   · `puedeConfigurar`: solo a quien vivió el panel cerrado le sorprende que
+  //     se abra. Cocina y empaque nunca vieron candados.
+  //   · `!onboarding.activo`: sin un solo pedido todavía. Un negocio veterano
+  //     que entra desde otro navegador —donde no está la marca de localStorage—
+  //     no necesita que le presenten el tablero en el que trabaja hace meses.
+  //   · fuera de Primeros pasos: ahí puede seguir abierto el modal de cierre
+  //     del onboarding, y dos modales encimados no explican nada.
+  const recorridoListo =
+    puedeConfigurar &&
+    !bajoLlave &&
+    !!onboarding &&
+    onboarding.puedeVender &&
+    !onboarding.activo &&
+    active !== 'primerosPasos';
+
+  const navItems = useMemo(
+    () =>
+      NAV.filter((n) => allowed.has(n.id) && !(n.id === 'primerosPasos' && arrancado)).map((n) =>
+        n.id === 'primerosPasos' && pendientes > 0 ? { ...n, badge: String(pendientes) } : n,
+      ),
+    [allowed, arrancado, pendientes],
+  );
+  // En mobile la barra inferior es la única navegación: si "Primeros pasos" no
+  // entra ahí, el dueño que configura desde el celular no lo encuentra nunca.
+  const mobItems = useMemo(() => {
+    const base = MOB_NAV.filter((id) => allowed.has(id));
+    return !arrancado && allowed.has('primerosPasos')
+      ? (['primerosPasos', ...base] as ScreenId[])
+      : base;
+  }, [allowed, arrancado]);
 
   // Guard: si la screen activa no está permitida para el rol, vuelve a pedidos.
   useEffect(() => {
     if (!allowed.has(active)) router.replace(SCREEN_PATHS.pedidos);
   }, [active, allowed, router]);
+
+  // Guard del recorrido: entrar por URL a una pantalla bajo llave devuelve a
+  // Primeros pasos. Sin esto el candado del rail sería decorativo.
+  useEffect(() => {
+    if (bajoLlave && active !== 'primerosPasos') router.replace(SCREEN_PATHS.primerosPasos);
+  }, [bajoLlave, active, router]);
 
   // Atajos de teclado (P/W/M/C/D/L/R/,) — saltan entre screens permitidas.
   useEffect(() => {
@@ -45,14 +119,14 @@ export function AdminShell({ user, children }: { user: AuthUser; children: React
       if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
       const k = e.key.toLowerCase();
       const item = NAV.find((n) => n.shortcut.toLowerCase() === k);
-      if (item && allowed.has(item.id)) {
+      if (item && allowed.has(item.id) && !(bajoLlave && item.id !== 'primerosPasos')) {
         e.preventDefault();
         goScreen(item.id);
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [allowed, goScreen]);
+  }, [allowed, goScreen, bajoLlave]);
 
   const handleLogout = () => {
     logout.mutate(undefined, { onSettled: () => router.replace('/login') });
@@ -85,18 +159,26 @@ export function AdminShell({ user, children }: { user: AuthUser; children: React
           {navItems.map((item) => {
             const Ico = Icon[item.icon];
             const isActive = active === item.id;
+            const locked = bajoLlave && item.id !== 'primerosPasos';
             return (
               <button
                 key={item.id}
                 type="button"
-                className={`rail-item${isActive ? ' is-active' : ''}`}
+                className={`rail-item${isActive ? ' is-active' : ''}${locked ? ' is-locked' : ''}`}
                 aria-current={isActive ? 'page' : undefined}
-                aria-label={item.label}
-                onClick={() => goScreen(item.id)}
+                aria-label={locked ? `${item.label} — se abre al terminar los primeros pasos` : item.label}
+                onClick={() => goScreen(locked ? 'primerosPasos' : item.id)}
               >
                 {Ico ? <Ico size={21} /> : null}
-                <span className="rail-label">{item.label}</span>
-                <span className="tip">{item.label}</span>
+                {item.badge ? <span className="rail-badge">{item.badge}</span> : null}
+                {locked ? (
+                  <span className="rail-lock" aria-hidden="true">
+                    <Icon.Lock size={11} />
+                  </span>
+                ) : null}
+                <span className="tip">
+                  {locked ? `${item.label} · al terminar` : item.label}
+                </span>
               </button>
             );
           })}
@@ -117,21 +199,25 @@ export function AdminShell({ user, children }: { user: AuthUser; children: React
           </div>
           <div className="topbar-actions">
             <CompanySwitcher />
-            <div className="user-chip">
-              <span className="av">{initialsOf(user.email)}</span>
-              <span className="meta">
-                <b>{user.email.split('@')[0]}</b>
-                <small>{role}</small>
-              </span>
-            </div>
+            <span className="user-chip" title={`${user.email} · ${role}`}>
+              {initialsOf(user.email)}
+            </span>
             <button type="button" className="iconbtn hide-mob" onClick={handleLogout} aria-label="Cerrar sesión">
               <Icon.LogOut size={19} />
             </button>
           </div>
         </header>
 
+        <AvisoWhatsApp />
+        <AvisoPrueba />
+
         <main className="content">{children}</main>
       </div>
+
+      {/* Vive en el shell, no dentro de una screen: el recorrido lleva al dueño
+          de pantalla en pantalla, y montado en una screen moriría en la
+          primera navegación. */}
+      <RecorridoPanel puedeArrancar={recorridoListo} pantallas={allowed} />
 
       {/* Nav inferior (mobile) */}
       <nav className="mobnav" aria-label="Navegación">
@@ -139,16 +225,17 @@ export function AdminShell({ user, children }: { user: AuthUser; children: React
           const item = NAV.find((n) => n.id === id)!;
           const Ico = Icon[item.icon];
           const isActive = active === id;
+          const locked = bajoLlave && id !== 'primerosPasos';
           return (
             <button
               key={id}
               type="button"
-              className={`mobnav-item${isActive ? ' is-active' : ''}`}
+              className={`mobnav-item${isActive ? ' is-active' : ''}${locked ? ' is-locked' : ''}`}
               aria-current={isActive ? 'page' : undefined}
-              onClick={() => goScreen(id)}
+              onClick={() => goScreen(locked ? 'primerosPasos' : id)}
             >
               {Ico ? <Ico size={20} /> : null}
-              {item.label}
+              {item.shortLabel ?? item.label}
             </button>
           );
         })}
@@ -174,20 +261,18 @@ function CompanySwitcher() {
 
   if (memberships.length === 0) return null;
 
+  // Con una sola empresa no hay nada que elegir: es una etiqueta, no un control.
   if (memberships.length === 1) {
     return (
-      <span className="user-chip company-chip hide-mob" aria-label="Empresa activa">
-        <span className="meta">
-          <small>Empresa</small>
-          <b>{memberships[0].companyName}</b>
-        </span>
+      <span className="company-fixed hide-mob" aria-label="Empresa activa">
+        {memberships[0].companyName}
       </span>
     );
   }
 
   return (
     <select
-      className="select company-select hide-mob"
+      className="company-pick hide-mob"
       value={active ?? ''}
       onChange={(e) => setActiveCompany(e.target.value)}
       aria-label="Empresa activa"

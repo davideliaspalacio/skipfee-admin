@@ -1,0 +1,65 @@
+.wrap { display: grid; gap: 16px; }
+.cargando { color: var(--text-muted); font-size: 14px; }
+
+/* Dos caminos excluyentes, mostrados a la vez y con sus consecuencias escritas:
+   elegir pasarela es una decisión de plata, no un toggle. */
+.modos { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+
+.modo {
+  display: grid; gap: 7px; text-align: left; font: inherit; cursor: pointer;
+  border: 1.5px solid var(--line); border-radius: 11px; background: var(--surface); padding: 15px 16px;
+  transition: border-color .16s var(--ease-quart), background .16s var(--ease-quart);
+}
+.modo:hover:not(:disabled) { border-color: var(--green-strong); }
+.modo:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
+.modo[data-activo='true'] {
+  border-color: var(--green-strong);
+  background: color-mix(in oklch, var(--green-strong) 9%, var(--surface));
+  opacity: 1;
+  cursor: default;
+}
+.modo:disabled[data-activo='false'] { opacity: .55; cursor: not-allowed; }
+
+.modoTitulo { display: flex; align-items: center; gap: 8px; font-size: 14.5px; font-weight: 700; color: var(--text); }
+.modoTitulo svg { color: var(--green-strong); }
+.modoTexto { font-size: 12.5px; line-height: 1.55; color: var(--text-muted); }
+
+.aviso {
+  margin: 0; display: grid; grid-template-columns: 17px 1fr; gap: 10px; align-items: start;
+  font-size: 13px; line-height: 1.5; color: var(--text-muted);
+  border: 1px solid color-mix(in oklch, var(--sun) 40%, var(--line));
+  background: color-mix(in oklch, var(--sun) 10%, var(--surface));
+  border-radius: 9px; padding: 11px 13px;
+}
+.aviso svg { color: var(--sun); margin-top: 1px; }
+.aviso b { color: var(--text); }
+
+.llaves { border-top: 1px solid var(--line); padding-top: 14px; display: grid; gap: 13px; }
+
+.desplegar {
+  display: inline-flex; align-items: center; gap: 8px; justify-self: start;
+  background: none; border: none; cursor: pointer; font: inherit; font-size: 13px; font-weight: 600;
+  color: var(--text-muted); padding: 0;
+}
+.desplegar:hover { color: var(--text); }
+.desplegar:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 4px; }
+.desplegar[aria-expanded='true'] svg { transform: rotate(180deg); }
+.desplegar svg { transition: transform .18s var(--ease-quart); }
+
+.form { display: grid; gap: 12px; max-width: 520px; }
+.formAyuda { margin: 0; font-size: 12.5px; line-height: 1.55; color: var(--text-muted); }
+.formAyuda b { color: var(--text); }
+.campo { display: grid; gap: 5px; }
+.campo > span { font-size: 12px; font-weight: 700; color: var(--text); }
+.formPie { display: flex; justify-content: flex-start; }
+
+@media (prefers-reduced-motion: reduce) {
+  .desplegar svg { transition: none; }
+}
+
+.etiqueta {
+  font-size: 10px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--sun-ink); background: color-mix(in oklch, var(--sun) 22%, transparent);
+  border: 1px solid color-mix(in oklch, var(--sun) 45%, transparent);
+  border-radius: var(--r-pill); padding: 2px 7px;
+}

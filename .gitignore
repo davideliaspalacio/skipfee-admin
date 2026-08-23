@@ -20,3 +20,6 @@
 # typescript
 next-env.d.ts
 *.tsbuildinfo
+
+# copias de respaldo de entorno (nunca al repo)
+.env*.bak

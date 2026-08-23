@@ -44,6 +44,7 @@ export const authKeys = {
 export const platformKeys = {
   all: ['platform'] as const,
   companies: () => [...platformKeys.all, 'companies'] as const,
+  settings: () => [...platformKeys.all, 'settings'] as const,
 };
 
 export const orderKeys = {
@@ -88,6 +89,29 @@ export const cookKeys = {
     return [...companyScope(), 'cooks'] as const;
   },
   list: (includeArchived = false) => [...cookKeys.all, 'list', includeArchived] as const,
+};
+
+export const tableKeys = {
+  get all() {
+    return [...companyScope(), 'tables'] as const;
+  },
+  list: (includeArchived = false) => [...tableKeys.all, 'list', includeArchived] as const,
+};
+
+export const waiterKeys = {
+  get all() {
+    return [...companyScope(), 'waiters'] as const;
+  },
+  list: (includeArchived = false) => [...waiterKeys.all, 'list', includeArchived] as const,
+};
+
+export const tabKeys = {
+  get all() {
+    return [...companyScope(), 'tabs'] as const;
+  },
+  list: () => [...tabKeys.all, 'list'] as const,
+  detail: (orderId: string) => [...tabKeys.all, 'detail', orderId] as const,
+  split: (orderId: string) => [...tabKeys.all, 'split', orderId] as const,
 };
 
 export const settingsKeys = {
@@ -152,4 +176,25 @@ export const surveyKeys = {
     return [...companyScope(), 'surveys'] as const;
   },
   list: (days: number) => [...surveyKeys.all, 'list', days] as const,
+};
+
+/**
+ * Conexión de WhatsApp (proveedor + sesión). Va bajo el scope de empresa: cada
+ * empresa tiene su propio proveedor y su propia sesión.
+ */
+export const whatsappKeys = {
+  all: () => [...companyScope(), 'whatsapp'] as const,
+  provider: () => [...whatsappKeys.all(), 'provider'] as const,
+  session: () => [...whatsappKeys.all(), 'session'] as const,
+};
+
+/** Estado de puesta en marcha del negocio. */
+export const paymentKeys = {
+  all: [...companyScope(), 'payments'] as const,
+  config: () => [...companyScope(), 'payments', 'config'] as const,
+};
+
+export const onboardingKeys = {
+  all: () => [...companyScope(), 'onboarding'] as const,
+  estado: () => [...onboardingKeys.all(), 'estado'] as const,
 };

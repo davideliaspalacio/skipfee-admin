@@ -1,0 +1,83 @@
+/* Cómo llegar a "Dispositivos vinculados". Vive dentro del modal del QR, así
+   que hereda su tinta y su papel. */
+
+.guia { display: grid; gap: 12px; }
+
+.tabs {
+  display: inline-flex;
+  gap: 3px;
+  padding: 3px;
+  border: 2.5px solid var(--tinta);
+  border-radius: 12px;
+  background: var(--papel-2);
+  justify-self: start;
+}
+.tab {
+  font: inherit;
+  font-family: var(--font-display), sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--tinta);
+  padding: 6px 14px;
+  border-radius: 8px;
+  transition: background 0.14s var(--ease-quart);
+}
+.tab[data-activo='true'] { background: oklch(0.80 0.17 152); }
+.tab:focus-visible { outline: 2px solid var(--tinta); outline-offset: 2px; }
+
+.pasos { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.pasos li {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 9px 11px;
+  background: var(--papel-2);
+  border: 2px solid var(--tinta);
+  border-radius: 12px;
+}
+
+.icono {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  color: var(--tinta);
+  background: var(--papel);
+  border: 2px solid var(--tinta);
+  border-radius: 10px;
+}
+
+.textoPaso { display: grid; gap: 1px; min-width: 0; }
+.textoPaso b {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display), sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--tinta);
+}
+/* El número va pegado al título, no en su propia columna: cuatro pasos no
+   necesitan una regla vertical de dígitos para leerse en orden. */
+.textoPaso b i {
+  font-style: normal;
+  font-size: 10.5px;
+  font-weight: 800;
+  width: 18px;
+  height: 18px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: oklch(0.87 0.15 92);
+  border: 1.5px solid var(--tinta);
+}
+.textoPaso small { font-size: 12px; line-height: 1.4; color: oklch(0.42 0.04 250); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tab { transition: none; }
+}

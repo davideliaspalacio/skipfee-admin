@@ -1,0 +1,406 @@
+/* Ilustraciones del mundo de caricatura. Comparten el trazo y el tiempo. */
+
+.tienda { width: min(268px, 100%); height: auto; display: block; }
+
+.letrero {
+  font-family: var(--font-display), sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+/* El toldo cae al abrir: es el gesto de "abrimos", en medio segundo. */
+.toldo {
+  transform-origin: 130px 40px;
+  animation: toldo-cae 0.6s var(--ease-rebote) 0.15s both;
+}
+@keyframes toldo-cae {
+  from { transform: scaleY(0.1); opacity: 0; }
+}
+
+/* Las chispas solo existen cuando hay algo que celebrar. */
+.chispas > * {
+  transform-origin: center;
+  transform-box: fill-box;
+  opacity: 0;
+}
+.tienda[data-celebrando='true'] .chispas > * {
+  animation: chispa 0.62s var(--ease-rebote) both;
+}
+@keyframes chispa {
+  0%   { opacity: 0; transform: scale(0.2) rotate(-25deg); }
+  60%  { opacity: 1; transform: scale(1.15) rotate(8deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* --------------------------------------------------------- burbuja del bot */
+
+.burbujaWrap {
+  position: absolute;
+  z-index: 2;
+  right: 14px;
+  /* Debajo del botón de cerrar: si la burbuja sube más, lo tapa. */
+  top: 52px;
+  width: min(212px, 52%);
+  animation: burbuja-entra 0.5s var(--ease-rebote) 0.3s both;
+}
+
+.burbuja {
+  position: relative;
+  background: #FFFDF7;
+  border: 2.5px solid var(--tinta);
+  border-radius: 14px 14px 14px 4px;
+  box-shadow: 0 4px 0 var(--tinta);
+  padding: 9px 11px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--tinta);
+}
+.burbuja b { font-weight: 700; }
+
+.burbujaPie {
+  display: block;
+  margin-top: 5px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: oklch(0.46 0.03 250);
+}
+
+@keyframes burbuja-entra {
+  from { opacity: 0; transform: translateY(-8px) scale(0.9); }
+}
+
+/* Al cambiar el texto, la burbuja da un latido: confirma que lo que escribe
+   el dueño es exactamente lo que va a decir su bot. */
+.burbuja[data-latido='true'] { animation: latido 0.34s var(--ease-rebote); }
+@keyframes latido {
+  50% { transform: scale(1.035); }
+}
+
+@media (max-width: 480px) {
+  /* En el celular no caben las dos: manda la ilustración, que es la que
+     explica. La burbuja reaparece apenas hay ancho. */
+  .burbujaWrap { display: none; }
+  .tienda { width: min(240px, 100%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toldo, .burbujaWrap, .burbuja[data-latido='true'] { animation: none; }
+  .tienda[data-celebrando='true'] .chispas > * { animation: none; opacity: 1; }
+}
+
+/* ------------------------------------------------------------ el teléfono */
+
+.telefono { width: min(230px, 100%); height: auto; display: block; }
+
+.aparato { animation: aparato-entra 0.5s var(--ease-rebote) 0.1s both; }
+@keyframes aparato-entra {
+  from { opacity: 0; transform: translateY(14px) rotate(-4deg); }
+}
+
+/* Los mensajes solo existen cuando el número ya atiende. */
+.mensajes > * { opacity: 0; }
+.telefono[data-estado='conectado'] .mensajes > * {
+  animation: mensaje-entra 0.4s var(--ease-rebote) both;
+}
+.telefono[data-estado='conectado'] .mensajes > *:nth-child(1) { animation-delay: 0.25s; }
+.telefono[data-estado='conectado'] .mensajes > *:nth-child(2) { animation-delay: 0.42s; }
+.telefono[data-estado='conectado'] .mensajes > *:nth-child(3) { animation-delay: 0.59s; }
+@keyframes mensaje-entra {
+  from { opacity: 0; transform: translateY(6px) scale(0.92); }
+  to   { opacity: 1; }
+}
+
+/* El código en pantalla y su barra de escaneo, mientras espera. */
+.codigo { opacity: 0; }
+.telefono[data-estado='escanea'] .codigo,
+.telefono[data-estado='esperando'] .codigo { opacity: 1; }
+
+.escaner { opacity: 0; }
+.telefono[data-estado='escanea'] .escaner {
+  opacity: 0.9;
+  animation: escanear 1.8s var(--ease-quart) infinite;
+}
+@keyframes escanear {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(48px); }
+}
+
+/* Vinculando: no hay chat que mostrar todavía, pero hay que verse ocupado. El
+   silencio en esta pantalla se lee como "se colgó" y el dueño pide otro código
+   justo cuando su celular ya estaba emparejando. */
+.cargando > * { opacity: 0; transform-origin: center; transform-box: fill-box; }
+.telefono[data-estado='vinculando'] .cargando > * {
+  animation: punto-late 1.05s var(--ease-quart) infinite both;
+}
+.telefono[data-estado='vinculando'] .cargando > *:nth-child(2) { animation-delay: 0.14s; }
+.telefono[data-estado='vinculando'] .cargando > *:nth-child(3) { animation-delay: 0.28s; }
+@keyframes punto-late {
+  0%, 100% { opacity: 0.35; transform: translateY(0); }
+  40%      { opacity: 1; transform: translateY(-5px); }
+}
+
+/* El visto verde: el momento en que esto empieza a servirle. */
+.visto { opacity: 0; transform-origin: 176px 42px; }
+.telefono[data-estado='conectado'] .visto {
+  animation: visto-entra 0.55s var(--ease-rebote) 0.15s both;
+}
+@keyframes visto-entra {
+  from { opacity: 0; transform: scale(0.3) rotate(-20deg); }
+  to   { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+/* La alerta ámbar: la sesión se cayó. Ocupa el sitio del visto porque es la
+   misma pregunta —¿está atendiendo mi número?— con la respuesta contraria. */
+.alerta { opacity: 0; transform-origin: 176px 42px; }
+.telefono[data-estado='desconectado'] .alerta {
+  animation: visto-entra 0.55s var(--ease-rebote) 0.15s both;
+}
+
+/* Ondas cuando el teléfono está hablando con el mundo: ya conectado, o
+   intentándolo. */
+.ondas > * { opacity: 0; }
+.telefono[data-estado='conectado'] .ondas > *,
+.telefono[data-estado='vinculando'] .ondas > * {
+  animation: onda 1.6s var(--ease-quart) infinite both;
+}
+@keyframes onda {
+  0%   { opacity: 0; }
+  35%  { opacity: 0.55; }
+  100% { opacity: 0; }
+}
+
+/* --------------------------------------------------------------- el QR */
+
+.qrCaja {
+  justify-self: center;
+  width: 208px;
+  height: 208px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto;
+  padding: 12px;
+  background: #fff;
+  border: 2.5px solid var(--tinta);
+  border-radius: 18px;
+  box-shadow: 0 5px 0 var(--tinta);
+}
+.qrCaja img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
+
+.qrVacio { display: grid; place-items: center; }
+.qrSpin {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3.5px solid oklch(0.90 0.012 250);
+  border-top-color: var(--tinta);
+  animation: qr-gira 0.8s linear infinite;
+}
+@keyframes qr-gira { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .aparato, .escaner, .ondas > *, .qrSpin { animation: none; }
+  .telefono[data-estado='conectado'] .mensajes > *,
+  .telefono[data-estado='conectado'] .visto,
+  .telefono[data-estado='desconectado'] .alerta { animation: none; opacity: 1; }
+  .telefono[data-estado='conectado'] .ondas > * { opacity: 0.5; }
+  .telefono[data-estado='vinculando'] .cargando > * { animation: none; opacity: 1; }
+}
+
+/* ------------------------------------------------------------- la pizarra */
+
+.carta { width: min(250px, 100%); height: auto; display: block; }
+
+.pizarra { animation: pizarra-entra 0.5s var(--ease-rebote) 0.1s both; }
+@keyframes pizarra-entra {
+  from { opacity: 0; transform: translateY(12px) rotate(-2deg); }
+}
+
+.cartaTitulo {
+  font-family: var(--font-display), sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+.cartaItem { font-family: var(--font-sans), sans-serif; font-size: 9.5px; font-weight: 600; }
+.cartaPrecio { font-family: var(--mono); font-size: 9px; font-weight: 700; }
+.cartaResto { font-family: var(--font-sans), sans-serif; font-size: 8.5px; font-weight: 700; opacity: 0.7; }
+
+/* Cada producto entra escrito, no aparecido de golpe. */
+.renglon { animation: renglon-entra 0.34s var(--ease-rebote) both; }
+@keyframes renglon-entra {
+  from { opacity: 0; transform: translateX(-8px); }
+}
+
+.carta[data-celebrando='true'] .chispas > * {
+  animation: chispa 0.62s var(--ease-rebote) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pizarra, .renglon { animation: none; }
+  .carta[data-celebrando='true'] .chispas > * { animation: none; opacity: 1; }
+}
+
+/* ---------------------------------------------------------------- la zona */
+
+.zona { width: min(250px, 100%); height: auto; display: block; }
+
+/* El área sigue a la barra: el círculo cambia de tamaño con el radio real. */
+.area { transition: r 0.28s var(--ease-rebote); }
+
+@media (prefers-reduced-motion: reduce) {
+  .area { transition: none; }
+}
+
+/* ==========================================================================
+   Recorrido por el panel
+   ==========================================================================
+   Estas escenas dibujan pantallas, no objetos. Comparten un mismo recurso: la
+   pieza que explica entra la última y con rebote (la tarjeta que viaja, la
+   ruta que se traza, el candado que se abre), porque es la que hay que mirar.
+   ========================================================================== */
+
+.panelAbre,
+.tablero,
+.bandeja,
+.ruta,
+.ajustes {
+  width: min(250px, 100%);
+  height: auto;
+  display: block;
+}
+
+/* ------------------------------------------------------ el panel se abre */
+
+/* Las secciones se encienden en cascada: estaban todas apagadas hasta ahora. */
+.railItem { animation: seccion-enciende 0.34s var(--ease-rebote) both; }
+@keyframes seccion-enciende {
+  from { opacity: 0; transform: translateX(-6px); }
+}
+
+.candado {
+  transform-origin: 169px 119px;
+  animation: candado-entra 0.5s var(--ease-rebote) 0.38s both;
+}
+@keyframes candado-entra {
+  from { opacity: 0; transform: scale(0.5) rotate(-14deg); }
+}
+
+/* El arco se levanta después de que el candado aterriza: primero llega, luego abre. */
+.arco {
+  transform-origin: 168px 108px;
+  animation: arco-abre 0.42s var(--ease-rebote) 0.72s both;
+}
+@keyframes arco-abre {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-26deg) translateX(-3px); }
+}
+
+.panelAbre .chispas > * { animation: chispa 0.62s var(--ease-rebote) both; }
+
+/* ------------------------------------------------------------- el tablero */
+
+.tableroEtiqueta {
+  font-family: var(--font-display), sans-serif;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.tarjeta { animation: renglon-entra 0.32s var(--ease-rebote) both; }
+
+/* La tarjeta suelta llega desde la columna anterior y se queda torcida a
+   medio camino: es el único momento del dibujo en el que algo se mueve. */
+.tarjetaViaja {
+  transform-origin: 149px 97px;
+  animation: tarjeta-viaja 0.6s var(--ease-rebote) 0.42s both;
+}
+@keyframes tarjeta-viaja {
+  from { opacity: 0; transform: translate(-34px, 14px) rotate(0deg) scale(0.9); }
+  to { opacity: 1; transform: translate(0, 0) rotate(-7deg) scale(1); }
+}
+
+/* ------------------------------------------------------------ la bandeja */
+
+.burbujas > * { animation: burbuja-entra 0.36s var(--ease-rebote) both; }
+.burbujas > *:nth-child(1) { animation-delay: 0.16s; }
+.burbujas > *:nth-child(2) { animation-delay: 0.3s; }
+.burbujas > *:nth-child(3) { animation-delay: 0.48s; }
+@keyframes burbuja-entra {
+  from { opacity: 0; transform: translateY(7px) scale(0.94); }
+}
+
+.cursorMano {
+  transform-origin: 206px 112px;
+  animation: cursor-llega 0.4s var(--ease-rebote) 0.62s both;
+}
+@keyframes cursor-llega {
+  from { opacity: 0; transform: translate(9px, 9px) scale(0.7); }
+}
+
+/* --------------------------------------------------------------- la ruta */
+
+/* La ruta se dibuja sola: el orden de las paradas es el trabajo de la pantalla. */
+.trazo {
+  stroke-dasharray: 8 6;
+  animation: trazo-dibuja 0.9s linear 0.15s both;
+}
+@keyframes trazo-dibuja {
+  from { stroke-dashoffset: 240; }
+  to { stroke-dashoffset: 0; }
+}
+
+.parada {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: parada-cae 0.4s var(--ease-rebote) both;
+}
+@keyframes parada-cae {
+  from { opacity: 0; transform: translateY(-10px) scale(0.6); }
+}
+
+.rutaNumero {
+  font-family: var(--font-display), sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.moto { animation: moto-arranca 0.5s var(--ease-rebote) 0.1s both; }
+@keyframes moto-arranca {
+  from { opacity: 0; transform: translateX(-16px); }
+}
+
+/* ------------------------------------------------------------ los mandos */
+
+.interruptor { animation: seccion-enciende 0.34s var(--ease-rebote) both; }
+
+.manecilla {
+  transform-origin: 188px 82px;
+  animation: reloj-gira 0.7s var(--ease-rebote) 0.3s both;
+}
+@keyframes reloj-gira {
+  from { transform: rotate(-70deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .railItem,
+  .candado,
+  .arco,
+  .tarjeta,
+  .tarjetaViaja,
+  .burbujas > *,
+  .cursorMano,
+  .parada,
+  .moto,
+  .interruptor,
+  .manecilla,
+  .panelAbre .chispas > * {
+    animation: none;
+    opacity: 1;
+  }
+  /* El arco abierto no es decoración: sin él el candado se lee cerrado. */
+  .arco { transform: rotate(-26deg) translateX(-3px); }
+  .trazo { animation: none; stroke-dashoffset: 0; }
+}

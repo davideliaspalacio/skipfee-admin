@@ -105,13 +105,10 @@ export function DemoShell({ children }: { children: React.ReactNode }) {
             <span>{t.sub}</span>
           </div>
           <div className="topbar-actions">
-            <div className="user-chip">
-              <span className="av">{brandInitial}</span>
-              <span className="meta">
-                <b>{negocio}</b>
-                <small>Plan {PLAN_NAMES[plan]}</small>
-              </span>
-            </div>
+            <span className="company-fixed hide-mob">{negocio}</span>
+            <span className="user-chip" title={`Plan ${PLAN_NAMES[plan]}`}>
+              {brandInitial}
+            </span>
           </div>
         </header>
 

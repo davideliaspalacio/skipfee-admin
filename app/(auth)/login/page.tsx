@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLogin, useMe } from '@/lib/queries';
@@ -78,7 +79,9 @@ export default function LoginPage() {
           {loading ? 'Ingresando…' : 'Iniciar sesión'}
         </button>
 
-        <div className="login-hint">¿Olvidaste tu contraseña? Pídele al admin que la reestablezca.</div>
+        <div className="login-hint">
+          <Link href="/recuperar">¿Olvidaste tu contraseña?</Link>
+        </div>
       </form>
     </div>
   );

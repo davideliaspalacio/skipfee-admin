@@ -136,7 +136,7 @@ export function CatalogoScreen() {
   return (
     <div className={styles.wrap}>
       <div className={styles.toolbar}>
-        <div className={styles.toolLeft}>
+        <div className={styles.toolLeft} data-tour="catalogo-categorias">
           <Tabs tabs={tabs} value={cat} onChange={setCat} />
         </div>
         <div className={styles.toolRight}>
@@ -149,7 +149,7 @@ export function CatalogoScreen() {
               aria-label="Buscar producto"
             />
           </div>
-          <button type="button" className="btn btn-primary sm" onClick={openCreate}>
+          <button type="button" className="btn btn-primary sm" data-tour="catalogo-nuevo" onClick={openCreate}>
             <Icon.Plus size={14} />
             Nuevo producto
           </button>

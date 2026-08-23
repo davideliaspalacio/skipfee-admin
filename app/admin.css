@@ -5,6 +5,10 @@
    Solo tokens de marca: cero colores nuevos.
    ============================================================ */
 
+/* Rebote: llega pasado de largo y se acomoda. Es el tiempo del mundo de
+   caricatura de Primeros pasos; el resto del panel usa --ease-quart. */
+:root { --ease-rebote: cubic-bezier(0.34, 1.56, 0.64, 1); }
+
 /* ---------- Inputs / form fields (admin) ---------- */
 .field { display: flex; flex-direction: column; gap: 8px; }
 .field .fl {
@@ -47,145 +51,68 @@
 .login-hint { text-align: center; font-size: 12px; color: var(--text-muted); }
 .login-card .btn { width: 100%; }
 
-/* ---------- App shell (rail + topbar + content) ---------- */
-.shell {
-  --rail-width: 228px;
-  min-height: 100dvh; background: var(--paper);
-}
-.shell.is-rail-collapsed { --rail-width: 76px; }
+/* ---------- App shell (rail + topbar + content) ----------
+   Rediseñado en el lenguaje de Primeros pasos, pero en su versión callada: el
+   chrome no compite con el contenido. De la caricatura toma la forma (squircles,
+   tinta, verde plano) y deja fuera el volumen (sombras duras, trazos de 3px)
+   — un rail con relieve en cada icono cansa a la tercera hora de turno.
+
+   El rail dejó de ser una losa oscura: ahora es papel con una línea. La
+   jerarquía la da el elemento activo, no el contraste del fondo. */
+.shell { min-height: 100dvh; background: var(--paper); }
+
 .rail {
-  position: fixed; left: 0; top: 0; bottom: 0; width: var(--rail-width); z-index: 40;
-  background: var(--surface); color: var(--text);
-  display: flex; flex-direction: column; align-items: stretch;
-  padding: 14px 12px; gap: 6px;
+  position: fixed; left: 0; top: 0; bottom: 0; width: 68px; z-index: 40;
+  background: var(--surface); color: var(--text-muted);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 12px 0 10px; gap: 4px;
   border-right: 1px solid var(--line);
-  box-shadow: 10px 0 28px -26px oklch(0.20 0.05 250 / .38);
-  transition: width .18s var(--ease-quart), padding .18s var(--ease-quart);
-}
-.rail-head {
-  display: flex; align-items: center; gap: 10px; width: 100%;
-  min-height: 44px; margin-bottom: 10px; min-width: 0;
 }
 .rail-brand {
-  width: 44px; height: 44px; border-radius: 13px; flex: none;
-  display: grid; place-items: center;
+  width: 38px; height: 38px; border-radius: 12px; flex: none;
+  display: grid; place-items: center; margin-bottom: 12px;
   background: var(--green); color: var(--green-ink);
-  font-family: var(--font-display), sans-serif; font-weight: 800; font-size: 22px;
-  box-shadow: 0 4px 0 var(--green-shadow);
+  font-family: var(--font-display), sans-serif; font-weight: 800; font-size: 19px;
 }
-.rail-brand-text {
-  min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 1px;
-  overflow: hidden;
-}
-.rail-brand-text b {
-  font-family: var(--font-display), sans-serif; font-size: 15px; line-height: 1.1;
-  color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.rail-brand-text span {
-  font-size: 11.5px; line-height: 1.15; color: var(--text-muted);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.rail-toggle {
-  width: 34px; height: 34px; border-radius: 10px; flex: none;
-  display: grid; place-items: center; cursor: pointer;
-  background: var(--surface); border: 1px solid var(--line); color: var(--text-muted);
-  transition: background .15s, color .15s, border-color .15s, transform .12s var(--ease-quart);
-}
-.rail-toggle:hover { color: var(--text); background: var(--surface-2); border-color: color-mix(in oklch, var(--green) 34%, var(--line)); transform: translateY(-1px); }
-.rail-toggle:focus-visible,
-.rail-item:focus-visible,
-.iconbtn:focus-visible {
-  outline: 3px solid var(--green); outline-offset: 2px;
-}
-.rail-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; width: 100%; align-items: stretch; }
+.rail-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; width: 100%; align-items: center; }
 .rail-item {
-  position: relative; width: 100%; height: 46px; border-radius: 13px;
-  display: flex; align-items: center; gap: 12px; padding: 0 12px;
-  color: var(--text-muted); font: inherit; font-size: 14px; font-weight: 700; line-height: 1;
+  position: relative; width: 44px; height: 44px; border-radius: 12px;
+  /* Tinta explícita por tema en vez de --text-muted: los iconos son gráficos,
+     necesitan 3:1 mínimo, y en claro el muted se queda en 2,5:1 sobre blanco. */
+  display: grid; place-items: center; color: var(--ink-softer);
   background: transparent; border: none; cursor: pointer;
-  text-align: left; text-decoration: none; min-width: 0;
-  transition: color .15s var(--ease-quart), background .15s var(--ease-quart), transform .12s var(--ease-quart);
+  transition: color .15s var(--ease-quart), background .15s var(--ease-quart);
 }
-.rail-item svg { flex: none; }
-.rail-label {
-  min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  opacity: 1; transition: opacity .12s var(--ease-quart);
-}
-.rail-item:hover { color: var(--text); background: var(--surface-2); transform: translateY(-1px); }
-.rail-item.is-active { color: var(--green-ink); background: var(--green-wash); }
-.rail-item.is-active::before {
-  content: ""; position: absolute; left: -12px; top: 50%; transform: translateY(-50%);
-  width: 3px; height: 22px; border-radius: 0 3px 3px 0; background: var(--green);
-}
+.rail-item:hover { color: var(--text); background: var(--surface-2); }
+/* El activo es una pastilla llena: se reconoce de un vistazo sin barritas ni
+   acentos al margen, que es lo que había antes. */
+.rail-item.is-active { color: var(--green-ink); background: var(--green); }
 .rail-item .tip {
-  position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%) translateX(-6px);
-  background: var(--surface); color: var(--text); border: 1px solid var(--line);
-  padding: 6px 11px; border-radius: 9px; font-size: 13px; font-weight: 600; white-space: nowrap;
+  position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%) translateX(-4px);
+  background: var(--ink); color: var(--on-ink);
+  padding: 6px 10px; border-radius: 8px; font-size: 12.5px; font-weight: 600; white-space: nowrap;
   opacity: 0; pointer-events: none; transition: opacity .14s, transform .14s; z-index: 60;
   box-shadow: 0 12px 30px -18px oklch(0.20 0.05 250 / .5);
 }
 .shell:not(.is-rail-collapsed) .rail-item .tip { display: none; }
 .rail-item:hover .tip { opacity: 1; transform: translateY(-50%) translateX(0); }
 .rail-item .rail-badge {
-  position: absolute; top: 6px; right: 6px; min-width: 16px; height: 16px; padding: 0 4px;
-  border-radius: 999px; background: var(--green); color: var(--green-ink);
-  font-family: var(--font-sans); font-size: 10px; font-weight: 700;
+  position: absolute; top: 5px; right: 5px; min-width: 16px; height: 16px; padding: 0 4px;
+  border-radius: 999px; background: var(--sun); color: var(--sun-ink);
+  font-family: var(--font-sans); font-size: 10px; font-weight: 800;
   display: grid; place-items: center; border: 2px solid var(--surface);
 }
-.rail-item .rail-badge.alert { background: var(--sun); color: var(--sun-ink); }
-.rail-foot {
-  display: flex; flex-direction: column; gap: 4px; align-items: stretch; width: 100%;
-  padding-top: 10px; border-top: 1px solid var(--line);
-}
-.rail-foot .iconbtn {
-  width: 100%; height: 44px; border-radius: 13px;
-  display: flex; align-items: center; justify-content: flex-start; gap: 12px;
-  padding: 0 12px; color: var(--text-muted); font: inherit; font-size: 14px; font-weight: 700;
-}
-.rail-foot .iconbtn svg { flex: none; }
-.rail-foot-label {
-  min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
+.rail-foot { display: flex; flex-direction: column; gap: 2px; align-items: center; width: 100%; }
 
-.shell.is-rail-collapsed .rail {
-  align-items: center; padding-inline: 0;
-}
-.shell.is-rail-collapsed .rail-head {
-  flex-direction: column; gap: 8px; margin-bottom: 8px;
-}
-.shell.is-rail-collapsed .rail-brand-text { display: none; }
-.shell.is-rail-collapsed .rail-toggle {
-  width: 40px; height: 28px; border-radius: 9px;
-}
-.shell.is-rail-collapsed .rail-nav {
-  align-items: center;
-}
-.shell.is-rail-collapsed .rail-foot {
-  align-items: center; padding-top: 0; border-top: none;
-}
-.shell.is-rail-collapsed .rail-item {
-  width: 48px; height: 48px; justify-content: center; padding: 0;
-}
-.shell.is-rail-collapsed .rail-foot .iconbtn {
-  width: 40px; height: 40px; justify-content: center; padding: 0;
-}
-.shell.is-rail-collapsed .rail-label {
-  width: 0; opacity: 0; pointer-events: none;
-}
-.shell.is-rail-collapsed .rail-foot-label {
-  width: 0; opacity: 0; pointer-events: none;
-}
-.shell.is-rail-collapsed .rail-item.is-active::before { left: -14px; }
+.shell-main { margin-left: 68px; min-height: 100dvh; display: flex; flex-direction: column; }
 
-.shell-main {
-  margin-left: var(--rail-width); min-height: 100dvh; display: flex; flex-direction: column;
-  transition: margin-left .18s var(--ease-quart);
-}
+/* La topbar es una línea de texto y un grupo de iconos. Nada de cajas: las
+   tres pastillas que había (empresa, usuario, tema) pesaban más que el título. */
 .topbar {
-  position: sticky; top: 0; z-index: 30; height: 64px;
+  position: sticky; top: 0; z-index: 30; height: 60px;
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  padding: 0 clamp(16px, 3vw, 28px);
-  background: color-mix(in oklch, var(--paper) 85%, transparent);
+  padding: 0 clamp(16px, 3vw, 26px);
+  background: color-mix(in oklch, var(--paper) 88%, transparent);
   backdrop-filter: saturate(1.4) blur(10px);
   border-bottom: 1px solid var(--line);
   min-width: 0;
@@ -206,50 +133,57 @@
   flex: 0 1 auto; min-width: 0; max-width: min(560px, 58vw); overflow: hidden;
   display: flex; align-items: center; justify-content: flex-end; gap: 10px;
 }
+.topbar-title { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.topbar-title b {
+  font-family: var(--font-display), sans-serif; font-size: 17px;
+  letter-spacing: -.015em; color: var(--text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.topbar-title span { font-size: 12px; color: var(--text-muted); }
+.topbar-actions { display: flex; align-items: center; gap: 4px; }
+
 .content { flex: 1; min-height: 0; padding: clamp(16px, 3vw, 28px); display: flex; flex-direction: column; }
 
-/* square icon button (topbar / rail foot) */
+/* Botón de icono: sin borde ni caja hasta que lo tocas. */
 .iconbtn {
-  width: 40px; height: 40px; border-radius: 11px; flex: none;
+  width: 36px; height: 36px; border-radius: 10px; flex: none;
   display: grid; place-items: center; cursor: pointer;
-  background: transparent; border: 1px solid transparent; color: var(--text-muted);
-  transition: background .15s, color .15s, border-color .15s, transform .12s var(--ease-quart);
+  background: transparent; border: none; color: var(--text-muted);
+  transition: background .15s, color .15s;
 }
-.iconbtn:hover { color: var(--text); background: var(--surface-2); transform: translateY(-1px); }
-.rail .iconbtn { color: var(--text-muted); }
-.rail .iconbtn:hover { color: var(--text); background: var(--surface-2); }
+.iconbtn:hover { color: var(--text); background: var(--surface-2); }
+.iconbtn:focus-visible { outline: 2px solid var(--green-strong); outline-offset: 2px; }
+.rail .iconbtn { color: var(--ink-softer); }
 
-/* user chip */
+/* Empresa activa: texto, no caja. Solo se ve como control cuando hay varias. */
+.company-pick {
+  appearance: none; border: none; background: transparent; cursor: pointer;
+  font: inherit; font-family: var(--font-display), sans-serif;
+  font-size: 13.5px; font-weight: 700; color: var(--text);
+  padding: 8px 26px 8px 10px; border-radius: 9px; max-width: 190px;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 12px center, right 7px center;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  transition: background-color .15s;
+}
+.company-pick:hover { background-color: var(--surface-2); }
+.company-pick:focus-visible { outline: 2px solid var(--green-strong); outline-offset: 2px; }
+.company-fixed {
+  font-family: var(--font-display), sans-serif; font-size: 13.5px; font-weight: 700;
+  color: var(--text); padding: 8px 10px; max-width: 190px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* El usuario: iniciales y nada más. El correo completo y el rol no son datos
+   que se consulten mientras se opera; viven en el tooltip. */
 .user-chip {
-  display: flex; align-items: center; gap: 9px; padding: 5px 12px 5px 5px;
-  border-radius: var(--r-pill); border: 1px solid var(--line); background: var(--surface);
-  min-width: 0; flex: 0 1 auto; height: 42px;
-}
-.user-chip .av {
-  width: 30px; height: 30px; border-radius: 50%; flex: none; display: grid; place-items: center;
-  background: var(--ink); color: var(--on-ink); font-weight: 700; font-size: 12px;
-}
-.user-chip .meta { min-width: 0; line-height: 1.15; }
-.user-chip .meta b {
-  display: block; font-size: 13px; color: var(--text); line-height: 1.2;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.user-chip .meta small {
-  display: block; font-size: 11px; color: var(--text-muted); text-transform: capitalize;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.topbar-actions > .iconbtn { flex: 0 0 40px; }
-.topbar-actions > .user-chip:not(.company-chip) {
-  flex: 1 1 132px; min-width: 88px; max-width: 180px;
-}
-.company-chip {
-  flex: 1 1 150px; min-width: 118px; max-width: 190px;
-  padding: 6px 14px;
-  background: color-mix(in oklch, var(--surface) 92%, var(--green-wash));
-}
-.company-select {
-  width: auto; min-width: 132px; max-width: 190px; height: 42px;
-  flex: 0 1 190px;
+  width: 34px; height: 34px; border-radius: 50%; flex: none;
+  display: grid; place-items: center;
+  background: var(--ink); color: var(--on-ink);
+  font-family: var(--font-display), sans-serif; font-weight: 800; font-size: 12.5px;
+  letter-spacing: .02em;
 }
 
 /* ---------- Mobile bottom nav ---------- */
@@ -481,6 +415,28 @@ textarea.input { resize: vertical; min-height: 84px; font-family: inherit; }
   .driver-popover.skipfee-tour .driver-popover-footer button { font-size: 14px; padding: 11px 18px; }
 }
 
+/* Layout mientras corre el recorrido.
+   La barra de progreso es `position: fixed` arriba del todo, así que se comía la
+   franja superior del panel: el aviso "Modo demo" (paso 2) quedaba resaltado
+   DEBAJO de ella —foco invisible— y los popovers anclados arriba salían con el
+   título tapado. Mientras el tour está activo bajamos el panel entero su alto.
+   `--tour-bar-h` la publica TourController midiendo la barra real. */
+:root { --tour-bar-h: 48px; }
+html.tour-open body { padding-top: var(--tour-bar-h); }
+html.tour-open .rail,
+html.tour-open .topbar { top: var(--tour-bar-h); }
+/* Entre paso y paso el popover viejo sigue en pantalla con el texto anterior:
+   lo ocultamos hasta que el nuevo foco está listo (ver TourController).
+   `visibility` y no `opacity`: driver.css pone `pointer-events:auto` a los hijos
+   del popover, así que con opacity sus botones seguirían siendo clicables. */
+html.tour-busy .driver-popover { visibility: hidden; pointer-events: none; }
+
+/* driver desactiva los eventos de toda la página mientras el tour corre
+   (`.driver-active *`), y eso dejaba muerto el botón de silencio de la barra.
+   Hace falta más especificidad que esa regla para devolvérselos. */
+body.driver-active .tour-progress,
+body.driver-active .tour-progress * { pointer-events: auto; }
+
 /* barra de progreso del recorrido (siempre por encima del overlay) */
 .tour-progress { position: fixed; top: 0; left: 0; right: 0; z-index: 2147483000; background: var(--ink); color: var(--on-ink); box-shadow: 0 6px 20px -8px oklch(0.10 0.04 250 / .7); }
 .tour-progress-track { height: 6px; background: oklch(1 0 0 / .12); }
@@ -505,3 +461,72 @@ textarea.input { resize: vertical; min-height: 84px; font-family: inherit; }
 .demo-final-card p { color: var(--text-muted); font-size: 15.5px; line-height: 1.55; max-width: 40ch; margin: 0 auto; }
 .demo-final-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
 .demo-final-actions .btn { width: 100%; }
+
+/* ---------- Pantallas de autenticación (recuperar / reset) ---------- */
+.auth-note {
+  margin: 0; font-size: 14px; line-height: 1.55; color: var(--text-muted); text-align: center;
+}
+.auth-note b { color: var(--text); font-weight: 600; word-break: break-all; }
+.auth-check {
+  display: flex; align-items: center; gap: 9px; cursor: pointer;
+  font-size: 13.5px; color: var(--text-muted); user-select: none;
+}
+.auth-check input { width: 16px; height: 16px; accent-color: var(--green-strong); cursor: pointer; }
+.login-hint a { color: var(--green-ink); font-weight: 600; text-decoration: underline; }
+
+/* ---------- Aviso de prueba gratis ---------- */
+.aviso-prueba {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 20px; font-size: 13px; font-weight: 600; line-height: 1.4;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-2); color: var(--text);
+}
+.aviso-prueba svg { flex: 0 0 auto; color: var(--text-muted); }
+.aviso-prueba[data-tono="ultima"] {
+  background: color-mix(in oklch, var(--sun) 14%, var(--surface));
+  border-bottom-color: color-mix(in oklch, var(--sun) 38%, var(--line));
+}
+.aviso-prueba[data-tono="ultima"] svg { color: var(--sun); }
+.aviso-prueba[data-tono="vencida"] {
+  background: color-mix(in oklch, var(--coral) 15%, var(--surface));
+  border-bottom-color: color-mix(in oklch, var(--coral) 42%, var(--line));
+}
+.aviso-prueba[data-tono="vencida"] svg { color: var(--coral); }
+@media (max-width: 640px) { .aviso-prueba { padding: 9px 14px; font-size: 12.5px; } }
+
+/* ---------- Botones deshabilitados ----------
+   brand.css define .btn con sus hovers pero nunca el estado deshabilitado: un
+   botón inactivo se ve idéntico a uno vivo (verde, con sombra, cursor de mano)
+   y el usuario cree que la app se colgó. Aquí solo se arregla el panel; el
+   design system compartido tiene el mismo hueco. */
+.btn:disabled,
+.btn[aria-disabled='true'] {
+  opacity: .5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.btn-ghost:disabled { box-shadow: inset 0 0 0 1.5px color-mix(in oklch, var(--ink) 22%, transparent); }
+.btn:disabled:hover { transform: none; }
+
+/* ---------- Aviso de canal caído ----------
+   Comparte forma con .aviso-prueba pero es siempre rojo: no hay versión suave
+   de "no estás recibiendo pedidos". */
+.aviso-canal {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 20px; font-size: 13px; font-weight: 600; line-height: 1.4;
+  border-bottom: 1px solid color-mix(in oklch, var(--coral) 42%, var(--line));
+  background: color-mix(in oklch, var(--coral) 15%, var(--surface));
+  color: var(--text);
+}
+.aviso-canal svg { flex: none; color: var(--coral); }
+.aviso-canal-cta {
+  margin-left: auto; flex: none;
+  font-weight: 700; color: var(--text);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.aviso-canal-cta:hover { color: var(--coral); }
+@media (max-width: 640px) {
+  .aviso-canal { padding: 9px 14px; font-size: 12.5px; flex-wrap: wrap; }
+  .aviso-canal-cta { margin-left: 0; }
+}

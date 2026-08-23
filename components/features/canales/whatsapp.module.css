@@ -1,0 +1,283 @@
+/* Conexión de WhatsApp. Todo sobre tokens de marca: hereda el tema oscuro. */
+
+.wrap { display: grid; gap: 20px; }
+
+.loading { color: var(--text-muted); font-size: 14px; padding: 6px 0; }
+
+/* ---------------------------------------------------------------- estado */
+
+.headState {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 12px; font-weight: 700; color: var(--text-muted);
+  /* La barra del Panel pone título y meta en la misma fila sin separación
+     mínima: en pantallas angostas se pegaban ("…NEGOCIO●SIN CONECTAR"). */
+  margin-left: 12px; white-space: nowrap;
+}
+.headDot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: color-mix(in oklch, var(--text-muted) 55%, transparent);
+  flex: 0 0 auto;
+}
+.headState[data-state='linked'] { color: var(--sun-ink); }
+.headState[data-state='linked'] .headDot { background: var(--sun); }
+.headState[data-state='live'] { color: var(--green-ink); }
+.headState[data-state='live'] .headDot {
+  background: var(--green-strong);
+  box-shadow: 0 0 0 4px color-mix(in oklch, var(--green) 28%, transparent);
+}
+
+/* ------------------------------------------------------ elección de canal */
+
+.choice { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+
+.choiceOpt {
+  appearance: none; text-align: left; cursor: pointer; font: inherit;
+  display: grid; gap: 8px; align-content: start;
+  padding: 15px 16px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color .16s var(--ease-quart), background .16s var(--ease-quart),
+              box-shadow .16s var(--ease-quart);
+}
+.choiceOpt:hover:not([data-active='true']):not(:disabled) {
+  border-color: color-mix(in oklch, var(--ink) 26%, var(--line));
+  background: var(--surface-2);
+}
+.choiceOpt:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
+.choiceOpt:disabled { opacity: .6; cursor: not-allowed; }
+.choiceOpt[data-active='true'] {
+  border-color: var(--green-strong);
+  background: color-mix(in oklch, var(--green-wash) 34%, var(--surface));
+  box-shadow: inset 0 0 0 1px var(--green-strong);
+  cursor: default;
+}
+
+.choiceHead { display: flex; align-items: center; gap: 9px; }
+.choiceHead b { font-size: 15px; font-weight: 800; }
+
+.choiceDot {
+  width: 15px; height: 15px; border-radius: 50%; flex: 0 0 auto;
+  border: 1.5px solid color-mix(in oklch, var(--ink) 32%, transparent);
+  background: var(--surface);
+  transition: border-color .16s var(--ease-quart), box-shadow .16s var(--ease-quart);
+}
+.choiceOpt[data-active='true'] .choiceDot {
+  border-color: var(--green-strong);
+  box-shadow: inset 0 0 0 3.5px var(--green-strong);
+}
+
+.rec {
+  margin-left: auto; flex: 0 0 auto;
+  font-size: 10px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+  color: var(--green-ink);
+  background: color-mix(in oklch, var(--green-wash) 80%, transparent);
+  border: 1px solid color-mix(in oklch, var(--green-strong) 40%, transparent);
+  border-radius: var(--r-pill); padding: 3px 8px;
+}
+
+.choiceLead { color: var(--text-muted); font-size: 13px; line-height: 1.45; }
+
+.choiceList { display: grid; gap: 5px; margin: 2px 0 0; padding: 0; list-style: none; }
+.choiceList li {
+  display: grid; grid-template-columns: 15px 1fr; gap: 8px; align-items: start;
+  font-size: 12.5px; line-height: 1.4; color: var(--text-muted);
+}
+.choiceList li svg { margin-top: 2px; }
+.choiceList li[data-kind='pro'] svg { color: var(--green-strong); }
+.choiceList li[data-kind='con'] svg { color: var(--sun-ink); }
+
+/* --------------------------------------------------------------- Kapso */
+
+.kapso {
+  display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 22px;
+  border: 1px solid var(--line); border-radius: 10px;
+  background: var(--surface-2); padding: 18px;
+}
+.kapsoBody h3 { font-size: 16px; font-weight: 800; margin: 0 0 7px; }
+.kapsoBody p { margin: 0 0 9px; font-size: 13.5px; line-height: 1.55; color: var(--text-muted); max-width: 62ch; }
+.kapsoNote {
+  display: flex; gap: 8px; align-items: flex-start;
+  color: var(--text-muted); font-size: 12.5px;
+}
+.kapsoNote svg { flex: 0 0 auto; margin-top: 2px; color: var(--blue); }
+
+.kv { display: grid; gap: 10px; align-content: start; margin: 0; }
+.kv div { display: grid; gap: 2px; }
+.kv dt {
+  font-size: 10.5px; font-weight: 800; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.kv dd { margin: 0; font-size: 13.5px; font-weight: 600; }
+.mono { font-family: var(--mono); font-size: 12.5px; }
+
+/* ------------------------------------------------------------ Evolution */
+
+.evo { display: grid; grid-template-columns: 232px minmax(0, 1fr); gap: 22px; align-items: start; }
+
+.rail { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+
+.railStep {
+  display: grid; grid-template-columns: 26px 1fr; gap: 11px; align-items: start;
+  padding: 9px 10px; border-radius: 8px;
+  position: relative;
+}
+/* hilo que une los pasos */
+.railStep:not(:last-child)::after {
+  content: ''; position: absolute; left: 22px; top: 34px; bottom: -2px;
+  width: 1.5px; background: var(--line);
+}
+.railStep[data-state='done']:not(:last-child)::after { background: var(--green-strong); }
+
+.railMark {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: inline-grid; place-items: center;
+  font-size: 12px; font-weight: 800;
+  border: 1.5px solid var(--line); background: var(--surface);
+  color: var(--text-muted); z-index: 1;
+}
+.railStep[data-state='current'] { background: var(--surface-2); }
+.railStep[data-state='current'] .railMark {
+  border-color: var(--ink-line); color: var(--text);
+}
+.railStep[data-state='done'] .railMark {
+  background: var(--green-strong); border-color: var(--green-strong); color: var(--green-ink);
+}
+
+.railText { display: grid; gap: 1px; min-width: 0; }
+.railText b { font-size: 13px; font-weight: 700; }
+.railText small { font-size: 11.5px; color: var(--text-muted); line-height: 1.35; }
+.railStep[data-state='todo'] .railText b { color: var(--text-muted); }
+
+.evoMain {
+  border: 1px solid var(--line); border-radius: 10px;
+  background: var(--surface-2); padding: 18px; min-width: 0;
+}
+.evoMain h3 { font-size: 16px; font-weight: 800; margin: 0 0 7px; }
+
+/* --------------------------------------------------------- formulario */
+
+.form { display: grid; gap: 13px; max-width: 420px; }
+.formLead { margin: -4px 0 2px; font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+.formActions { display: flex; gap: 9px; margin-top: 3px; }
+
+/* --------------------------------------------------------------- QR */
+
+.link { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 22px; align-items: start; }
+.qrCol { display: grid; gap: 9px; justify-items: center; }
+
+.qrFrame {
+  width: 252px; height: 252px; border-radius: 12px;
+  background: oklch(1 0 0);
+  border: 1px solid var(--line);
+  display: grid; place-items: center; padding: 16px;
+  box-shadow: 0 2px 10px oklch(0.2 0.03 250 / .09);
+}
+.qrFrame img { display: block; width: 100%; height: auto; image-rendering: pixelated; }
+.qrFrame[data-empty='true'] {
+  background: var(--surface-3); box-shadow: none;
+  border-style: dashed;
+}
+.qrPlaceholder {
+  display: grid; gap: 9px; justify-items: center; text-align: center;
+  color: var(--text-muted); font-size: 12.5px; max-width: 15ch;
+}
+.qrTtl { margin: 0; font-size: 12px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+
+.linkCol { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.steps { margin: 0; padding-left: 19px; display: grid; gap: 6px; }
+.steps li { font-size: 13.5px; line-height: 1.5; color: var(--text-muted); }
+.steps li b { color: var(--text); font-weight: 700; }
+.linkCol .btn, .linkCol button { justify-self: start; }
+
+.risk {
+  display: flex; gap: 8px; align-items: flex-start; margin: 2px 0 0;
+  font-size: 12.5px; line-height: 1.45; color: var(--text-muted); max-width: 58ch;
+}
+.risk svg { flex: 0 0 auto; margin-top: 2px; color: var(--sun-ink); }
+
+/* -------------------------------------------------- esperando / listo */
+
+.waiting { display: grid; gap: 11px; }
+.waiting p { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--text-muted); max-width: 64ch; }
+.waiting p b { color: var(--text); font-weight: 700; }
+.hintLow { font-size: 12.5px !important; }
+
+.pulseRow {
+  display: inline-flex; align-items: center; gap: 9px; justify-self: start;
+  font-size: 13px; font-weight: 600; color: var(--sun-ink);
+  background: color-mix(in oklch, var(--sun) 16%, var(--surface));
+  border: 1px solid color-mix(in oklch, var(--sun) 45%, var(--line));
+  border-radius: var(--r-pill); padding: 7px 14px;
+}
+.pulse {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--sun-ink);
+  animation: pulse 1.6s var(--ease-quart) infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .35; transform: scale(.72); }
+}
+
+.done { display: grid; gap: 10px; justify-items: start; }
+.doneMark {
+  display: inline-grid; place-items: center;
+  width: 42px; height: 42px; border-radius: 50%;
+  background: color-mix(in oklch, var(--green-wash) 85%, transparent);
+  color: var(--green-ink);
+  border: 1px solid color-mix(in oklch, var(--green-strong) 42%, transparent);
+}
+.done p { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--text-muted); max-width: 60ch; }
+.doneActions { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 4px; }
+
+/* ------------------------------------------------------------ avisos */
+
+.alert {
+  display: grid; grid-template-columns: 18px 1fr; gap: 10px; align-items: start;
+  border-radius: 8px; padding: 11px 13px; font-size: 13px; line-height: 1.45;
+  border: 1px solid var(--line); background: var(--surface);
+}
+.alert b { display: block; font-weight: 700; color: var(--text); }
+.alert p { margin: 3px 0 0; color: var(--text-muted); }
+.alert svg { margin-top: 1px; }
+.alert[data-tone='error'] {
+  border-color: color-mix(in oklch, var(--coral) 48%, var(--line));
+  background: color-mix(in oklch, var(--coral) 11%, var(--surface));
+}
+.alert[data-tone='error'] svg { color: var(--coral); }
+.alert[data-tone='warn'] {
+  border-color: color-mix(in oklch, var(--sun) 52%, var(--line));
+  background: color-mix(in oklch, var(--sun) 15%, var(--surface));
+}
+.alert[data-tone='warn'] svg { color: var(--sun-ink); }
+
+/* ------------------------------------------------------------ responsive */
+
+@media (max-width: 900px) {
+  .choice { grid-template-columns: 1fr; }
+  .kapso { grid-template-columns: 1fr; gap: 16px; }
+  .evo { grid-template-columns: 1fr; gap: 14px; }
+  .rail { grid-template-columns: repeat(3, 1fr); display: grid; gap: 6px; }
+  .railStep { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 6px; }
+  .railStep::after { display: none; }
+  .railText small { display: none; }
+  .link { grid-template-columns: 1fr; justify-items: center; }
+  .linkCol { justify-items: start; width: 100%; }
+}
+
+@media (max-width: 480px) {
+  .qrFrame { width: min(252px, 78vw); height: min(252px, 78vw); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse { animation: none; }
+  .choiceOpt { transition: none; }
+}
+
+/* ------------------------------------------------------------ tema oscuro
+   `--sun-ink` y `--green-ink` son tintas oscuras pensadas para fondos claros y
+   el tema oscuro no las remapea. Sobre superficie oscura caían a 1.3–1.9:1.
+   En oscuro usamos los tonos claros de la misma familia. *
+/* El QR se queda en blanco a propósito: los lectores necesitan el contraste
+   real del código, no una versión "modo oscuro" que no escanea. */

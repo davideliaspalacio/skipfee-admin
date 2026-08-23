@@ -7,7 +7,9 @@ import { NAV, SCREEN_PATHS, type ScreenId } from './nav';
 export const RAIL_COLLAPSED_KEY = 'skipfee-admin-rail-collapsed';
 
 const DEFAULT_SCREEN: ScreenId = 'pedidos';
-const VALID_SCREENS = new Set<ScreenId>(NAV.map(n => n.id));
+const SCREEN_BY_SEGMENT = new Map<string, ScreenId>(
+  NAV.map(n => [n.path.replace(/^\/+/, ''), n.id]),
+);
 
 /**
  * Resuelve la screen admin activa a partir del pathname (`/pedidos/…`,
@@ -16,7 +18,7 @@ const VALID_SCREENS = new Set<ScreenId>(NAV.map(n => n.id));
 export function useActiveScreen(): ScreenId {
   const pathname = usePathname() ?? '';
   const candidate = pathname.replace(/^\/+|\/+$/g, '').split('/')[0];
-  return VALID_SCREENS.has(candidate as ScreenId) ? (candidate as ScreenId) : DEFAULT_SCREEN;
+  return SCREEN_BY_SEGMENT.get(candidate) ?? DEFAULT_SCREEN;
 }
 
 /** Navega por id de screen sin que los layouts conozcan paths. */

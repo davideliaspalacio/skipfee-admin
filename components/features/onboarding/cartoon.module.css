@@ -1,0 +1,801 @@
+/* ==========================================================================
+   Mundo "caricatura" de Primeros pasos
+   ==========================================================================
+   Reglas del mundo, para que los modales siguientes se vean hermanos:
+
+   · Trazo de tinta grueso y constante (3px en el marco, 2.5px en la ilustración).
+   · Sombra sólida desplazada, sin blur — el idioma que ya usan los botones del
+     design system, subido de volumen.
+   · Color plano. Nada de degradados salvo el cielo de la escena.
+   · Movimiento con rebote (`--ease-rebote`): las cosas llegan pasadas de largo
+     y se acomodan. Un fade lineal aquí se sentiría de formulario, que es
+     justo lo que no queremos que parezca.
+   · Suelo claro en los dos temas: ver el comentario de ModalCartoon.tsx.
+   ========================================================================== */
+
+.fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: oklch(0.23 0.045 250 / 0.62);
+  backdrop-filter: blur(3px);
+  animation: fondo-entra 0.22s var(--ease-quart) both;
+}
+
+/* Velo apenas suficiente para que el modal gane el foco sin borrar lo de
+   atrás: el recorrido habla de esa pantalla, y verla es parte de la
+   explicación. Sigue oscureciendo lo bastante como para que el papel del
+   marco se despegue del fondo. */
+.fondo[data-traslucido='true'] {
+  background: oklch(0.23 0.045 250 / 0.34);
+  backdrop-filter: none;
+}
+
+.marco {
+  --tinta: oklch(0.23 0.045 250);
+  --papel: #FFFDF7;
+  --papel-2: #FFF6E4;
+
+  position: fixed;
+  z-index: 91;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  width: min(560px, calc(100vw - 28px));
+  max-height: min(92dvh, 780px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  background: var(--papel);
+  color: var(--tinta);
+  border: 3px solid var(--tinta);
+  border-radius: 26px;
+  box-shadow: 0 10px 0 var(--tinta), 0 30px 60px -20px oklch(0.23 0.045 250 / 0.55);
+  animation: marco-entra 0.42s var(--ease-rebote) both;
+}
+
+.marco[data-ancho='ancho'] { width: min(820px, calc(100vw - 28px)); }
+/* En el modal ancho no hay burbuja que esquivar a la derecha: la ilustración
+   se centra y crece, en vez de quedar arrinconada con medio cielo vacío. */
+.marco[data-ancho='ancho'] .escena { place-items: end center; padding-inline: 20px; }
+.marco[data-ancho='ancho'] .escena > svg { width: min(330px, 100%); }
+
+@keyframes fondo-entra {
+  from { opacity: 0; }
+}
+
+@keyframes marco-entra {
+  from { opacity: 0; translate: -50% -46%; scale: 0.94; }
+}
+
+/* ------------------------------------------------------------- la escena */
+
+.escena {
+  position: relative;
+  border-bottom: 3px solid var(--tinta);
+  padding: 20px 20px 0 22px;
+  display: grid;
+  /* La ilustración se ancla abajo-izquierda para dejarle la derecha libre a la
+     burbuja: si se centra, el letrero del negocio queda tapado justo cuando es
+     lo que hay que mirar. */
+  place-items: end start;
+  min-height: 186px;
+  overflow: hidden;
+}
+.escena[data-tono='verde'] { background: oklch(0.90 0.09 152); }
+.escena[data-tono='sol']   { background: oklch(0.91 0.11 92); }
+.escena[data-tono='cielo'] { background: oklch(0.89 0.07 235); }
+
+/* Nubes de fondo: dan profundidad sin robar atención. */
+.escena::before,
+.escena::after {
+  content: '';
+  position: absolute;
+  border-radius: 99px;
+  background: oklch(1 0 0 / 0.55);
+  pointer-events: none;
+}
+.escena::before { width: 96px; height: 30px; top: 24px; left: -14px; }
+.escena::after  { width: 64px; height: 22px; top: 52px; right: 24px; }
+
+.escena svg { position: relative; z-index: 1; }
+
+.cerrar {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--tinta);
+  background: var(--papel);
+  border: 2.5px solid var(--tinta);
+  border-radius: 50%;
+  box-shadow: 0 3px 0 var(--tinta);
+  transition: transform 0.12s var(--ease-quart), box-shadow 0.12s var(--ease-quart);
+}
+.cerrar:hover { transform: translateY(-1px); box-shadow: 0 4px 0 var(--tinta); }
+.cerrar:active { transform: translateY(3px); box-shadow: 0 0 0 var(--tinta); }
+.cerrar:focus-visible { outline: 3px solid var(--tinta); outline-offset: 3px; }
+
+/* -------------------------------------------------------------- el texto */
+
+.cuerpo { padding: 22px 24px 4px; overflow-y: auto; }
+
+.titulo {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.5rem, 4vw, 1.9rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: var(--tinta);
+  text-wrap: balance;
+}
+
+.sub {
+  margin: 9px 0 0;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: oklch(0.42 0.04 250);
+  max-width: 46ch;
+}
+
+.contenido { margin-top: 20px; display: grid; gap: 16px; }
+
+/* Los campos entran escalonados: la mirada baja con ellos en vez de
+   encontrarse un formulario entero de golpe. */
+.contenido > * { animation: campo-entra 0.4s var(--ease-expo) both; }
+.contenido > *:nth-child(1) { animation-delay: 0.06s; }
+.contenido > *:nth-child(2) { animation-delay: 0.12s; }
+.contenido > *:nth-child(3) { animation-delay: 0.18s; }
+.contenido > *:nth-child(4) { animation-delay: 0.24s; }
+
+@keyframes campo-entra {
+  from { opacity: 0; transform: translateY(10px); }
+}
+
+/* ---------------------------------------------------------------- el pie */
+
+.pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 24px 22px;
+}
+
+/* Botón de caricatura: mismo gesto táctil que el design system, más grueso. */
+.accion {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 14px 22px;
+  border-radius: 14px;
+  border: 2.5px solid var(--tinta);
+  background: oklch(0.80 0.17 152);
+  color: var(--tinta);
+  box-shadow: 0 5px 0 var(--tinta);
+  transition: transform 0.12s var(--ease-quart), box-shadow 0.12s var(--ease-quart);
+}
+.accion:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 7px 0 var(--tinta); }
+.accion:active:not(:disabled) { transform: translateY(5px); box-shadow: 0 0 0 var(--tinta); }
+.accion:focus-visible { outline: 3px solid var(--tinta); outline-offset: 3px; }
+.accion:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: 0 5px 0 var(--tinta); transform: none; }
+
+.accionSuave {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: oklch(0.42 0.04 250);
+  padding: 8px 4px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.accionSuave:hover { color: var(--tinta); }
+.accionSuave:focus-visible { outline: 2px solid var(--tinta); outline-offset: 3px; border-radius: 6px; }
+
+/* ------------------------------------------------------------- los campos */
+
+.campo { display: grid; gap: 7px; }
+
+.etiqueta {
+  font-family: var(--font-display), sans-serif;
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--tinta);
+}
+
+.pista { font-size: 12.5px; line-height: 1.45; color: oklch(0.42 0.04 250); }
+
+/* Input de caricatura: el foco no es un halo, es el papel hundiéndose. */
+.entrada {
+  width: 100%;
+  font: inherit;
+  font-size: 15px;
+  color: var(--tinta);
+  background: var(--papel-2);
+  border: 2.5px solid var(--tinta);
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: inset 0 3px 0 oklch(0.23 0.045 250 / 0.09);
+  transition: box-shadow 0.14s var(--ease-quart), background 0.14s var(--ease-quart);
+}
+.entrada::placeholder { color: oklch(0.55 0.03 250); }
+.entrada:focus {
+  outline: none;
+  background: #fff;
+  box-shadow: inset 0 3px 0 oklch(0.23 0.045 250 / 0.14), 0 0 0 3px oklch(0.80 0.17 152);
+}
+textarea.entrada { resize: vertical; min-height: 62px; line-height: 1.5; }
+
+.dosColumnas { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* Sugerencias de un toque. Escribir de cero es la parte que traba a la gente. */
+.sugerencias { display: flex; flex-wrap: wrap; gap: 7px; }
+.sugerencia {
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 99px;
+  border: 2px solid var(--tinta);
+  background: var(--papel);
+  color: var(--tinta);
+  box-shadow: 0 2px 0 var(--tinta);
+  transition: transform 0.12s var(--ease-quart), box-shadow 0.12s var(--ease-quart), background 0.12s;
+}
+.sugerencia:hover { transform: translateY(-1px); box-shadow: 0 3px 0 var(--tinta); background: var(--papel-2); }
+.sugerencia:active { transform: translateY(2px); box-shadow: 0 0 0 var(--tinta); }
+.sugerencia:focus-visible { outline: 2px solid var(--tinta); outline-offset: 2px; }
+
+/* --------------------------------------------------------- el buscador */
+
+.buscador { position: relative; }
+
+/* El campo del buscador se pinta por encima de los que vienen después.
+   Cada campo entra con una animación de `transform`, y eso le crea su propio
+   contexto de apilado: un z-index puesto DENTRO del campo queda atrapado ahí y
+   el desplegable de direcciones termina debajo del horario. El z-index tiene
+   que ir en el campo mismo, que como hijo de un grid lo acepta sin `position`. */
+.contenido > *:has(.buscador) { z-index: 20; }
+
+.elegido {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  background: oklch(0.93 0.05 152);
+  border: 2.5px solid var(--tinta);
+  border-radius: 12px;
+  padding: 10px 13px;
+  margin-bottom: 8px;
+}
+.elegido span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.elegido svg { flex: none; }
+
+.sugerenciasLugar {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 5px;
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  right: 0;
+  background: var(--papel);
+  border: 2.5px solid var(--tinta);
+  border-radius: 14px;
+  box-shadow: 0 5px 0 var(--tinta);
+  display: grid;
+  gap: 2px;
+  max-height: 230px;
+  overflow-y: auto;
+}
+.sugerenciasLugar button {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 9px;
+  padding: 9px 11px;
+  display: grid;
+  gap: 1px;
+  font: inherit;
+  color: var(--tinta);
+}
+.sugerenciasLugar button:hover { background: var(--papel-2); }
+.sugerenciasLugar button:focus-visible { outline: 2px solid var(--tinta); outline-offset: -2px; }
+.sugerenciasLugar b { font-size: 14px; font-weight: 700; }
+.sugerenciasLugar small { font-size: 12px; color: oklch(0.42 0.04 250); }
+
+.buscando {
+  position: absolute;
+  right: 13px;
+  top: 13px;
+  font-size: 12px;
+  color: oklch(0.42 0.04 250);
+}
+
+/* ------------------------------------------------------------- el éxito */
+
+.exito { display: grid; gap: 14px; justify-items: center; text-align: center; padding: 8px 0 6px; }
+.exito h2 {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.6rem, 5vw, 2.1rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--tinta);
+}
+.exito p { margin: 0; font-size: 14.5px; line-height: 1.55; color: oklch(0.42 0.04 250); max-width: 40ch; }
+
+@media (max-width: 480px) {
+  .marco { border-radius: 22px; }
+  .escena { min-height: 158px; }
+  .cuerpo { padding: 18px 18px 4px; }
+  .pie { padding: 16px 18px 20px; flex-wrap: wrap-reverse; }
+  .pie .accion { flex: 1; }
+  .dosColumnas { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fondo, .marco, .contenido > * { animation: none; }
+  .accion, .cerrar, .sugerencia, .entrada { transition: none; }
+}
+
+/* ------------------------------------------------------- los dos caminos */
+
+.caminos { display: grid; gap: 10px; }
+
+.camino {
+  display: grid;
+  gap: 6px;
+  text-align: left;
+  font: inherit;
+  padding: 14px 15px;
+  border: 2.5px solid var(--tinta);
+  border-radius: 14px;
+  background: var(--papel-2);
+  color: var(--tinta);
+}
+.camino[data-recomendado='true'] {
+  background: oklch(0.93 0.05 152);
+  box-shadow: 0 4px 0 var(--tinta);
+}
+button.camino { cursor: pointer; transition: transform 0.12s var(--ease-quart), background 0.12s; }
+button.camino:hover { transform: translateY(-1px); background: #fff; }
+button.camino:focus-visible { outline: 3px solid var(--tinta); outline-offset: 3px; }
+
+.caminoTitulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display), sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+}
+.caminoTexto { font-size: 13px; line-height: 1.5; color: oklch(0.42 0.04 250); }
+.caminoAviso {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  color: oklch(0.42 0.12 80);
+}
+.caminoLink { font-size: 13px; font-weight: 700; }
+
+/* Casilla de riesgo: sin marcarla no se puede seguir. Que alguien pierda su
+   número por algo que no le dijimos cuesta más que una conversión. */
+.acepta {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 10px;
+  align-items: start;
+  font-size: 13px;
+  line-height: 1.5;
+  color: oklch(0.42 0.04 250);
+  cursor: pointer;
+}
+.acepta input {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: oklch(0.73 0.17 152);
+  cursor: pointer;
+}
+
+/* ------------------------------------------------------------- listas */
+
+.lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.lista li {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 11px;
+  align-items: start;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: oklch(0.42 0.04 250);
+}
+.lista li b { color: var(--tinta); }
+.lista li svg { margin-top: 2px; color: var(--tinta); }
+
+/* ----------------------------------------------------- pasos de bienvenida */
+
+.pasosBienvenida { list-style: none; margin: 0; padding: 0; display: grid; gap: 13px; }
+.pasosBienvenida li {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 12px;
+  align-items: start;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: oklch(0.42 0.04 250);
+}
+.pasosBienvenida b { color: var(--tinta); font-weight: 800; }
+
+.numero {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display), sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--tinta);
+  background: oklch(0.87 0.15 92);
+  border: 2.5px solid var(--tinta);
+  border-radius: 50%;
+  box-shadow: 0 3px 0 var(--tinta);
+}
+
+/* -------------------------------------------------------- escribir la carta */
+
+.filaProducto { display: grid; grid-template-columns: minmax(0, 1fr) 118px; gap: 12px; }
+
+.sugerencia[data-activa='true'] {
+  background: oklch(0.87 0.15 92);
+  box-shadow: 0 2px 0 var(--tinta);
+}
+
+.agregarProducto {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  justify-self: start;
+  font: inherit;
+  font-family: var(--font-display), sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 11px 16px;
+  border-radius: 12px;
+  border: 2.5px dashed var(--tinta);
+  background: var(--papel-2);
+  color: var(--tinta);
+  transition: transform 0.12s var(--ease-quart), background 0.12s;
+}
+.agregarProducto:hover:not(:disabled) { transform: translateY(-1px); background: #fff; border-style: solid; }
+.agregarProducto:focus-visible { outline: 3px solid var(--tinta); outline-offset: 3px; }
+.agregarProducto:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.listaProductos { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+.listaProductos li {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 12px;
+  background: var(--papel-2);
+  border: 2px solid var(--tinta);
+  border-radius: 11px;
+  animation: campo-entra 0.3s var(--ease-rebote) both;
+}
+
+/* Lo que todavía no existe en el catálogo se dibuja como un boceto: borde
+   punteado y su etiqueta. Sin esa diferencia, la X de un renglón recién
+   escrito y la de un producto que lleva meses vendiéndose se ven iguales. */
+.listaProductos li[data-estado='borrador'] {
+  border-style: dashed;
+  background: var(--papel);
+}
+
+.productoCelda { display: flex; align-items: center; gap: 7px; min-width: 0; }
+
+.sinGuardar {
+  flex: none;
+  font-style: normal;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 99px;
+  border: 1.5px solid var(--tinta);
+  background: oklch(0.90 0.11 92);
+  color: oklch(0.35 0.10 80);
+}
+
+.accionesFila { display: flex; align-items: center; gap: 6px; }
+
+.editarProducto {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 2px solid var(--tinta);
+  background: var(--papel);
+  color: var(--tinta);
+}
+.editarProducto:hover { background: oklch(0.87 0.15 92); }
+.editarProducto:focus-visible { outline: 2px solid var(--tinta); outline-offset: 2px; }
+
+.productoNombre {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--tinta);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.productoCat { font-size: 11.5px; color: oklch(0.42 0.04 250); }
+.productoPrecio { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--tinta); }
+
+.quitarProducto {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 2px solid var(--tinta);
+  background: var(--papel);
+  color: var(--tinta);
+}
+.quitarProducto:hover { background: oklch(0.70 0.14 28); color: #fff; }
+.quitarProducto:focus-visible { outline: 2px solid var(--tinta); outline-offset: 2px; }
+
+@media (max-width: 480px) {
+  .filaProducto { grid-template-columns: 1fr; }
+}
+
+/* ------------------------------------- corregir, repetidos y quitar de verdad */
+
+/* El formulario de arriba cambia de trabajo cuando se está corrigiendo algo.
+   Decirlo con el botón ("Guardar cambios") no basta: quien no mira el botón
+   cree que está escribiendo un producto nuevo y pisa el que tenía. */
+.editandoAviso {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 9px 12px;
+  font-size: 13px;
+  line-height: 1.4;
+  border: 2px dashed var(--tinta);
+  border-radius: 11px;
+  background: oklch(0.93 0.05 152);
+  color: oklch(0.32 0.04 250);
+}
+.editandoAviso b { font-weight: 800; }
+.editandoAviso span { flex: 1; min-width: 0; }
+.editandoAviso svg { flex: none; color: var(--tinta); }
+
+.avisoRepetido {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 9px 12px;
+  font-size: 13px;
+  line-height: 1.4;
+  border: 2px solid var(--tinta);
+  border-radius: 11px;
+  background: oklch(0.92 0.09 92);
+  color: oklch(0.33 0.08 80);
+}
+.avisoRepetido b { font-weight: 800; }
+.avisoRepetido span { flex: 1; min-width: 0; }
+.avisoRepetido svg { flex: none; }
+
+.enlaceAviso {
+  flex: none;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: oklch(0.33 0.08 80);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.enlaceAviso:hover { color: var(--tinta); }
+.enlaceAviso:focus-visible { outline: 2px solid var(--tinta); outline-offset: 2px; border-radius: 4px; }
+
+.confirmaQuitar {
+  display: grid;
+  gap: 11px;
+  padding: 13px 14px;
+  border: 2.5px solid var(--tinta);
+  border-radius: 13px;
+  background: oklch(0.94 0.04 28);
+  box-shadow: 0 4px 0 var(--tinta);
+  animation: campo-entra 0.26s var(--ease-rebote) both;
+}
+.confirmaQuitar p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: oklch(0.35 0.06 28);
+}
+.confirmaQuitar b { color: var(--tinta); font-weight: 800; }
+
+.confirmaBotones { display: flex; gap: 9px; justify-content: flex-end; flex-wrap: wrap; }
+
+.accionRiesgo {
+  font: inherit;
+  font-family: var(--font-display), sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 9px 16px;
+  border-radius: 11px;
+  border: 2.5px solid var(--tinta);
+  background: oklch(0.48 0.17 28);
+  color: #fff;
+  box-shadow: 0 3px 0 var(--tinta);
+  transition: transform 0.12s var(--ease-quart);
+}
+.accionRiesgo:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 0 var(--tinta); }
+.accionRiesgo:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 0 0 var(--tinta); }
+.accionRiesgo:focus-visible { outline: 3px solid var(--tinta); outline-offset: 3px; }
+.accionRiesgo:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* En pantalla angosta las cinco columnas dejaban el nombre en dos letras. Se
+   parte en dos filas: nombre y precio arriba, categoría y acciones abajo. */
+@media (max-width: 480px) {
+  .listaProductos li { grid-template-columns: 34px minmax(0, 1fr) auto; row-gap: 3px; }
+  .listaProductos li .productoFoto { grid-column: 1; grid-row: 1 / span 2; }
+  .listaProductos li .productoCelda { grid-column: 2; grid-row: 1; }
+  .listaProductos li .productoCat { grid-column: 2; grid-row: 2; }
+  .listaProductos li .productoPrecio { grid-column: 3; grid-row: 1; }
+  .listaProductos li .accionesFila { grid-column: 3; grid-row: 2; justify-content: flex-end; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confirmaQuitar { animation: none; }
+  .accionRiesgo { transition: none; }
+}
+
+/* ---------------------------------------------- "vas por aquí" del recorrido */
+
+/* El pie pasa a tres zonas cuando hay recorrido: puntos · volver · seguir. */
+.pie:has(.puntos) { justify-content: space-between; }
+
+.puntos { display: inline-flex; align-items: center; gap: 6px; margin-right: auto; }
+.puntos i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 2px solid var(--tinta);
+  background: var(--papel-2);
+  /* Solo el color se transiciona. El ancho cambia de golpe a propósito: pasa
+     una vez por paso y justo cuando el modal entero se está reemplazando, así
+     que el tween no lo ve nadie — y animar `width` sí cuesta layout. */
+  transition: background 0.2s;
+}
+.puntos i[data-estado='hecho'] { background: oklch(0.73 0.17 152); }
+/* El punto actual es una cápsula, no un círculo: se distingue sin color. */
+.puntos i[data-estado='aqui'] { width: 22px; border-radius: 99px; background: oklch(0.87 0.15 92); }
+
+@media (prefers-reduced-motion: reduce) {
+  .puntos i { transition: none; }
+}
+
+/* ------------------------------------------------- esperas con voz */
+
+/* Un giro solo dice "espera"; al lado va SIEMPRE el texto de qué está pasando.
+   Una espera sin nombre se lee como cuelgue, y quien cree que se colgó cierra
+   la ventana justo antes de que termine. */
+.cargandoFila {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 6px 0 16px;
+  font-size: 15px;
+  font-weight: 600;
+  color: oklch(0.36 0.04 250);
+  text-align: left;
+}
+
+.cargandoGiro {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border-radius: 50%;
+  border: 3px solid oklch(0.90 0.012 250);
+  border-top-color: var(--tinta);
+  animation: cargando-gira 0.8s linear infinite;
+}
+@keyframes cargando-gira { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .cargandoGiro { animation: none; }
+}
+
+/* --------------------------------------------------- vincular por QR */
+
+.vincular { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; align-items: start; }
+.columnaQr { display: grid; gap: 8px; justify-items: center; }
+.columnaQr .pista { text-align: center; max-width: 22ch; }
+
+@media (max-width: 640px) {
+  .vincular { grid-template-columns: 1fr; }
+  .columnaQr { justify-self: center; }
+}
+
+/* ------------------------------------------------------- foto del producto */
+
+/* Opcional de verdad, no "opcional pero mírame": ocupa 44px y dice por qué se
+   puede saltar. El canal principal es un chat, no una vitrina. */
+.fotoFila { display: flex; align-items: center; gap: 11px; }
+
+.fotoBoton {
+  width: 44px; height: 44px; flex: none;
+  display: grid; place-items: center; cursor: pointer; overflow: hidden;
+  border: 2.5px dashed var(--tinta);
+  border-radius: 11px;
+  background: var(--papel-2);
+  color: var(--tinta);
+  transition: background 0.12s var(--ease-quart);
+}
+.fotoBoton[data-tiene='true'] { border-style: solid; padding: 0; }
+.fotoBoton img { width: 100%; height: 100%; object-fit: cover; }
+.fotoBoton:hover { background: #fff; }
+.fotoBoton:focus-visible { outline: 3px solid var(--tinta); outline-offset: 2px; }
+
+.fotoTexto {
+  display: grid; gap: 1px; flex: 1; min-width: 0;
+  font-family: var(--font-display), sans-serif; font-size: 13.5px; font-weight: 800;
+  color: var(--tinta);
+}
+.fotoTexto small {
+  font-family: var(--font-sans), sans-serif; font-size: 11.5px; font-weight: 500;
+  color: oklch(0.42 0.04 250);
+}
+
+.fotoQuitar {
+  font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer;
+  background: none; border: none; color: oklch(0.42 0.04 250);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.fotoQuitar:hover { color: var(--tinta); }
+
+.productoFoto {
+  width: 34px; height: 34px; border-radius: 8px; object-fit: cover;
+  border: 2px solid var(--tinta); background: var(--papel);
+}
+.productoFoto[data-vacia='true'] {
+  border-style: dashed;
+  opacity: 0.45;
+}

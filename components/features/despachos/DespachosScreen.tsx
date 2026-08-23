@@ -211,7 +211,7 @@ export function DespachosScreen() {
         sub="Direcciones gestionadas manualmente · rutas optimizadas para ahorrar gasolina"
       />
 
-      <StatGrid cols={4}>
+      <StatGrid cols={4} dataTour="despachos-kpis">
         <StatCard value={String(totalStops)} label={`Paradas en ruta · ${routes.length} zonas`} />
         <StatCard value={String(routes.length)} label="Rutas sugeridas por zona" />
         <StatCard value={totalKm.toFixed(1)} unit="km" label={`Distancia optimizada · −${totalSavedKm.toFixed(1)} km`} />
@@ -300,7 +300,7 @@ export function DespachosScreen() {
             />
           ) : (
             <div className={styles.routes}>
-              {routes.map((r) => (
+              {routes.map((r, i) => (
                 <div key={r.id} className={styles.routeCard}>
                   <div className={styles.routeHead}>
                     <div className={styles.routeHeadLeft}>
@@ -504,6 +504,10 @@ export function DespachosScreen() {
                       </button>
                       <button
                         className="btn btn-primary"
+                        /* Solo la primera ruta lleva el ancla: el recorrido guiado
+                           usa querySelector y con una por tarjeta el foco dependería
+                           del orden de las zonas. */
+                        data-tour={i === 0 ? 'despachos-despachar' : undefined}
                         disabled={r.stops.length === 0}
                         onClick={() => dispatchRoute(r)}
                       >

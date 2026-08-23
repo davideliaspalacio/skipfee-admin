@@ -16,6 +16,9 @@ export function Tabs({ tabs, value, onChange }: { tabs: TabDef[]; value: string;
           role="tab"
           aria-selected={value === t.id}
           className={`tab${value === t.id ? ' is-active' : ''}`}
+          /* Ancla estable para el recorrido guiado del demo (`lib/tour.ts`),
+             que necesita poder abrir una pestaña concreta antes de resaltarla. */
+          data-tour={`tab-${t.id}`}
           onClick={() => onChange(t.id)}
         >
           {t.label}

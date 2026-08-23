@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "components/features/onboarding/*.module.css"
+        ],
+        "createdAt": "2026-08-23T06:39:52.855Z",
+        "reason": "Mundo cartoon del onboarding: .entrada lleva borde de tinta uniforme en los cuatro lados y el inset superior de 3px es el papel hundido (letterpress), no una pestana de acento lateral en una tarjeta."
+      }
+    ]
+  }
+}

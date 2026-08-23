@@ -200,7 +200,7 @@ export function ClientesScreen() {
         sub="Directorio de quienes han pedido o escrito por WhatsApp"
       />
 
-      <StatGrid cols={4}>
+      <StatGrid cols={4} dataTour="clientes-kpis">
         <StatCard value={kpis.total} label="Clientes totales" />
         <StatCard value={kpis.recurrentesPct} unit="%" label="Recurrentes (2–10 pedidos)" />
         <StatCard value={kpis.vipsPct} unit="%" label="VIP (>10 pedidos)" />
@@ -236,7 +236,7 @@ export function ClientesScreen() {
         </div>
       </div>
 
-      <Panel title="Directorio" meta={meta} noPad>
+      <Panel title="Directorio" meta={meta} noPad dataTour="clientes-directorio">
         <DataTable
           columns={columns}
           rows={rows}

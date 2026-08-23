@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   settingsKeys,
@@ -46,7 +46,10 @@ export default function PreviewConfiguracion() {
 
   return (
     <QueryClientProvider client={qc}>
-      <ConfiguracionScreen />
+      {/* ConfiguracionScreen usa useSearchParams (deep-link ?tab=…) → Suspense. */}
+      <Suspense fallback={null}>
+        <ConfiguracionScreen />
+      </Suspense>
     </QueryClientProvider>
   );
 }

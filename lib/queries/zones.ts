@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchZones, patchZone, createZone, deleteZone, type CreateZoneBody, type PatchZoneBody } from '../api';
 import type { Zone } from '../data';
-import { zoneKeys } from './keys';
+import { onboardingKeys, zoneKeys } from './keys';
 import { useActiveCompany } from './company';
 import { pushToast } from '../toast';
 
@@ -37,6 +37,8 @@ export function useCreateZone() {
     mutationFn: (body: CreateZoneBody) => createZone(body),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: zoneKeys.all });
+      // La primera zona destraba el paso "hasta dónde repartes" en Primeros pasos.
+      qc.invalidateQueries({ queryKey: onboardingKeys.all() });
       pushToast({ kind: 'success', message: 'Zona creada' });
     },
     onError: err => {

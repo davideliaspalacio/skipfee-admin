@@ -1,6 +1,6 @@
 import { tenantRequest } from './client';
 
-export type ChannelProvider = 'whatsapp' | 'storefront' | 'rappi' | 'didi' | 'ubereats' | 'manual';
+export type ChannelProvider = 'whatsapp' | 'storefront' | 'rappi' | 'didi' | 'ubereats' | 'manual' | 'presencial';
 export type ChannelKind = 'direct' | 'marketplace' | 'pos';
 export type ChannelMode = 'none' | 'simulated' | 'live';
 export type ChannelStatus =

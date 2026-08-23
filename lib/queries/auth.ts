@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { login, logout, me, type MeResult } from '../api';
+import { login, logout, me, type Membership, type MeResult } from '../api';
 import { authKeys } from './keys';
 import { useActiveCompany } from './company';
 import { normalizeRole, type UserRole } from '../roles';
@@ -28,6 +28,15 @@ export function useActiveRole(): UserRole {
   );
   // Fallback al rol del user (compat con backends que aún no mandan memberships).
   return normalizeRole(membership?.role ?? me.data?.user.role);
+}
+
+/** Membresía de la empresa activa (rol, plan, días de prueba). */
+export function useActiveMembership(): Membership | null {
+  const me = useMe();
+  const activeCode = useActiveCompany();
+  return (
+    me.data?.memberships.find((m) => String(m.companyCode) === activeCode) ?? null
+  );
 }
 
 export function useLogin() {

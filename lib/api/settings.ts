@@ -1,4 +1,4 @@
-import { tenantRequest } from './client';
+import { tenantMultipart, tenantRequest } from './client';
 
 export type DayKey = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun';
 
@@ -49,6 +49,13 @@ export interface Settings {
   // --- Dirección del local (origen de los domicilios) ---
   /** Dirección legible del local. Solo visual — el cálculo usa lat/lng. */
   localAddress: string | null;
+  /** En qué se especializa el negocio ("pizzería napolitana en Laureles").
+   *  Lo usa el prompt del bot para presentarse. */
+  businessDescription: string | null;
+  /** Logo del negocio. Se muestra en la cabecera de la tienda. */
+  logoUrl: string | null;
+  /** Color de marca `#RRGGBB`. null = la tienda usa el verde de Skipfee. */
+  brandColor: string | null;
   /** Latitud del origen de las rutas. Default histórico: 6.2447 (Medellín). */
   localLat: number;
   /** Longitud del origen de las rutas. Default histórico: -75.5736. */
@@ -70,4 +77,12 @@ export async function patchSettings(body: Partial<Settings>): Promise<void> {
     method: 'PATCH',
     body: JSON.stringify(body),
   });
+}
+
+/** Sube el logo del negocio (PNG/JPG/WEBP/SVG, ≤ 2 MB) y lo guarda en settings. */
+export async function uploadLogo(file: File): Promise<string> {
+  const form = new FormData();
+  form.append('file', file);
+  const { url } = await tenantMultipart<{ ok: true; url: string }>('/settings/logo', form);
+  return url;
 }
