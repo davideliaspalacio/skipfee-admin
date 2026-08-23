@@ -13,16 +13,13 @@ export const metadata: Metadata = {
   title: "Skipfee · Panel",
   description: "Panel administrativo de Skipfee",
   robots: { index: false, follow: false },
+  icons: { icon: "/skipfeeIconMain.png", shortcut: "/skipfeeIconMain.png", apple: "/skipfeeIconMain.png" },
 };
-
-// Setea data-theme antes del primer paint para evitar FOUC en dark mode.
-const themeInit = `(function(){try{var t=localStorage.getItem('skipfee-admin-theme');if(t!=='dark'&&t!=='light'){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" suppressHydrationWarning className={`${display.variable} ${sans.variable} ${mono.variable}`}>
       <body>
-        <script dangerouslySetInnerHTML={{ __html: themeInit }} />
         <Providers>{children}</Providers>
       </body>
     </html>

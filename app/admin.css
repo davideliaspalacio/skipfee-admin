@@ -1,49 +1,13 @@
 /* ============================================================
    admin.css — capa de INTERACCIÓN del panel (sobre brand.css).
    brand.css es el espejo congelado de la landing; aquí van los
-   estados/superficies propios del admin + dark mode.
+   estados/superficies propios del admin.
    Solo tokens de marca: cero colores nuevos.
    ============================================================ */
 
 /* Rebote: llega pasado de largo y se acomoda. Es el tiempo del mundo de
    caricatura de Primeros pasos; el resto del panel usa --ease-quart. */
 :root { --ease-rebote: cubic-bezier(0.34, 1.56, 0.64, 1); }
-
-/* ---------- Dark mode ----------
-   Remapea SOLO superficies/texto. Acentos (--green*, --sun, --coral, --blue)
-   quedan idénticos para que la marca no cambie. --ink/--ink-soft/--ink-line
-   se conservan: son anclas oscuras (rail, KDS, paneles on-ink) en ambos temas. */
-[data-theme="dark"] {
-  --paper: oklch(0.20 0.028 255);
-  --surface: oklch(0.24 0.032 255);
-  --surface-2: oklch(0.27 0.032 255);
-  --surface-3: oklch(0.31 0.032 255);
-  --text: oklch(0.95 0.01 150);
-  --text-muted: oklch(0.72 0.02 255);
-  --line: oklch(0.36 0.02 255);
-  --on-ink: oklch(0.96 0.01 150);
-  --on-ink-muted: oklch(0.78 0.02 255);
-}
-/* brand.css fija varios colores de texto a --ink directo; en dark los reapuntamos */
-[data-theme="dark"] h1,
-[data-theme="dark"] h2,
-[data-theme="dark"] h3,
-[data-theme="dark"] h4,
-[data-theme="dark"] .display,
-[data-theme="dark"] .stat .v,
-[data-theme="dark"] .chip { color: var(--text); }
-[data-theme="dark"] .panel { border-color: var(--line); }
-[data-theme="dark"] body { color: var(--text); }
-/* .btn-ghost fija color:var(--ink) (tinta oscura) y --ink NO se remapea en
-   oscuro: el texto quedaba en 1.12:1 sobre el panel, prácticamente invisible.
-   Afecta a todo el panel, no a una pantalla concreta. */
-[data-theme="dark"] .btn-ghost {
-  color: var(--text);
-  box-shadow: inset 0 0 0 1.5px color-mix(in oklch, var(--text) 26%, transparent);
-}
-[data-theme="dark"] .btn-ghost:hover {
-  background: color-mix(in oklch, var(--text) 8%, transparent);
-}
 
 /* ---------- Inputs / form fields (admin) ---------- */
 .field { display: flex; flex-direction: column; gap: 8px; }
@@ -123,15 +87,14 @@
 /* El activo es una pastilla llena: se reconoce de un vistazo sin barritas ni
    acentos al margen, que es lo que había antes. */
 .rail-item.is-active { color: var(--green-ink); background: var(--green); }
-[data-theme="dark"] .rail-item { color: var(--on-ink-muted); }
-[data-theme="dark"] .rail-item:hover { color: var(--on-ink); }
-[data-theme="dark"] .rail-item.is-active { color: var(--green-ink); background: var(--green); }
 .rail-item .tip {
   position: absolute; left: calc(100% + 10px); top: 50%; transform: translateY(-50%) translateX(-4px);
   background: var(--ink); color: var(--on-ink);
   padding: 6px 10px; border-radius: 8px; font-size: 12.5px; font-weight: 600; white-space: nowrap;
   opacity: 0; pointer-events: none; transition: opacity .14s, transform .14s; z-index: 60;
+  box-shadow: 0 12px 30px -18px oklch(0.20 0.05 250 / .5);
 }
+.shell:not(.is-rail-collapsed) .rail-item .tip { display: none; }
 .rail-item:hover .tip { opacity: 1; transform: translateY(-50%) translateX(0); }
 .rail-item .rail-badge {
   position: absolute; top: 5px; right: 5px; min-width: 16px; height: 16px; padding: 0 4px;
@@ -152,6 +115,23 @@
   background: color-mix(in oklch, var(--paper) 88%, transparent);
   backdrop-filter: saturate(1.4) blur(10px);
   border-bottom: 1px solid var(--line);
+  min-width: 0;
+}
+.topbar-title {
+  display: flex; flex-direction: column; gap: 1px;
+  flex: 1 1 auto; min-width: 0; overflow: hidden;
+}
+.topbar-title b {
+  font-family: var(--font-display), sans-serif; font-size: 19px; letter-spacing: -.01em; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.topbar-title span {
+  font-size: 12.5px; color: var(--text-muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.topbar-actions {
+  flex: 0 1 auto; min-width: 0; max-width: min(560px, 58vw); overflow: hidden;
+  display: flex; align-items: center; justify-content: flex-end; gap: 10px;
 }
 .topbar-title { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
 .topbar-title b {
@@ -174,7 +154,6 @@
 .iconbtn:hover { color: var(--text); background: var(--surface-2); }
 .iconbtn:focus-visible { outline: 2px solid var(--green-strong); outline-offset: 2px; }
 .rail .iconbtn { color: var(--ink-softer); }
-[data-theme="dark"] .rail .iconbtn { color: var(--on-ink-muted); }
 
 /* Empresa activa: texto, no caja. Solo se ve como control cuando hay varias. */
 .company-pick {
@@ -206,20 +185,20 @@
   font-family: var(--font-display), sans-serif; font-weight: 800; font-size: 12.5px;
   letter-spacing: .02em;
 }
-[data-theme="dark"] .user-chip { background: var(--surface-3); color: var(--text); }
 
 /* ---------- Mobile bottom nav ---------- */
 .mobnav {
   display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; height: 64px;
-  background: var(--ink); border-top: 1px solid var(--ink-line);
+  background: var(--surface); border-top: 1px solid var(--line);
   align-items: stretch; padding: 0 6px;
+  box-shadow: 0 -12px 28px -24px oklch(0.20 0.05 250 / .42);
 }
 .mobnav-item {
   flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
-  background: none; border: none; cursor: pointer; color: var(--on-ink-muted);
+  background: none; border: none; cursor: pointer; color: var(--text-muted);
   font-size: 10.5px; font-weight: 600;
 }
-.mobnav-item.is-active { color: var(--green); }
+.mobnav-item.is-active { color: var(--green-ink); }
 
 @media (max-width: 1023px) {
   .rail { display: none; }
@@ -372,11 +351,16 @@ textarea.input { resize: vertical; min-height: 84px; font-family: inherit; }
 .demo-banner-cta { font-weight: 700; color: var(--green-ink); text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; flex: none; }
 .demo-banner-cta:hover { color: var(--green-strong); }
 /* candado en el rail / mobnav */
-.rail-item.is-locked { opacity: .6; }
+.rail-item.is-locked { opacity: .6; padding-right: 32px; }
 .rail-item.is-locked:hover { opacity: 1; }
 .rail-item .rail-lock {
-  position: absolute; bottom: 5px; right: 6px; width: 15px; height: 15px; border-radius: 5px;
-  display: grid; place-items: center; background: var(--ink-soft); color: var(--sun); border: 1px solid var(--ink-line);
+  position: absolute; top: 50%; right: 9px; transform: translateY(-50%);
+  width: 15px; height: 15px; border-radius: 5px;
+  display: grid; place-items: center; background: var(--surface-2); color: var(--sun-ink); border: 1px solid var(--line);
+}
+.shell.is-rail-collapsed .rail-item.is-locked { padding-right: 0; }
+.shell.is-rail-collapsed .rail-item .rail-lock {
+  top: auto; bottom: 5px; right: 6px; transform: none;
 }
 .mobnav-item.is-locked { opacity: .6; }
 /* función bloqueada (upsell) */
@@ -489,7 +473,6 @@ body.driver-active .tour-progress * { pointer-events: auto; }
 }
 .auth-check input { width: 16px; height: 16px; accent-color: var(--green-strong); cursor: pointer; }
 .login-hint a { color: var(--green-ink); font-weight: 600; text-decoration: underline; }
-[data-theme="dark"] .login-hint a { color: var(--green); }
 
 /* ---------- Aviso de prueba gratis ---------- */
 .aviso-prueba {

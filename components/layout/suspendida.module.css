@@ -25,8 +25,6 @@
   border: 1px solid color-mix(in oklch, var(--sun) 40%, var(--line));
   color: var(--sun-ink);
 }
-:global([data-theme='dark']) .icono { color: var(--sun); }
-
 .tarjeta h1 {
   margin: 0;
   font-family: var(--font-display), sans-serif;

@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Icon } from '@/lib/icons';
 import { NAV, MOB_NAV, SCREEN_TITLES, type ScreenId } from '@/lib/nav';
-import { useDarkMode } from '@/lib/hooks';
+import { useRailCollapsed } from '@/lib/hooks';
 import { useDemo } from '@/lib/demo';
 import { isScreenUnlocked, minPlanFor, PLAN_NAMES } from '@/lib/plans';
 import { DemoBanner } from '@/components/ui/DemoBanner';
@@ -37,7 +37,7 @@ function screenFromPath(pathname: string): ScreenId | null {
 export function DemoShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { negocio, plan } = useDemo();
-  const [dark, setDark] = useDarkMode();
+  const [railCollapsed, setRailCollapsed] = useRailCollapsed();
 
   const active = screenFromPath(pathname);
   const tourActive = useTourActive();
@@ -48,10 +48,26 @@ export function DemoShell({ children }: { children: React.ReactNode }) {
   const t = active ? SCREEN_TITLES[active] : { title: negocio, sub: 'Panel de demostración' };
 
   return (
-    <div className="shell">
+    <div className={`shell${railCollapsed ? ' is-rail-collapsed' : ''}`}>
       {/* Rail vertical (desktop) */}
       <aside className="rail">
-        <div className="rail-brand" aria-label={negocio}>{brandInitial}</div>
+        <div className="rail-head">
+          <div className="rail-brand" aria-label={negocio}>{brandInitial}</div>
+          <div className="rail-brand-text" aria-hidden={railCollapsed}>
+            <b>{negocio}</b>
+            <span>Demo</span>
+          </div>
+          <button
+            type="button"
+            className="rail-toggle"
+            onClick={() => setRailCollapsed(!railCollapsed)}
+            aria-label={railCollapsed ? 'Expandir barra lateral' : 'Plegar barra lateral'}
+            aria-expanded={!railCollapsed}
+            title={railCollapsed ? 'Expandir' : 'Plegar'}
+          >
+            {railCollapsed ? <Icon.Chevron size={18} /> : <Icon.ChevronLeft size={18} />}
+          </button>
+        </div>
         <nav className="rail-nav" aria-label="Navegación del panel">
           {NAV.map((item) => {
             const Ico = Icon[item.icon];
@@ -66,6 +82,7 @@ export function DemoShell({ children }: { children: React.ReactNode }) {
                 aria-label={item.label}
               >
                 {Ico ? <Ico size={21} /> : null}
+                <span className="rail-label">{item.label}</span>
                 {isLocked ? <span className="rail-lock" aria-hidden="true"><LockIcon /></span> : null}
                 <span className="tip">{item.label}{isLocked ? ` · Plan ${PLAN_NAMES[minPlanFor(item.id)]}` : ''}</span>
               </Link>
@@ -73,11 +90,9 @@ export function DemoShell({ children }: { children: React.ReactNode }) {
           })}
         </nav>
         <div className="rail-foot">
-          <button type="button" className="iconbtn" onClick={() => setDark(!dark)} aria-label={dark ? 'Tema claro' : 'Tema oscuro'}>
-            {dark ? <Icon.Sun size={19} /> : <Icon.Moon size={19} />}
-          </button>
-          <a className="iconbtn" href={SITE_URL} aria-label="Volver a skipfee.co" title="Volver a skipfee.co">
+          <a className="iconbtn rail-foot-action" href={SITE_URL} aria-label="Volver a skipfee.co" title="Volver a skipfee.co">
             <Icon.Home size={19} />
+            <span className="rail-foot-label">Volver al sitio</span>
           </a>
         </div>
       </aside>
@@ -90,9 +105,6 @@ export function DemoShell({ children }: { children: React.ReactNode }) {
             <span>{t.sub}</span>
           </div>
           <div className="topbar-actions">
-            <button type="button" className="iconbtn hide-mob" onClick={() => setDark(!dark)} aria-label={dark ? 'Tema claro' : 'Tema oscuro'}>
-              {dark ? <Icon.Sun size={19} /> : <Icon.Moon size={19} />}
-            </button>
             <span className="company-fixed hide-mob">{negocio}</span>
             <span className="user-chip" title={`Plan ${PLAN_NAMES[plan]}`}>
               {brandInitial}

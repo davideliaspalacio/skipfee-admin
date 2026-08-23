@@ -63,4 +63,3 @@
   border: 1px solid color-mix(in oklch, var(--sun) 45%, transparent);
   border-radius: var(--r-pill); padding: 2px 7px;
 }
-:global([data-theme='dark']) .etiqueta { color: var(--sun); }

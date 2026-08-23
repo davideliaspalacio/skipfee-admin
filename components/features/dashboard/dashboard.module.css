@@ -3,7 +3,23 @@
 
 .wrap { display: flex; flex-direction: column; gap: 18px; }
 
-/* ── Banner de promoción activa ───────────────────────────────────── */
+/* ── Banner de promociones activas ────────────────────────────────── */
+.promoWrap { display: flex; flex-direction: column; gap: 10px; }
+.promoSummary {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--green-ink);
+}
+.promoSummary b {
+  display: inline-grid; place-items: center; min-width: 24px; height: 24px;
+  border-radius: 999px; background: var(--green-wash); color: var(--green-ink);
+  font-family: var(--font-display); font-size: 13px; letter-spacing: 0;
+}
+.promoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
 .promo {
   display: flex; align-items: center; gap: 16px;
   background: var(--green); color: var(--green-ink);
@@ -11,6 +27,11 @@
   position: relative; overflow: hidden;
   box-shadow: 0 6px 0 var(--green-shadow);
   animation: rise .5s var(--ease-expo);
+}
+.promo.compact {
+  gap: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 4px 0 var(--green-shadow);
 }
 .promoMark {
   display: grid; place-items: center; flex: none;
@@ -20,6 +41,12 @@
   font-family: var(--font-display); font-weight: 800; font-size: 20px;
   letter-spacing: -0.02em; line-height: 1; text-align: center;
 }
+.promo.compact .promoMark {
+  min-width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  font-size: 16px;
+}
 .promoBody { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
 .promoKicker {
   font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em;
@@ -27,6 +54,14 @@
 }
 .promoName { font-family: var(--font-display); font-weight: 800; font-size: 18px; letter-spacing: -0.01em; }
 .promoDesc { font-size: 13.5px; opacity: .8; line-height: 1.35; }
+.promo.compact .promoName { font-size: 15.5px; }
+.promo.compact .promoDesc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 12.5px;
+}
 .promoSpark { flex: none; opacity: .55; }
 
 /* ── Cabecera ─────────────────────────────────────────────────────── */

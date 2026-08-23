@@ -65,7 +65,6 @@
 .contador[data-completo='true'] { background: oklch(0.80 0.17 152); }
 
 .cabeceraTexto { display: grid; gap: 2px; min-width: 0; flex: 1; }
-:global([data-theme='dark']) .cabeceraTexto b,
 .cabeceraTexto b {
   font-family: var(--font-display), sans-serif;
   font-size: 20px;
@@ -227,7 +226,6 @@
 .lateral { display: grid; gap: 12px; }
 
 .ficha { padding: 14px 16px; display: grid; gap: 7px; }
-:global([data-theme='dark']) .ficha h2,
 .ficha h2 {
   margin: 0;
   display: flex;

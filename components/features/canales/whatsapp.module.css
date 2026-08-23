@@ -278,30 +278,6 @@
 /* ------------------------------------------------------------ tema oscuro
    `--sun-ink` y `--green-ink` son tintas oscuras pensadas para fondos claros y
    el tema oscuro no las remapea. Sobre superficie oscura caían a 1.3–1.9:1.
-   En oscuro usamos los tonos claros de la misma familia. */
-
-:global([data-theme='dark']) .headState[data-state='linked'] { color: var(--sun); }
-:global([data-theme='dark']) .headState[data-state='live'] { color: var(--green); }
-
-:global([data-theme='dark']) .pulseRow {
-  color: var(--sun);
-  background: color-mix(in oklch, var(--sun) 10%, var(--surface));
-  border-color: color-mix(in oklch, var(--sun) 34%, var(--line));
-}
-:global([data-theme='dark']) .pulse { background: var(--sun); }
-
-:global([data-theme='dark']) .choiceList li[data-kind='con'] svg,
-:global([data-theme='dark']) .risk svg,
-:global([data-theme='dark']) .alert[data-tone='warn'] svg { color: var(--sun); }
-
-:global([data-theme='dark']) .alert[data-tone='warn'] {
-  background: color-mix(in oklch, var(--sun) 9%, var(--surface));
-  border-color: color-mix(in oklch, var(--sun) 34%, var(--line));
-}
-:global([data-theme='dark']) .alert[data-tone='error'] {
-  background: color-mix(in oklch, var(--coral) 10%, var(--surface));
-  border-color: color-mix(in oklch, var(--coral) 36%, var(--line));
-}
-
+   En oscuro usamos los tonos claros de la misma familia. *
 /* El QR se queda en blanco a propósito: los lectores necesitan el contraste
    real del código, no una versión "modo oscuro" que no escanea. */

@@ -283,6 +283,12 @@ export const mockActivePromotions: ActivePromotion[] = [
       { id: 'p01', name: 'Pastrami Bros', price: 28000, cat: 'Sándwiches', img: null, description: 'Pastrami curado 12h.', available: true },
     ],
   },
+  {
+    ...mockPromotions[1],
+    products: [
+      { id: 'p12', name: 'Combo Pastrami + Coca', price: 32000, cat: 'Combos', img: null, description: 'Pastrami Bros + Coca-Cola Zero.', available: true },
+    ],
+  },
 ];
 
 /* ------------------------------------------------------------------ *

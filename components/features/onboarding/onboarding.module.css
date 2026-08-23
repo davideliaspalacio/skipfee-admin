@@ -183,14 +183,7 @@
 }
 
 /* Las tintas `-ink` son tinta oscura para fondos claros: sobre las superficies
-   del tema oscuro quedan en 1,3:1 (invisibles). En oscuro van los tonos claros. */
-:global([data-theme='dark']) .obligatorio,
-:global([data-theme='dark']) .aviso,
-:global([data-theme='dark']) .faltan { color: var(--sun) !important; }
-
-:global([data-theme='dark']) .agregar:hover,
-:global([data-theme='dark']) .ejemplos button:hover { color: var(--green); }
-
+   del tema oscuro quedan en 1,3:1 (invisibles). En oscuro van los tonos claros. *
 @media (prefers-reduced-motion: reduce) {
   .spin { animation: none; }
   .barra > span { transition: none; }

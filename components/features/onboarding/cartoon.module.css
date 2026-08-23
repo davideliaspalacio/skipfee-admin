@@ -126,10 +126,6 @@
 
 .cuerpo { padding: 22px 24px 4px; overflow-y: auto; }
 
-/* `[data-theme="dark"] h2` de admin.css gana por especificidad y repintaría el
-   título con la tinta clara del panel. Este mundo tiene suelo propio en los dos
-   temas, así que su tinta se impone explícitamente. */
-:global([data-theme='dark']) .titulo,
 .titulo {
   margin: 0;
   font-family: var(--font-display), sans-serif;
@@ -338,7 +334,6 @@ textarea.entrada { resize: vertical; min-height: 62px; line-height: 1.5; }
 /* ------------------------------------------------------------- el éxito */
 
 .exito { display: grid; gap: 14px; justify-items: center; text-align: center; padding: 8px 0 6px; }
-:global([data-theme='dark']) .exito h2,
 .exito h2 {
   margin: 0;
   font-family: var(--font-display), sans-serif;

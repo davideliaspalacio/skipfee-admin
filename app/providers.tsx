@@ -1,9 +1,22 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useLayoutEffect, useState, type ReactNode } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { ToastHost } from '@/components/ui/ToastHost';
+
+function LightModeBootstrap() {
+  useLayoutEffect(() => {
+    document.documentElement.setAttribute('data-theme', 'light');
+    try {
+      window.localStorage.removeItem('skipfee-admin-theme');
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  return null;
+}
 
 /**
  * Providers globales del admin (client boundary).
@@ -27,6 +40,7 @@ export function Providers({ children }: { children: ReactNode }) {
 
   const tree = (
     <QueryClientProvider client={qc}>
+      <LightModeBootstrap />
       {children}
       <ToastHost />
     </QueryClientProvider>
