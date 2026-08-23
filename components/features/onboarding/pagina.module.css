@@ -1,0 +1,349 @@
+/* ==========================================================================
+   Primeros pasos — la pantalla, en el mismo mundo que sus modales
+   ==========================================================================
+   Es una isla clara dentro de un panel oscuro, y es deliberado: mientras el
+   negocio está montándose, el panel está bajo llave y esta es la única pantalla
+   a la que puede entrar. Que se vea distinta dice "estás en la puesta en
+   marcha", no "esta pantalla se les olvidó". Cuando termina, desaparece.
+   ========================================================================== */
+
+.pagina {
+  --tinta: oklch(0.23 0.045 250);
+  --papel: #FFFDF7;
+  --papel-2: #FFF6E4;
+
+  /* Dos columnas: el recorrido y lo que se pregunta mientras se recorre. El
+     ancho sobrante ya no es aire, es el sitio donde vive la información. */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 268px;
+  gap: 16px;
+  align-items: start;
+  max-width: 1000px;
+  margin-inline: auto;
+  width: 100%;
+  color: var(--tinta);
+}
+
+.principal,
+.ficha,
+.fichaEnlace {
+  background: var(--papel);
+  border: 2.5px solid var(--tinta);
+  border-radius: 18px;
+  box-shadow: 0 5px 0 var(--tinta);
+}
+
+.principal {
+  padding: 18px 20px 20px;
+  display: grid;
+  gap: 14px;
+  animation: tarjeta-entra 0.4s var(--ease-rebote) both;
+}
+
+@keyframes tarjeta-entra {
+  from { opacity: 0; transform: translateY(10px); }
+}
+
+/* ------------------------------------------------------------- cabecera */
+
+.cabecera { display: flex; align-items: center; gap: 14px; }
+
+.contador {
+  flex: none;
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--font-display), sans-serif;
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--tinta);
+  background: oklch(0.87 0.15 92);
+  border: 2.5px solid var(--tinta);
+  border-radius: 12px;
+  padding: 7px 12px;
+}
+.contador i { font-style: normal; font-size: 12.5px; opacity: 0.65; }
+.contador[data-completo='true'] { background: oklch(0.80 0.17 152); }
+
+.cabeceraTexto { display: grid; gap: 2px; min-width: 0; flex: 1; }
+:global([data-theme='dark']) .cabeceraTexto b,
+.cabeceraTexto b {
+  font-family: var(--font-display), sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--tinta);
+}
+.cabeceraTexto small { font-size: 13px; line-height: 1.45; color: oklch(0.42 0.04 250); }
+
+.retomar {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display), sans-serif;
+  font-size: 14.5px;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 11px 18px;
+  border-radius: 12px;
+  border: 2.5px solid var(--tinta);
+  background: oklch(0.80 0.17 152);
+  color: var(--tinta);
+  box-shadow: 0 4px 0 var(--tinta);
+  transition: transform 0.12s var(--ease-quart), box-shadow 0.12s var(--ease-quart);
+}
+.retomar:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--tinta); }
+.retomar:active { transform: translateY(4px); box-shadow: 0 0 0 var(--tinta); }
+.retomar:focus-visible { outline: 3px solid var(--tinta); outline-offset: 3px; }
+
+/* --------------------------------------------------------------- barra */
+
+.barra {
+  height: 10px;
+  border-radius: 99px;
+  background: var(--papel-2);
+  border: 2px solid var(--tinta);
+  overflow: hidden;
+}
+/* El relleno ocupa todo el ancho y se desplaza: animar `width` da tirones y
+   aplastaría el canto de tinta del frente. */
+.barra > span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: oklch(0.80 0.17 152);
+  border-right: 2px solid var(--tinta);
+  transition: transform 0.5s var(--ease-rebote);
+  will-change: transform;
+}
+
+/* --------------------------------------------------------------- pasos */
+
+.pasos { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+
+.paso {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 11px 13px;
+  background: var(--papel-2);
+  border: 2px solid var(--tinta);
+  border-radius: 13px;
+  animation: paso-entra 0.34s var(--ease-rebote) both;
+}
+.pasos li:nth-child(2) { animation-delay: 0.05s; }
+.pasos li:nth-child(3) { animation-delay: 0.1s; }
+.pasos li:nth-child(4) { animation-delay: 0.15s; }
+.pasos li:nth-child(5) { animation-delay: 0.2s; }
+
+@keyframes paso-entra {
+  from { opacity: 0; transform: translateY(6px); }
+}
+
+/* Lo terminado encoge: deja de ser una tarjeta y pasa a ser un renglón. Es de
+   donde sale el espacio que sobraba cuando alguien iba por el cuarto paso. */
+.paso[data-hecho='true'] {
+  background: transparent;
+  border-color: color-mix(in oklch, var(--tinta) 22%, transparent);
+  padding: 7px 13px;
+}
+.paso[data-hecho='true'] .texto b { font-size: 14px; }
+.paso[data-hecho='true'] .texto small { font-size: 12px; }
+
+.marca {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display), sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--tinta);
+  background: var(--papel);
+  border: 2px solid var(--tinta);
+  border-radius: 50%;
+}
+.paso[data-hecho='true'] .marca { background: oklch(0.80 0.17 152); border-width: 2px; }
+
+.texto { display: grid; gap: 2px; min-width: 0; }
+.texto b {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-family: var(--font-display), sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--tinta);
+}
+.texto small { font-size: 12.5px; line-height: 1.4; color: oklch(0.42 0.04 250); }
+
+.necesario {
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--tinta);
+  background: oklch(0.87 0.15 92);
+  border: 1.5px solid var(--tinta);
+  border-radius: 99px;
+  padding: 2px 7px;
+}
+
+.acciones { display: flex; align-items: center; gap: 10px; flex: none; }
+
+.enlace {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: oklch(0.42 0.04 250);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+.enlace:hover { color: var(--tinta); }
+
+.accion {
+  flex: none;
+  font-family: var(--font-display), sans-serif;
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 2px solid var(--tinta);
+  color: var(--tinta);
+  transition: transform 0.12s var(--ease-quart), box-shadow 0.12s var(--ease-quart);
+}
+.accion[data-tono='fuerte'] { background: oklch(0.80 0.17 152); box-shadow: 0 3px 0 var(--tinta); }
+.accion[data-tono='suave'] { background: transparent; box-shadow: none; }
+.accion:hover { transform: translateY(-2px); box-shadow: 0 4px 0 var(--tinta); }
+.accion:active { transform: translateY(3px); box-shadow: 0 0 0 var(--tinta); }
+.accion:focus-visible { outline: 3px solid var(--tinta); outline-offset: 3px; }
+
+/* ------------------------------------------------------------- lateral */
+
+.lateral { display: grid; gap: 12px; }
+
+.ficha { padding: 14px 16px; display: grid; gap: 7px; }
+:global([data-theme='dark']) .ficha h2,
+.ficha h2 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display), sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--tinta);
+}
+.ficha p { margin: 0; font-size: 12.5px; line-height: 1.5; color: oklch(0.42 0.04 250); }
+
+.dominio {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--tinta);
+  background: var(--papel-2);
+  border: 2px solid var(--tinta);
+  border-radius: 9px;
+  padding: 7px 10px;
+  overflow-wrap: anywhere;
+}
+
+.fichaEnlace {
+  padding: 13px 15px;
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 11px;
+  align-items: start;
+  color: var(--tinta);
+  transition: transform 0.12s var(--ease-quart), box-shadow 0.12s var(--ease-quart);
+}
+.fichaEnlace:hover { transform: translateY(-2px); box-shadow: 0 7px 0 var(--tinta); }
+.fichaEnlace:focus-visible { outline: 3px solid var(--tinta); outline-offset: 3px; }
+.fichaEnlace svg { margin-top: 2px; }
+.fichaEnlace b { display: block; font-family: var(--font-display), sans-serif; font-size: 13.5px; font-weight: 800; }
+.fichaEnlace small { display: block; margin-top: 2px; font-size: 12px; line-height: 1.45; color: oklch(0.42 0.04 250); }
+
+/* --------------------------------------------------------------- resto */
+
+.cargando { margin: 0; font-size: 14.5px; color: oklch(0.42 0.04 250); }
+
+@media (max-width: 900px) {
+  .pagina { grid-template-columns: 1fr; }
+  /* En angosto el costado va debajo, y en dos columnas para no alargar. */
+  .lateral { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+}
+
+@media (max-width: 560px) {
+  .principal { border-radius: 16px; padding: 16px 14px 18px; }
+  .cabecera { flex-wrap: wrap; gap: 10px; }
+  .cabeceraTexto { flex: 1 1 100%; order: 3; }
+  .retomar { margin-left: auto; }
+  .paso { grid-template-columns: 28px minmax(0, 1fr); }
+  .paso .acciones { grid-column: 2; justify-self: start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .principal, .paso { animation: none; }
+  .barra > span { transition: none; }
+  .retomar, .accion, .fichaEnlace { transition: none; }
+}
+
+/* ------------------------------------------------------ fichas con datos */
+
+.resumen { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
+.resumen li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12.5px;
+  color: oklch(0.42 0.04 250);
+  padding: 4px 0;
+  border-bottom: 1px dashed color-mix(in oklch, var(--tinta) 18%, transparent);
+}
+.resumen li:last-child { border-bottom: none; }
+.resumen b {
+  font-family: var(--font-display), sans-serif;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--tinta);
+  text-align: right;
+}
+/* Lo que falta se marca en ámbar: es lo único accionable de la lista. */
+.resumen li[data-hecho='false'] b { color: oklch(0.42 0.12 80); }
+
+.flujo {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  counter-reset: paso;
+}
+.flujo li {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 9px;
+  align-items: start;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: oklch(0.42 0.04 250);
+  counter-increment: paso;
+}
+.flujo li::before {
+  content: counter(paso);
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display), sans-serif;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: var(--tinta);
+  background: var(--papel-2);
+  border: 1.5px solid var(--tinta);
+  border-radius: 50%;
+}
