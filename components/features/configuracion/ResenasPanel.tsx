@@ -54,8 +54,8 @@ function ResenasConfig({ settings }: { settings: Settings }) {
   const dirty = keys.some(k => draft[k] !== settings[k]);
 
   return (
-    <div className={styles.card}>
-      <div className={styles.cardHead}>
+    <div className={styles.card} data-tour="config-resenas">
+      <div className={styles.cardHead} data-tour="config-resenas-head">
         <div>
           <div className={styles.cardTitle}><Icon.Star size={15} /> Encuesta y regalo por reseña</div>
           <div className={styles.cardSub}>Tras entregar, el bot pregunta del 1 al 5. Con 4–5 invita a reseñar y regala un postre; con 1–3 pasa el chat a un humano.</div>
