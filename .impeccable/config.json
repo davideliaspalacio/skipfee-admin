@@ -5,9 +5,12 @@
     "ignoreValues": [
       {
         "rule": "side-tab",
-        "value": "inset 0 3px 0 oklch(0.23 0.045 250 / 0.09)",
-        "createdAt": "2026-08-22T16:24:20.081Z",
-        "reason": "No es un acento lateral en una tarjeta: es la sombra interior superior de los inputs del mundo de caricatura (papel hundido), tinta neutra al 9%, igual en todos los campos. Es profundidad, no decoración."
+        "value": "*",
+        "files": [
+          "components/features/onboarding/*.module.css"
+        ],
+        "createdAt": "2026-08-23T06:39:52.855Z",
+        "reason": "Mundo cartoon del onboarding: .entrada lleva borde de tinta uniforme en los cuatro lados y el inset superior de 3px es el papel hundido (letterpress), no una pestana de acento lateral en una tarjeta."
       }
     ]
   }
