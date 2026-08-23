@@ -3,11 +3,16 @@ import {
   ApiError,
   listCompanies,
   createCompany,
+  updateCompany,
+  fetchPlatformSettings,
+  patchPlatformSettings,
   type Company,
   type CreateCompanyBody,
   type CreateCompanyResult,
+  type PlatformSettings,
+  type UpdateCompanyBody,
 } from '../api';
-import { platformKeys } from './keys';
+import { authKeys, platformKeys } from './keys';
 import { useActiveRole } from './auth';
 import { isPlatformOwner } from '../roles';
 import { pushToast } from '../toast';
@@ -44,6 +49,49 @@ export function useCreateCompany() {
           ? 'Ese slug ya existe. Elegí otro.'
           : `No se pudo crear la empresa: ${err.message}`;
       pushToast({ kind: 'error', message: msg });
+    },
+  });
+}
+
+/**
+ * Ficha de empresa: activar/suspender, cambiar plan, extender o reiniciar la
+ * prueba. Invalida también `me`: el banner de días restantes del panel se
+ * alimenta de ahí.
+ */
+export function useUpdateCompany() {
+  const qc = useQueryClient();
+  return useMutation<Company, Error, { codeOrSlug: string | number; body: UpdateCompanyBody }>({
+    mutationFn: ({ codeOrSlug, body }) => updateCompany(codeOrSlug, body),
+    onSuccess: company => {
+      qc.invalidateQueries({ queryKey: platformKeys.companies() });
+      qc.invalidateQueries({ queryKey: authKeys.me() });
+      pushToast({ kind: 'success', message: `"${company.name}" actualizada` });
+    },
+    onError: err => {
+      pushToast({ kind: 'error', message: `No se pudo actualizar: ${err.message}` });
+    },
+  });
+}
+
+export function usePlatformSettings() {
+  const role = useActiveRole();
+  return useQuery<PlatformSettings>({
+    queryKey: platformKeys.settings(),
+    queryFn: () => fetchPlatformSettings(),
+    enabled: isPlatformOwner(role),
+  });
+}
+
+export function usePatchPlatformSettings() {
+  const qc = useQueryClient();
+  return useMutation<PlatformSettings, Error, Partial<PlatformSettings>>({
+    mutationFn: body => patchPlatformSettings(body),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: platformKeys.settings() });
+      pushToast({ kind: 'success', message: 'Configuración guardada' });
+    },
+    onError: err => {
+      pushToast({ kind: 'error', message: `No se pudo guardar: ${err.message}` });
     },
   });
 }
