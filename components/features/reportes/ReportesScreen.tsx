@@ -82,6 +82,7 @@ function FinancialCard({
   return (
     <Panel
       title="Resumen financiero"
+      dataTour="reportes-financiero"
       meta={
         loading ? (
           <Skeleton width={58} height={22} radius={99} />
@@ -244,7 +245,7 @@ function ZoneAnalysis({ report, loading }: { report?: ReportsData; loading: bool
   const rows = report?.zoneAnalysis ?? [];
 
   return (
-    <Panel title="Análisis por zona" meta="Pedidos y rentabilidad" noPad>
+    <Panel title="Análisis por zona" meta="Pedidos y rentabilidad" noPad dataTour="reportes-zonas">
       <table className="dtable">
         <thead>
           <tr>

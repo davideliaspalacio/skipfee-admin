@@ -77,7 +77,7 @@ export function Kanban({
     <div className={styles.wrap}>
       <div className={styles.header}>
         <div className={styles.headLeft}>
-          <div className="input-search" style={{ width: 230 }}>
+          <div className="input-search" style={{ width: 230 }} data-tour="pedidos-buscar">
             <Icon.Search size={16} />
             <input
               placeholder="Buscar #pedido, cliente…"
@@ -86,7 +86,7 @@ export function Kanban({
               aria-label="Buscar pedido"
             />
           </div>
-          <div className={styles.filters}>
+          <div className={styles.filters} data-tour="pedidos-zonas">
             <button
               type="button"
               className={`chip sm${zoneFilter === 'all' ? ' tone-active' : ''}`}

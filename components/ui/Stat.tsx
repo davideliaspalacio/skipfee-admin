@@ -1,9 +1,22 @@
 import type { ReactNode } from 'react';
 
 /** Rejilla de stats sobre la clase de marca .stats. */
-export function StatGrid({ children, cols }: { children: ReactNode; cols?: number }) {
+export function StatGrid({
+  children,
+  cols,
+  dataTour,
+}: {
+  children: ReactNode;
+  cols?: number;
+  /** Ancla estable para el recorrido guiado del demo (`lib/tour.ts`). */
+  dataTour?: string;
+}) {
   return (
-    <div className="stats" style={cols ? { gridTemplateColumns: `repeat(${cols}, 1fr)` } : undefined}>
+    <div
+      className="stats"
+      data-tour={dataTour}
+      style={cols ? { gridTemplateColumns: `repeat(${cols}, 1fr)` } : undefined}
+    >
       {children}
     </div>
   );

@@ -63,7 +63,7 @@ export function ChatList({
 
   return (
     <div className={styles.list}>
-      <div className={styles.listHead}>
+      <div className={styles.listHead} data-tour="wa-bandeja">
         <div className={styles.listTop}>
           <span className={styles.listTitle}>
             <Icon.MessageCircle size={16} />

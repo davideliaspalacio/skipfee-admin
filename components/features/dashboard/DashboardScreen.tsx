@@ -177,7 +177,7 @@ export function DashboardScreen() {
         />
       </StatGrid>
 
-      <div className={styles.row}>
+      <div className={styles.row} data-tour="dash-graficas">
         <Panel
           title="Ventas últimos 7 días"
           meta={
@@ -241,6 +241,7 @@ export function DashboardScreen() {
 
       <Panel
         title="Requiere tu atención"
+        dataTour="dash-atencion"
         meta={
           loading ? (
             <span className={styles.muted}>Cargando…</span>

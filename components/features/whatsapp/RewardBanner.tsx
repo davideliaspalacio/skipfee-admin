@@ -22,7 +22,7 @@ export function RewardBanner({ phone }: { phone: string }) {
   const busy = approve.isPending || reject.isPending;
 
   return (
-    <div className={`${styles.banner} ${styles.bannerReward}`}>
+    <div className={`${styles.banner} ${styles.bannerReward}`} data-tour="wa-resena">
       <Icon.Cake size={15} />
       <span className={styles.bannerText}>
         <b>Reseña por verificar.</b>{' '}
