@@ -1,9 +1,16 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Icon } from '@/lib/icons';
-import { NAV, MOB_NAV, SCREEN_PATHS, SCREEN_TITLES, type ScreenId } from '@/lib/nav';
+import {
+  NAV,
+  MOB_NAV,
+  MOB_NAV_MORE_SECTIONS,
+  SCREEN_PATHS,
+  SCREEN_TITLES,
+  type ScreenId,
+} from '@/lib/nav';
 import { useActiveScreen, useScreenNav, useRailCollapsed } from '@/lib/hooks';
 import { visibleScreenIds } from '@/lib/roles';
 import {
@@ -93,12 +100,32 @@ export function AdminShell({ user, children }: { user: AuthUser; children: React
   );
   // En mobile la barra inferior es la única navegación: si "Primeros pasos" no
   // entra ahí, el dueño que configura desde el celular no lo encuentra nunca.
+  const [masAbierto, setMasAbierto] = useState(false);
+
   const mobItems = useMemo(() => {
     const base = MOB_NAV.filter((id) => allowed.has(id));
     return !arrancado && allowed.has('primerosPasos')
       ? (['primerosPasos', ...base] as ScreenId[])
       : base;
   }, [allowed, arrancado]);
+
+  // Lo que NO cabe en la barra inferior. Sin esto, desde el celular no había
+  // forma de llegar a Configuración, Catálogo, Despachos, Canales, Clientes ni
+  // Reportes: la barra pinta cuatro pestañas y el rail no existe por debajo de
+  // 1024px. Un dueño con celular no podía editar su carta ni sus horarios.
+  const seccionesMas = useMemo(
+    () =>
+      MOB_NAV_MORE_SECTIONS.map(s => ({
+        ...s,
+        items: s.items.filter(id => allowed.has(id) && !mobItems.includes(id)),
+      })).filter(s => s.items.length > 0),
+    [allowed, mobItems],
+  );
+
+  // Se cierra al navegar: la hoja tapa la pantalla a la que acabas de ir.
+  useEffect(() => {
+    setMasAbierto(false);
+  }, [active]);
 
   // Guard: si la screen activa no está permitida para el rol, vuelve a pedidos.
   useEffect(() => {
@@ -239,7 +266,60 @@ export function AdminShell({ user, children }: { user: AuthUser; children: React
             </button>
           );
         })}
+
+        {seccionesMas.length > 0 ? (
+          <button
+            type="button"
+            className={`mobnav-item${masAbierto ? ' is-active' : ''}`}
+            aria-expanded={masAbierto}
+            aria-haspopup="dialog"
+            onClick={() => setMasAbierto(v => !v)}
+          >
+            <Icon.MoreHorizontal size={20} />
+            Más
+          </button>
+        ) : null}
       </nav>
+
+      {masAbierto ? (
+        <>
+          <button
+            type="button"
+            className="mobmas-fondo"
+            aria-label="Cerrar"
+            onClick={() => setMasAbierto(false)}
+          />
+          <div className="mobmas" role="dialog" aria-label="Más secciones">
+            {seccionesMas.map(sec => (
+              <div key={sec.label} className="mobmas-grupo">
+                <b>{sec.label}</b>
+                <div className="mobmas-items">
+                  {sec.items.map(id => {
+                    const item = NAV.find(n => n.id === id)!;
+                    const Ico = Icon[item.icon];
+                    // Bajo llave se comporta igual que el rail: la puerta se ve,
+                    // pero lleva de vuelta a Primeros pasos. Esconderla haría
+                    // creer que la sección no existe.
+                    const locked = bajoLlave && id !== 'primerosPasos';
+                    return (
+                      <button
+                        key={id}
+                        type="button"
+                        className={`mobmas-item${locked ? ' is-locked' : ''}`}
+                        onClick={() => goScreen(locked ? 'primerosPasos' : id)}
+                      >
+                        {Ico ? <Ico size={19} /> : null}
+                        <span>{item.label}</span>
+                        {locked ? <Icon.Lock size={13} /> : null}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }

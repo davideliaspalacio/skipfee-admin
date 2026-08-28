@@ -530,3 +530,48 @@ body.driver-active .tour-progress * { pointer-events: auto; }
   .aviso-canal { padding: 9px 14px; font-size: 12.5px; flex-wrap: wrap; }
   .aviso-canal-cta { margin-left: 0; }
 }
+
+/* ---------- Hoja "Más" (mobile) ----------
+   La barra inferior solo tiene sitio para cuatro pestañas, y por debajo de
+   1024px el rail no existe: sin esto, Configuración, Catálogo, Despachos,
+   Canales, Clientes y Reportes eran inalcanzables desde un celular. Un dueño
+   que trabaja desde el teléfono no podía ni editar su carta. */
+.mobmas-fondo {
+  display: none; position: fixed; inset: 0; z-index: 44;
+  background: oklch(0.20 0.05 250 / .34); border: none; padding: 0; cursor: pointer;
+}
+.mobmas {
+  display: none; position: fixed; left: 0; right: 0; bottom: 64px; z-index: 45;
+  background: var(--surface); border-top: 1px solid var(--line);
+  border-radius: 16px 16px 0 0; padding: 14px 12px 18px;
+  max-height: 62dvh; overflow-y: auto;
+  box-shadow: 0 -16px 40px -26px oklch(0.20 0.05 250 / .5);
+  animation: mobmas-sube .18s var(--ease-quart);
+}
+@keyframes mobmas-sube { from { transform: translateY(14px); opacity: 0; } }
+
+.mobmas-grupo + .mobmas-grupo { margin-top: 14px; }
+.mobmas-grupo > b {
+  display: block; margin: 0 6px 7px;
+  font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text-muted);
+}
+.mobmas-items { display: grid; gap: 4px; }
+.mobmas-item {
+  display: flex; align-items: center; gap: 11px; width: 100%;
+  padding: 12px 10px; border-radius: 11px;
+  background: none; border: none; cursor: pointer;
+  font: inherit; font-size: 15px; font-weight: 600; color: var(--text);
+  text-align: left;
+}
+.mobmas-item:active { background: var(--surface-2); }
+/* El candado se ve, no se esconde: una sección ausente parecería inexistente. */
+.mobmas-item.is-locked { color: var(--text-muted); }
+.mobmas-item.is-locked svg:last-child { margin-left: auto; }
+
+@media (max-width: 1023px) {
+  .mobmas-fondo, .mobmas { display: block; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mobmas { animation: none; }
+}
